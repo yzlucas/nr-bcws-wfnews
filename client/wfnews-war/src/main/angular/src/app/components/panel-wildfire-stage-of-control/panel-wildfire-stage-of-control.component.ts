@@ -16,11 +16,13 @@ import { haversineDistance } from '../../services/wfnews-map.service/util';
 import { RootState } from '../../store';
 import { searchWildfires } from '../../store/wildfiresList/wildfiresList.action';
 import { LOAD_WILDFIRES_COMPONENT_ID } from '../../store/wildfiresList/wildfiresList.stats';
-import { convertToDateWithDayOfWeek as DateTimeConvert, convertToStageOfControlDescription as StageOfControlConvert, convertToFireCentreDescription } from '../../utils';
+import { snowPlowHelper, convertToDateWithDayOfWeek as DateTimeConvert, convertToStageOfControlDescription as StageOfControlConvert, convertToFireCentreDescription } from '../../utils';
 import { CollectionComponent } from '../common/base-collection/collection.component';
 import { IncidentIdentifyPanelComponent } from '../incident-identify-panel/incident-identify-panel.component';
 import { PanelWildfireStageOfControlComponentModel } from './panel-wildfire-stage-of-control.component.model';
 import * as L from 'leaflet'
+import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 const delay = t => new Promise(resolve => setTimeout(resolve, t));
 
 @Directive()
@@ -28,9 +30,12 @@ export class PanelWildfireStageOfControlComponent extends CollectionComponent im
   @ViewChild('listIdentifyContainer', { read: ViewContainerRef }) listIdentifyContainer: ViewContainerRef;
   @Input() collection: PagedCollection
 
+  public snowPlowHelper = snowPlowHelper
+
   activeWildfiresInd = true;
   outWildfiresInd = false;
   wildfiresOfNoteInd = false;
+  newFires = false;
   currentLat: number;
   currentLong: number;
 
@@ -59,6 +64,8 @@ export class PanelWildfireStageOfControlComponent extends CollectionComponent im
   public loading = true
   public tabIndex = 0
 
+  public readonly url = this.appConfigService.getConfig().application.baseUrl.toString() + this.router.url.slice(1)
+
   public convertToDateWithDayOfWeek = DateTimeConvert;
   public convertToStageOfControlDescription = StageOfControlConvert;
   public convertToFireCentreDescription = convertToFireCentreDescription;
@@ -69,14 +76,22 @@ export class PanelWildfireStageOfControlComponent extends CollectionComponent im
   }
 
   ngOnDestroy(): void {
+    const panel = document.getElementsByClassName('incident-details')
+    if (panel && panel.length !== 0) {
+      (panel.item(0) as HTMLElement).remove();
+    }
+
+    (document.getElementsByClassName('identify-panel').item(0) as HTMLElement).style.display = 'none';
+
     const SMK = window['SMK'];
     for (const smkMap in SMK.MAP) {
       if (Object.prototype.hasOwnProperty.call(SMK.MAP, smkMap)) {
-        SMK.MAP[smkMap].$viewer.map.removeLayer(this.highlightLayer);
+        if (this.highlightLayer && this.highlightLayer._leaflet_id) {
+          SMK.MAP[smkMap].$viewer.map.removeLayer(this.highlightLayer);
+        }
       }
     }
 
-    console.warn('Clearing intervals on destroy')
     clearInterval(this.initInterval)
     clearInterval(this.mapPanProgressBar)
     clearInterval(this.markerAnimation)
@@ -99,7 +114,9 @@ export class PanelWildfireStageOfControlComponent extends CollectionComponent im
         this.mapEventDebounce = null;
       }
       this.mapEventDebounce = setTimeout(() => {
-        this.doSearch();
+        if (this.tabIndex === 1) {
+          this.doSearch();
+        }
       }, 500);
     }
   }
@@ -136,9 +153,14 @@ export class PanelWildfireStageOfControlComponent extends CollectionComponent im
     }, 1000)
   }
 
-  onTabChanged (event) {
+  onTabChanged (event: MatTabChangeEvent) {
     this.onChangeFilters();
     this.doSearch();
+
+    this.snowPlowHelper(this.url, {
+      action: 'incident_tab_change',
+      text: `${event.index}:${event.tab.textLabel}`
+    })
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -191,9 +213,22 @@ export class PanelWildfireStageOfControlComponent extends CollectionComponent im
   }
 
   doSearch() {
+    if (!this.activeWildfiresInd && !this.outWildfiresInd && !this.newFires && !this.wildfiresOfNoteInd) {
+      this.collectionData = []
+      this.collection = null
+      this.searchState = null
+      this.loading = false
+      this.summaryString = 'No records to display.'
+      this.isFirstPage = 'FIRST'
+      this.isLastPage = 'LAST'
+      setTimeout(() => {
+        this.cdr.detectChanges();
+      });
+      return;
+    }
+
     let bbox = undefined
     // Fetch the maps bounding box
-    console.log('Loading true')
     this.loading = true
     try {
       const SMK = window['SMK'];
@@ -211,21 +246,46 @@ export class PanelWildfireStageOfControlComponent extends CollectionComponent im
       console.log('SMK initializing... wait to fetch bounds.')
     }
 
+    // set stages of control to return
+    const stageOfControlList = []
+    if (this.outWildfiresInd) {
+      stageOfControlList.push('OUT')
+    }
+    if(this.activeWildfiresInd) {
+      stageOfControlList.push('OUT_CNTRL')
+      stageOfControlList.push('HOLDING')
+      stageOfControlList.push('UNDR_CNTRL')
+    }
+
+    // We use a boolean in the postgres model so this shouldn't be needed
+    //if(this.wildfiresOfNoteInd) {
+    //  stageOfControlList.push('FIRE_OF_NOTE')
+    //}
+
     this.store.dispatch(searchWildfires(this.componentId, {
       pageNumber: this.config.currentPage,
       pageRowCount: 10,
       sortColumn: this.currentSort,
       sortDirection: this.currentSortDirection,
       query: undefined
-    }, undefined, this.wildfiresOfNoteInd, (this.activeWildfiresInd && this.outWildfiresInd) ? undefined : !this.activeWildfiresInd, bbox, this.displayLabel, undefined, undefined, undefined,
+    }, undefined, this.wildfiresOfNoteInd, stageOfControlList, this.newFires, bbox, this.displayLabel, undefined, undefined, undefined,
       () => {
-        console.log('Loading false')
         this.loading = false
         this.cdr.detectChanges()
       }));
+
+    // set a timeout to turn of the loading indicator
+    setTimeout(() => {
+      this.loading = false
+      this.cdr.detectChanges()
+    }, 5000)
   }
 
-  stageOfControlChanges(event: any) {
+  stageOfControlChanges(event: MatCheckboxChange) {
+    this.snowPlowHelper(this.url, {
+      action: 'incident_list_options',
+      text: `${event.source.ariaLabel.toUpperCase()}-${event.checked}`
+    })
     this.onChangeFilters()
     this.doSearch()
   }
@@ -298,11 +358,11 @@ export class PanelWildfireStageOfControlComponent extends CollectionComponent im
       if (incident.fireOfNoteInd) {
         icon.style.backgroundColor = '#aa0d0d'
       } else if (incident.stageOfControlCode === 'OUT_CNTRL') {
-        icon.style.backgroundColor = '#aa0d0d'
+        icon.style.backgroundColor = '#FF0000'
       } else if (incident.stageOfControlCode === 'HOLDING') {
-        icon.style.backgroundColor = '#ffd966'
+        icon.style.backgroundColor = '#FFFF00'
       } else if (incident.stageOfControlCode === 'UNDR_CNTRL') {
-        icon.style.backgroundColor = '#507800'
+        icon.style.backgroundColor = '#98E600'
       }
 
       if (this.markerAnimation) {
@@ -370,6 +430,13 @@ export class PanelWildfireStageOfControlComponent extends CollectionComponent im
   openPreview(incident: any) {
     this.onPanelMouseEnter(incident);
 
+    this.snowPlowHelper(this.url, {
+      action: 'wildfire_list_click',
+      text: incident.incidentName,
+      id: incident.incidentNumberLabel
+    })
+
+
     incident.incident_number_label = incident.incidentNumberLabel;
     const self = this;
     this.zone.run(function () {
@@ -400,15 +467,15 @@ export class PanelWildfireStageOfControlComponent extends CollectionComponent im
   }
 
   onWatchlist(incident: any): boolean {
-    return this.watchlistService.getWatchlist().includes(incident.incidentNumberLabel)
+    return this.watchlistService.getWatchlist().includes(incident.fireYear + ':' + incident.incidentNumberLabel)
   }
 
   addToWatchlist(incident: any) {
-    this.watchlistService.saveToWatchlist(incident.incidentNumberLabel)
+    this.watchlistService.saveToWatchlist(incident.fireYear, incident.incidentNumberLabel)
   }
 
   removeFromWatchlist(incident: any) {
-    this.watchlistService.removeFromWatchlist(incident.incidentNumberLabel)
+    this.watchlistService.removeFromWatchlist(incident.fireYear, incident.incidentNumberLabel)
   }
 
   onClickBookmark(event: Event) {

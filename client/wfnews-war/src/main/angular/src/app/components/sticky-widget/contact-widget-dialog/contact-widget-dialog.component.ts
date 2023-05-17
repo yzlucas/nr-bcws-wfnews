@@ -14,6 +14,7 @@ export class ContactWidgetDialogComponent implements OnInit {
 
     public contactForm: FormGroup;
     contactInformationConfig: any;
+    public closeColor;
 
     constructor (
       private dialogRef: MatDialogRef<ContactWidgetDialogComponent>,
@@ -47,8 +48,6 @@ export class ContactWidgetDialogComponent implements OnInit {
         let error = "";
         const emailControl: FormControl = (this.contactForm.get('email') as FormControl);
 
-        if(emailControl.hasError('required'))
-            error += "Email is required";
         if(emailControl.hasError('email'))
             error += "A valid email is required";
 
@@ -56,7 +55,6 @@ export class ContactWidgetDialogComponent implements OnInit {
      }
 
     onSubmit() {
-        //TODO: send to email API
         this.dialogRef.close();
         const url = `${this.appConfig.getConfig().rest['wfnews']}/mail`;
 
@@ -66,7 +64,7 @@ export class ContactWidgetDialogComponent implements OnInit {
           name: this.contactForm.get('name').value,
           subject: this.contactForm.get('subject').value,
           emailAddress: this.contactForm.get('email').value,
-          message: this.contactForm.get('message').value
+          messageBody: this.contactForm.get('message').value
         }).toPromise().then(() => {
           this.snackbarService.open('Thank you! Our Team will contact you as soon as possible.', null, { duration: 10000, panelClass: 'snackbar-success-v2' });
         }).catch(err => {

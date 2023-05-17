@@ -26,13 +26,13 @@ export class WfnewsInterceptor extends AuthenticationInterceptor implements Http
         let processedRequest = req;
         let requestId;
         requestId = `WFNEWSUI${UUID.UUID().toUpperCase()}`.replace(/-/g, "");
-        
+
         if (this.isUrlSecured(req.url)) {
             if (!this.tokenService) {
                 this.tokenService = this.injector.get(TokenService);
             }
             return this.handleLogin(req, next, this.tokenService, requestId);
-            
+
         } else {
             return this.handleRequest(requestId, next, processedRequest);
         }
@@ -40,7 +40,7 @@ export class WfnewsInterceptor extends AuthenticationInterceptor implements Http
 
     handleLogin(req: HttpRequest<any>, next: HttpHandler, tokenService: TokenService, requestId: string): Observable<any> {
         let processedRequest = req;
-        
+
         return tokenService.authTokenEmitter.pipe(
             filter(token => token != null)
             , take(1)
@@ -55,7 +55,7 @@ export class WfnewsInterceptor extends AuthenticationInterceptor implements Http
                             this.tokenService.updateToken(tokenResponse);
                             let headers = req.headers.set("Authorization", `Bearer ${tokenResponse["access_token"]}`)
                                 .set("RequestId", requestId);
-        
+
                             processedRequest = req.clone({headers});
                             if (this.asyncTokenRefresh.isComplete) {
                                 this.asyncTokenRefresh = undefined;
@@ -68,18 +68,6 @@ export class WfnewsInterceptor extends AuthenticationInterceptor implements Http
                         }));
                     } else {
                         if (requestId) {
-                            //api's other than resources v2 api or schedule api still need to have this manually set
-                            let headers = req.headers.set("RequestId", requestId).set("Accept", "*/*");
-        
-                            // Need to explicitly disable caching, as IE11 caches by default
-                            if (req.method === "GET") {
-                                headers = headers.set("Cache-Control", "no-cache")
-                                    .set("Pragma", "no-cache");
-                            }
-        
-                            if (req.url.indexOf('bytes') !== -1) {
-        
-                            }
                             let authToken = this.tokenService.getOauthToken();
                             processedRequest = req.clone({
                                 headers: req.headers.set('Authorization', 'Bearer ' + authToken).set("RequestId", requestId).set("Accept", "*/*")
@@ -191,13 +179,13 @@ export class WfnewsInterceptor extends AuthenticationInterceptor implements Http
 
     isUrlSecured(url: string): boolean {
         let isSecured = false;
-        const config = this.appConfig.getConfig();                
+        const config = this.appConfig.getConfig();
         if (config && config.rest) {
             let wfdmProxy = config.externalAppConfig['wfdmProxy'];
             if(url.startsWith(wfdmProxy.toString())) {
                 return true; // if the request is from Document Service proxy
             }
-            if (url.startsWith(config.rest['wfnews'])) {
+            if (url.startsWith(config.rest['wfnews']) || url.includes('wfss-pointid-api')) {
                 return false; // if the request is from wfnews-server, no need to hanldeLogin
             }
             for (let endpoint in config.rest) {
@@ -211,7 +199,7 @@ export class WfnewsInterceptor extends AuthenticationInterceptor implements Http
     }
 
     displayRefreshErrorMessage(message: string) {
-
+      // unused. Why is this empty?
     }
 
     refreshWindow() {

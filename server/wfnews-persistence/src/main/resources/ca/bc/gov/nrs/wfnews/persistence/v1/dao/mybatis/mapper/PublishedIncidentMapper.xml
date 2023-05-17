@@ -8,12 +8,13 @@
 		<result property="incidentNumberLabel" column="INCIDENT_NUMBER_LABEL" javaType="java.lang.String" jdbcType="VARCHAR" />
 		<result property="newsCreatedTimestamp" column="NEWS_CREATED_TIMESTAMP" javaType="java.util.Date" jdbcType="TIMESTAMP" />
 		<result property="stageOfControlCode" column="STAGE_OF_CONTROL_CODE" javaType="java.lang.String" jdbcType="VARCHAR" />
-		<result property="fireCentre" column="FIRE_CENTRE" javaType="java.lang.String" jdbcType="VARCHAR" />
+		<result property="fireCentreCode" column="FIRE_CENTRE_CODE" javaType="java.lang.String" jdbcType="VARCHAR" />
+		<result property="fireCentreName" column="FIRE_CENTRE_NAME" javaType="java.lang.String" jdbcType="VARCHAR" />
 		<result property="fireYear" column="FIRE_YEAR" javaType="java.lang.Integer" jdbcType="NUMERIC" />
 		<result property="generalIncidentCauseCatId" column="GENERAL_INCIDENT_CAUSE_CAT_ID" javaType="java.lang.Integer" jdbcType="NUMERIC" />
 		<result property="newsPublicationStatusCode" column="NEWS_PUBLICATION_STATUS_CODE" javaType="java.lang.String" jdbcType="VARCHAR" />
-		<result property="discoveryDate" column="DISCOVERY_DATE" javaType="java.util.Date" jdbcType="DATE" />
-		<result property="declaredOutDate" column="DECLARED_OUT_DATE" javaType="java.util.Date" jdbcType="DATE" />
+		<result property="discoveryDate" column="DISCOVERY_DATE" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+		<result property="declaredOutDate" column="DECLARED_OUT_DATE" javaType="java.util.Date" jdbcType="TIMESTAMP" />
 		<result property="fireZoneUnitIdentifier" column="FIRE_ZONE_ORG_UNIT_IDENTIFIER" javaType="java.lang.Integer" jdbcType="NUMERIC" />
 		<result property="fireOfNoteInd" column="FIRE_OF_NOTE_IND" javaType="java.lang.Boolean" jdbcType="VARCHAR" />
 		<result property="incidentName" column="INCIDENT_NAME" javaType="java.lang.String" jdbcType="VARCHAR" />
@@ -47,14 +48,19 @@
 		<result property="lastUpdatedTimestamp" column="LAST_UPDATED_TIMESTAMP" javaType="java.util.Date" jdbcType="TIMESTAMP" />
 		<result property="revisionCount" column="REVISION_COUNT" javaType="java.lang.Long" jdbcType="NUMERIC" />
 		<result property="createUser" column="CREATE_USER" javaType="java.lang.String" jdbcType="VARCHAR" />
-		<result property="createDate" column="CREATE_DATE" javaType="java.util.Date" jdbcType="DATE" />
+		<result property="createDate" column="CREATE_DATE" javaType="java.util.Date" jdbcType="TIMESTAMP" />
 		<result property="updateUser" column="UPDATE_USER" javaType="java.lang.String" jdbcType="VARCHAR" />
-		<result property="updateDate" column="UPDATE_DATE" javaType="java.util.Date" jdbcType="DATE" />
+		<result property="updateDate" column="UPDATE_DATE" javaType="java.util.Date" jdbcType="TIMESTAMP" />
 		<result property="latitude" column="LATITUDE" javaType="java.lang.String" jdbcType="VARCHAR" />
 		<result property="longitude" column="LONGITUDE" javaType="java.lang.String" jdbcType="VARCHAR" /> 
-		<result property="fireCentre" column="FIRE_CENTRE" javaType="java.lang.String" jdbcType="VARCHAR" />
+		<result property="fireCentreCode" column="FIRE_CENTRE_CODE" javaType="java.lang.String" jdbcType="VARCHAR" />
 		<result property="fireYear" column="FIRE_YEAR" javaType="java.lang.Integer" jdbcType="NUMERIC" />
+		<result property="responseTypeCode" column="RESPONSE_TYPE_CODE" javaType="java.lang.String" jdbcType="VARCHAR" />
+		<result property="responseTypeDetail" column="RESPONSE_TYPE_DETAIL" javaType="java.lang.String" jdbcType="VARCHAR" />
 	</resultMap>
+	
+	<sql id="distanceCalcSrid">3005</sql> <!-- NAD83 / BC Albers -->
+	<sql id="latLonSrid">4326</sql> <!-- WGS84 -->
 	
 	<insert id="insert">
 	<selectKey keyProperty="publishedIncidentDetailGuid" resultType="java.lang.String" order="BEFORE"> 
@@ -71,7 +77,8 @@
 				NEWS_PUBLICATION_STATUS_CODE,
 				DISCOVERY_DATE,
 				DECLARED_OUT_DATE,
-				FIRE_CENTRE,
+				FIRE_CENTRE_CODE,
+				FIRE_CENTRE_NAME,
 				FIRE_YEAR,
 				FIRE_ZONE_ORG_UNIT_IDENTIFIER,
 				FIRE_OF_NOTE_IND,
@@ -98,6 +105,8 @@
 				INCIDENT_MGMNT_CREW_RSRC_DTL,
 				STRUCTURE_PROTECTION_RSRC_IND,
 				STRUCTURE_PROTECTION_RSRC_DTL,
+				RESPONSE_TYPE_CODE,
+				RESPONSE_TYPE_DETAIL,
 				PUBLISHED_TIMESTAMP,
 				PUBLISHED_USER_TYPE_CODE,
 				PUBLISHED_USER_GUID,
@@ -120,9 +129,10 @@
 				#{dto.stageOfControlCode, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
 				#{dto.generalIncidentCauseCatId, javaType=java.lang.Integer, jdbcType=NUMERIC, mode=IN},
 				#{dto.newsPublicationStatusCode, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
-				#{dto.discoveryDate, javaType=java.util.Date, jdbcType=DATE, mode=IN},
-				#{dto.declaredOutDate, javaType=java.util.Date, jdbcType=DATE, mode=IN},
-				#{dto.fireCentre, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
+				#{dto.discoveryDate, javaType=java.util.Date, jdbcType=TIMESTAMP, mode=IN},
+				#{dto.declaredOutDate, javaType=java.util.Date, jdbcType=TIMESTAMP, mode=IN},
+				#{dto.fireCentreCode, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
+				#{dto.fireCentreName, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
 				#{dto.fireYear, javaType=java.lang.Integer, jdbcType=NUMERIC, mode=IN},
 				#{dto.fireZoneUnitIdentifier, javaType=java.lang.Integer, jdbcType=NUMERIC, mode=IN},
 				#{dto.fireOfNoteInd, javaType=java.lang.Boolean, jdbcType=VARCHAR, mode=IN},
@@ -149,6 +159,8 @@
 				#{dto.incidentMgmtCrewRsrcDetail, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
 				#{dto.structureProtectionRsrcInd, javaType=java.lang.Boolean, jdbcType=VARCHAR, mode=IN},
 				#{dto.structureProtectionRsrcDetail, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
+				#{dto.responseTypeCode, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
+				#{dto.responseTypeDetail, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
 				#{dto.publishedTimestamp, javaType=java.util.Date, jdbcType=TIMESTAMP, mode=IN},
 				#{dto.publishedUserTypeCode, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
 				#{dto.publishedUserGuid, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
@@ -159,9 +171,9 @@
 				#{dto.longitude, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
 				#{dto.revisionCount, javaType=java.lang.Long, jdbcType=NUMERIC, mode=IN},
 				#{dto.createUser, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
-				#{dto.createDate, javaType=java.util.Date, jdbcType=DATE, mode=IN},
+				#{dto.createDate, javaType=java.util.Date, jdbcType=TIMESTAMP, mode=IN},
 				#{dto.updateUser, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
-				#{dto.updateDate, javaType=java.util.Date, jdbcType=DATE, mode=IN}) 
+				#{dto.updateDate, javaType=java.util.Date, jdbcType=TIMESTAMP, mode=IN}) 
 	</insert> 
 	
 	<update id="update">
@@ -174,9 +186,10 @@
 				STAGE_OF_CONTROL_CODE =				#{dto.stageOfControlCode, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
 				GENERAL_INCIDENT_CAUSE_CAT_ID =				#{dto.generalIncidentCauseCatId, javaType=java.lang.Integer, jdbcType=NUMERIC, mode=IN},
 				NEWS_PUBLICATION_STATUS_CODE =				#{dto.newsPublicationStatusCode, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
-				DISCOVERY_DATE =				#{dto.discoveryDate, javaType=java.util.Date, jdbcType=DATE, mode=IN},
-				DECLARED_OUT_DATE =				#{dto.declaredOutDate, javaType=java.util.Date, jdbcType=DATE, mode=IN},
-				FIRE_CENTRE = 		#{dto.fireCentre, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
+				DISCOVERY_DATE =				#{dto.discoveryDate, javaType=java.util.Date, jdbcType=TIMESTAMP, mode=IN},
+				DECLARED_OUT_DATE =				#{dto.declaredOutDate, javaType=java.util.Date, jdbcType=TIMESTAMP, mode=IN},
+				FIRE_CENTRE_CODE = 		#{dto.fireCentreCode, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
+				FIRE_CENTRE_NAME = 		#{dto.fireCentreName, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
 				FIRE_YEAR = #{dto.fireYear, javaType=java.lang.Integer, jdbcType=NUMERIC, mode=IN},
 				FIRE_ZONE_ORG_UNIT_IDENTIFIER =				#{dto.fireZoneUnitIdentifier, javaType=java.lang.Integer, jdbcType=NUMERIC, mode=IN},
 				FIRE_OF_NOTE_IND =				#{dto.fireOfNoteInd, javaType=java.lang.Boolean, jdbcType=VARCHAR, mode=IN},
@@ -203,8 +216,10 @@
 				INCIDENT_MGMNT_CREW_RSRC_DTL =				#{dto.incidentMgmtCrewRsrcDetail, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
 				STRUCTURE_PROTECTION_RSRC_IND =				#{dto.structureProtectionRsrcInd, javaType=java.lang.Boolean, jdbcType=VARCHAR, mode=IN},
 				STRUCTURE_PROTECTION_RSRC_DTL =				#{dto.structureProtectionRsrcDetail, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
-				PUBLISHED_TIMESTAMP =				#{dto.publishedTimestamp, javaType=java.util.Date, jdbcType=TIMESTAMP, mode=IN},
-				PUBLISHED_USER_TYPE_CODE =				#{dto.publishedUserTypeCode, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
+				RESPONSE_TYPE_CODE =                  #{dto.responseTypeCode, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
+				RESPONSE_TYPE_DETAIL =                #{dto.responseTypeDetail, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
+				PUBLISHED_TIMESTAMP =				          #{dto.publishedTimestamp, javaType=java.util.Date, jdbcType=TIMESTAMP, mode=IN},
+				PUBLISHED_USER_TYPE_CODE =			    	#{dto.publishedUserTypeCode, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
 				PUBLISHED_USER_GUID =				#{dto.publishedUserGuid, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
 				PUBLISHED_USER_USERID =				#{dto.publishedUserUserId, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
 				PUBLISHED_USER_NAME =				#{dto.publishedUserName, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
@@ -213,18 +228,22 @@
 				LAST_UPDATED_TIMESTAMP =				#{dto.lastUpdatedTimestamp, javaType=java.util.Date, jdbcType=TIMESTAMP, mode=IN},
 				REVISION_COUNT =				REVISION_COUNT + 1,
 				CREATE_USER =				#{dto.createUser, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
-				CREATE_DATE =				#{dto.createDate, javaType=java.util.Date, jdbcType=DATE, mode=IN},
+				CREATE_DATE =				#{dto.createDate, javaType=java.util.Date, jdbcType=TIMESTAMP, mode=IN},
 				UPDATE_USER =				#{dto.updateUser, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN},
-				UPDATE_DATE =				#{dto.updateDate, javaType=java.util.Date, jdbcType=DATE, mode=IN}
+				UPDATE_DATE =				#{dto.updateDate, javaType=java.util.Date, jdbcType=TIMESTAMP, mode=IN}
 		 WHERE PUBLISHED_INCIDENT_DETAIL_GUID = #{publishedIncidentDetailGuid, javaType=java.lang.String, jdbcType=BINARY, mode=IN}
 	</update>
-	
+
 	<select id="fetch" resultMap="PublishedIncidentDtoMap"> 
 		SELECT *
 		  FROM WFNEWS.PUBLISHED_INCIDENT_DETAIL
-		  WHERE PUBLISHED_INCIDENT_DETAIL_GUID = #{publishedIncidentDetailGuid}
-			   OR INCIDENT_NUMBER_LABEL = #{publishedIncidentDetailGuid}
-				 OR INCIDENT_NAME = #{publishedIncidentDetailGuid}
+		 WHERE (PUBLISHED_INCIDENT_DETAIL_GUID = #{publishedIncidentDetailGuid}
+	  	  OR INCIDENT_NUMBER_LABEL = #{publishedIncidentDetailGuid}
+				OR INCIDENT_NAME = #{publishedIncidentDetailGuid})
+		<if test="fireYear != null">
+			 AND fire_year = #{fireYear, javaType=java.lang.Integer, jdbcType=NUMERIC, mode=IN}
+		</if>
+		 LIMIT 1
 	</select>
 	
 	<select id="fetchForIncidentGuid" resultMap="PublishedIncidentDtoMap"> 
@@ -243,21 +262,67 @@
 	</delete> 
 	
 	<select id="select" resultMap="PublishedIncidentDtoMap">
-
-		SELECT *
-		  FROM WFNEWS.PUBLISHED_INCIDENT_DETAIL
-			WHERE 1=1
+		SELECT 
+			PUBLISHED_INCIDENT_DETAIL_GUID,
+			INCIDENT_GUID,
+			INCIDENT_NUMBER_LABEL,
+			NEWS_CREATED_TIMESTAMP,
+			STAGE_OF_CONTROL_CODE,
+			FIRE_CENTRE_CODE,
+			FIRE_CENTRE_NAME,
+			FIRE_YEAR,
+			GENERAL_INCIDENT_CAUSE_CAT_ID,
+			NEWS_PUBLICATION_STATUS_CODE,
+			DISCOVERY_DATE,
+			DECLARED_OUT_DATE,
+			FIRE_OF_NOTE_IND,
+			INCIDENT_NAME,
+			INCIDENT_LOCATION,
+			TRADITIONAL_TERRITORY_DETAIL,
+			INCIDENT_SIZE_ESTIMATED_HA,
+			INCIDENT_SIZE_MAPPED_HA,
+			INCIDENT_SIZE_DETAIL,
+			INCIDENT_CAUSE_DETAIL,
+			WILDFIRE_CREW_RESOURCES_IND,
+			WILDFIRE_AVIATION_RESOURCE_IND,
+			HEAVY_EQUIPMENT_RESOURCES_IND,
+			INCIDENT_MGMNT_CREW_RSRC_IND,
+			STRUCTURE_PROTECTION_RSRC_IND,
+			PUBLISHED_TIMESTAMP,
+			LAST_UPDATED_TIMESTAMP,
+			CREATE_DATE,
+			UPDATE_DATE,
+			LATITUDE,
+			LONGITUDE,
+			RESPONSE_TYPE_CODE,
+			RESPONSE_TYPE_DETAIL
+		FROM WFNEWS.PUBLISHED_INCIDENT_DETAIL
+		WHERE stage_of_control_code IS NOT NULL
+		  <if test="stageOfControlList != null &amp;&amp; !stageOfControlList.isEmpty() &amp;&amp; stageOfControlList.contains('OUT')">
+		      AND (stage_of_control_code = 'OUT' AND fire_year = #{currentFireYear, javaType=java.lang.Integer, jdbcType=NUMERIC, mode=IN}
+					<if test="stageOfControlList != null &amp;&amp; !stageOfControlList.isEmpty() &amp;&amp; stageOfControlList.size() &gt; 1">
+						OR stage_of_control_code IN
+					<foreach item="soc" collection="stageOfControlList" separator="," open="(" close=")">
+						<if test="soc != 'OUT'">
+							#{soc}
+						</if>
+					</foreach>
+				</if>)
+		  </if>
+			<if test="stageOfControlList != null &amp;&amp; !stageOfControlList.isEmpty() &amp;&amp; !stageOfControlList.contains('OUT')">
+					AND stage_of_control_code IN
+				<foreach item="soc" collection="stageOfControlList" separator="," open="(" close=")">
+					#{soc}
+				</foreach>
+			</if>
 			<if test="xmin != null &amp;&amp; ymin != null &amp;&amp; xmax != null &amp;&amp; ymax != null">
-				AND geometry &amp;&amp; ST_MakeEnvelope (#{xmin, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{ymin, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{xmax, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{ymax, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, 4326)
+				AND geometry &amp;&amp; ST_MakeEnvelope (#{xmin, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{ymin, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{xmax, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{ymax, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, <include refid="latLonSrid"/>)
 			</if>
 			<if test="latitude != null &amp;&amp; longitude != null &amp;&amp; radius != null">
-				AND ST_DWithin(ST_Transform(geometry, 3857), ST_Transform(ST_SetSRID(ST_MakePoint(#{longitude, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{latitude, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}), 4326), 3857), #{radius, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN})
+				AND ST_DWithin(ST_Transform(geometry, <include refid="distanceCalcSrid"/>), ST_Transform(ST_SetSRID(ST_MakePoint(#{longitude, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{latitude, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}), <include refid="latLonSrid"/>), <include refid="distanceCalcSrid"/>), #{radius, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN})
 			</if>
-		  <if test="out == true">  
-				AND stage_of_control_code = 'OUT'
-			</if>
-			<if test="out == false">  
-				AND stage_of_control_code != 'OUT'
+			<if test="newFires == true">  
+				AND DISCOVERY_DATE BETWEEN NOW() - INTERVAL '24 HOURS' AND NOW()
 			</if>
 			<if test="fireOfNote == true">  
 				AND fire_of_note_ind = 'Y'
@@ -265,11 +330,26 @@
 			<if test="fireOfNote == false">  
 				AND fire_of_note_ind = 'N'
 			</if>
-			<if test="fireCentre != null &amp;&amp; fireCentre != ''">  
-				AND fire_centre = #{fireCentre, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN}
+			<if test="fireCentreCode != null &amp;&amp; fireCentreCode != ''">  
+				AND fire_centre_code = #{fireCentreCode, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN}
+			</if>
+			<if test="fireCentreName != null &amp;&amp; fireCentreName != ''">  
+				AND fire_centre_name = #{fireCentreName, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN}
+			</if>
+			<if test="fromCreateDate != null">
+				AND CREATE_DATE &gt;= #{fromCreateDate, javaType=java.util.Date, jdbcType=TIMESTAMP, mode=IN}
+			</if>
+			<if test="toCreateDate != null">
+				AND CREATE_DATE &lt;= #{toCreateDate, javaType=java.util.Date, jdbcType=TIMESTAMP, mode=IN}
+			</if>
+			<if test="fromDiscoveryDate != null">
+				AND DISCOVERY_DATE &gt;= #{fromDiscoveryDate, javaType=java.util.Date, jdbcType=TIMESTAMP, mode=IN}
+			</if>
+			<if test="toDiscoveryDate != null">
+				AND DISCOVERY_DATE &lt;= #{toDiscoveryDate, javaType=java.util.Date, jdbcType=TIMESTAMP, mode=IN}
 			</if>
 			<if test="searchText!=null &amp;&amp; searchText.length>0">
-				AND UPPER(CONCAT(incident_location, '', CONCAT(fire_centre, '', CONCAT(incident_number_label, '', incident_name))))
+				AND UPPER(CONCAT(incident_location, '', CONCAT(fire_centre_code, '', CONCAT(incident_number_label, '', incident_name))))
 				LIKE '%'||UPPER(#{searchText})||'%' 
 			</if>
 			<if test="orderBy!=null and orderBy.length>0">
@@ -280,9 +360,12 @@
 						<when test="order == 'fireOfNoteInd'">fire_of_note_ind</when>
 						<when test="order == 'incidentLocation'">incident_location</when>
 						<when test="order == 'incidentName'">incident_name</when>
-						<when test="order == 'fireCentre'">fire_centre</when>
+						<when test="order == 'fireCentreCode'">fire_centre_code</when>
+						<when test="order == 'fireCentreName'">fire_centre_name</when>
 						<when test="order == 'stageOfControlCode'">stage_of_control_code</when>
 						<when test="order == 'lastUpdatedTimestamp'">last_updated_timestamp</when>
+						<when test="order == 'discoveryDate'">discovery_date</when>
+						<when test="order == 'createDate'">create_date</when>
 						<when test="order == 'ASC' &amp;&amp; index &lt; orderBy.length - 1"> ASC,</when>
 						<when test="order == 'ASC' &amp;&amp; index == orderBy.length - 1"> ASC</when>
 						<when test="order == 'DESC' &amp;&amp; index &lt; orderBy.length - 1"> DESC,</when>
@@ -293,66 +376,100 @@
 			<if test="offset != null and pageRowCount != null">
 				OFFSET #{offset, javaType=java.lang.Integer, jdbcType=INTEGER, mode=IN} ROWS
 				FETCH NEXT #{pageRowCount, javaType=java.lang.Integer, jdbcType=INTEGER, mode=IN} ROWS ONLY
-			</if> 
-		
+			</if>
 	</select>
 	
 	<select id="selectCount" resultType="int">
 		SELECT COUNT(*)
-		  FROM WFNEWS.PUBLISHED_INCIDENT_DETAIL
-		  WHERE PUBLISHED_INCIDENT_DETAIL_GUID IS NOT NULL
-		  AND PUBLISHED_INCIDENT_DETAIL_GUID != ''
-		  <if test="fireOfNote != null and fireOfNote == true">
-				AND fire_of_note_ind = 'Y'
+		FROM WFNEWS.PUBLISHED_INCIDENT_DETAIL
+		WHERE stage_of_control_code IS NOT NULL
+		  <if test="stageOfControlList != null &amp;&amp; !stageOfControlList.isEmpty() &amp;&amp; stageOfControlList.contains('OUT')">
+		      AND (stage_of_control_code = 'OUT' AND fire_year = #{currentFireYear, javaType=java.lang.Integer, jdbcType=NUMERIC, mode=IN}
+					<if test="stageOfControlList != null &amp;&amp; !stageOfControlList.isEmpty() &amp;&amp; stageOfControlList.size() &gt; 1">
+						OR stage_of_control_code IN
+					<foreach item="soc" collection="stageOfControlList" separator="," open="(" close=")">
+						<if test="soc != 'OUT'">
+							#{soc}
+						</if>
+					</foreach>
+				</if>)
 		  </if>
-		  <if test="fireOfNote != null and fireOfNote == false">
-				AND fire_of_note_ind = 'N'
-		  </if>
-		  <if test="out == true">  
-				AND stage_of_control_code = 'OUT'
-		  </if>
-		  <if test="out == false">  
-				AND stage_of_control_code != 'OUT'
-		  </if>
-		  <if test="fireCentre != null &amp;&amp; fireCentre != ''">  
-				AND fire_centre = #{fireCentre, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN}
-		  </if>
-		  <if test="xmin != null &amp;&amp; ymin != null &amp;&amp; xmax != null &amp;&amp; ymax != null">
-				AND geometry &amp;&amp; ST_MakeEnvelope (#{xmin, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{ymin, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{xmax, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{ymax, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, 4326)
-		  </if>
-		  <if test="latitude != null &amp;&amp; longitude != null &amp;&amp; radius != null">
-				AND ST_DWithin(ST_Transform(geometry, 3857), ST_Transform(ST_SetSRID(ST_MakePoint(#{longitude, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{latitude, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}), 4326), 3857), #{radius, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN})
-		  </if>
-		  <if test="searchText!=null &amp;&amp; searchText.length>0">
-				AND UPPER(CONCAT(incident_location, '', CONCAT(fire_centre, '', CONCAT(incident_number_label, '', incident_name))))
-				LIKE '%'||UPPER(#{searchText})||'%' 
-		  </if>
+			<if test="stageOfControlList != null &amp;&amp; !stageOfControlList.isEmpty() &amp;&amp; !stageOfControlList.contains('OUT')">
+					AND stage_of_control_code IN
+				<foreach item="soc" collection="stageOfControlList" separator="," open="(" close=")">
+					#{soc}
+				</foreach>
+			</if>
+		<if test="xmin != null &amp;&amp; ymin != null &amp;&amp; xmax != null &amp;&amp; ymax != null">
+			AND geometry &amp;&amp; ST_MakeEnvelope (#{xmin, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{ymin, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{xmax, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{ymax, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, <include refid="latLonSrid"/>)
+		</if>
+		<if test="latitude != null &amp;&amp; longitude != null &amp;&amp; radius != null">
+			AND ST_DWithin(ST_Transform(geometry, <include refid="distanceCalcSrid"/>), ST_Transform(ST_SetSRID(ST_MakePoint(#{longitude, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{latitude, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}), <include refid="latLonSrid"/>), <include refid="distanceCalcSrid"/>), #{radius, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN})
+		</if>
+		<if test="newFires == true">  
+			AND DISCOVERY_DATE BETWEEN NOW() - INTERVAL '24 HOURS' AND NOW()
+		</if>
+		<if test="fireOfNote == true">  
+			AND fire_of_note_ind = 'Y'
+		</if>
+		<if test="fireOfNote == false">  
+			AND fire_of_note_ind = 'N'
+		</if>
+		<if test="fireCentreCode != null &amp;&amp; fireCentreCode != ''">  
+			AND fire_centre_code = #{fireCentreCode, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN}
+		</if>
+		<if test="fireCentreName != null &amp;&amp; fireCentreName != ''">  
+			AND fire_centre_name = #{fireCentreName, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN}
+		</if>
+		<if test="fromCreateDate != null">
+			AND CREATE_DATE &gt;= #{fromCreateDate, javaType=java.util.Date, jdbcType=TIMESTAMP, mode=IN}
+		</if>
+		<if test="toCreateDate != null">
+			AND CREATE_DATE &lt;= #{toCreateDate, javaType=java.util.Date, jdbcType=TIMESTAMP, mode=IN}
+		</if>
+		<if test="fromDiscoveryDate != null">
+			AND DISCOVERY_DATE &gt;= #{fromDiscoveryDate, javaType=java.util.Date, jdbcType=TIMESTAMP, mode=IN}
+		</if>
+		<if test="toDiscoveryDate != null">
+			AND DISCOVERY_DATE &lt;= #{toDiscoveryDate, javaType=java.util.Date, jdbcType=TIMESTAMP, mode=IN}
+		</if>
+		<if test="searchText!=null &amp;&amp; searchText.length>0">
+			AND UPPER(CONCAT(incident_location, '', CONCAT(fire_centre_code, '', CONCAT(incident_number_label, '', incident_name))))
+			LIKE '%'||UPPER(#{searchText})||'%' 
+		</if>
 	</select>
 
 	<select id="selectAsJson" resultType="string">
-		SELECT
-			json_build_object(
-				'type', 'FeatureCollection',
-				'features', json_agg(ST_AsGeoJSON(t.*)::json)
-			)
-		FROM
-			wfnews.published_incident_detail AS t
-		WHERE stage_of_control_code = #{stageOfControlCode, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN}
-			AND fire_of_note_ind = 'N'
-			AND geometry &amp;&amp; ST_MakeEnvelope (#{xmin, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{ymin, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{xmax, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{ymax, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, 4326)
+              SELECT jsonb_build_object('type', 'FeatureCollection', 'features', jsonb_agg(features.feature)) AS fc
+  		FROM (SELECT JSONB_BUILD_OBJECT(
+            'type', 'Feature',
+            'geometry',   ST_AsGeoJSON(t.geometry, options => 1)::JSONB,
+            'properties', TO_JSONB(t.*) - 'geometry'
+           ) AS feature
+		          FROM (SELECT f.incident_number_label, f.incident_name, f.fire_year, f.geometry FROM wfnews.published_incident_detail AS f
+		         WHERE stage_of_control_code = #{stageOfControlCode, javaType=java.lang.String, jdbcType=VARCHAR, mode=IN}
+		<if test="stageOfControlCode == 'OUT'">
+		           AND fire_year = #{currentFireYear, javaType=java.lang.Integer, jdbcType=NUMERIC, mode=IN}
+		</if>
+		<if test="stageOfControlCode != 'OUT'">
+		           AND fire_of_note_ind = 'N'
+		</if>
+		           AND geometry &amp;&amp; ST_MakeEnvelope (#{xmin, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{ymin, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{xmax, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{ymax, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, <include refid="latLonSrid"/>)) t
+		  ) features
 	</select>
 
 	<select id="selectFireOfNoteAsJson" resultType="string">
-		SELECT
-			json_build_object(
-				'type', 'FeatureCollection',
-				'features', json_agg(ST_AsGeoJSON(t.*)::json)
-			)
-		FROM
-			wfnews.published_incident_detail AS t
-		WHERE stage_of_control_code != 'OUT'
-		 AND fire_of_note_ind = 'Y'
-		 AND geometry &amp;&amp; ST_MakeEnvelope (#{xmin, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{ymin, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{xmax, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{ymax, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, 4326)
+              SELECT jsonb_build_object('type', 'FeatureCollection', 'features', jsonb_agg(features.feature)) AS fc
+  		FROM (SELECT JSONB_BUILD_OBJECT(
+            'type', 'Feature',
+            'geometry',   ST_AsGeoJSON(t.geometry, options => 1)::JSONB,
+            'properties', TO_JSONB(t.*) - 'geometry'
+           ) AS feature
+		          FROM (SELECT f.incident_number_label, f.incident_name, f.fire_year, f.geometry FROM wfnews.published_incident_detail AS f
+		         WHERE stage_of_control_code != 'OUT'
+		           AND fire_of_note_ind = 'Y'
+		           AND geometry &amp;&amp; ST_MakeEnvelope (#{xmin, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{ymin, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{xmax, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, #{ymax, javaType=java.lang.Double, jdbcType=DOUBLE, mode=IN}, <include refid="latLonSrid"/>)) t
+		  ) features
 	</select>
 	
 </mapper>

@@ -1,6 +1,7 @@
 <ng-container [formGroup]="formGroup" class="incident-form">
   <mat-card class="info-card news-form-card">
     <fieldset class="field-set">
+      <legend style="display: none">General Disclaimer Card</legend>
       <div class="news-form">
         <div class="field size-full">
           <mat-form-field class="item-full-width" appearance="outline" floatLabel="always">
@@ -10,6 +11,7 @@
                 #autosize="cdkTextareaAutosize"
                 cdkAutosizeMinRows="1"
                 cdkAutosizeMaxRows="5"
+                [(ngModel)]="incident.responseComments"
                 formControlName="responseComments"
                 ></textarea>
           </mat-form-field>
@@ -22,19 +24,20 @@
       Wildfire Crews
     </mat-card-title>
     <fieldset class="field-set">
+      <legend style="display: none">Response card</legend>
       <div class="news-form">
         <div class="field size-unset">
           <mat-form-field appearance="standard" floatLabel="always">
             <mat-label class="label">Initial Attack Crews</mat-label>
-            <input matInput type="text" #initialAttackCrews>
+            <input matInput type="number" #initialAttackCrews (change)="crewsValueChange()">
           </mat-form-field>
           <mat-form-field appearance="standard" floatLabel="always">
             <mat-label class="label">Unit Crews</mat-label>
-            <input matInput type="text" #unitCrews>
+            <input matInput type="number" #unitCrews (change)="crewsValueChange()">
           </mat-form-field>
         </div>
         <div class="field size-third">
-          <mat-checkbox [(ngModel)]="incident.wildifreCrewsInd" formControlName="wildifreCrewsInd" class="example-margin" (change)="onWildfireCrewsChecked($event)">External Crews</mat-checkbox>
+          <mat-checkbox [(ngModel)]="incident.wildifreCrewsInd" formControlName="wildifreCrewsInd" class="example-margin" (change)="onWildfireCrewsChecked($event)">Crews</mat-checkbox>
         </div>
         <div class="field size-full">
           <mat-form-field class="item-full-width" appearance="outline" floatLabel="always">
@@ -56,15 +59,16 @@
       Aviation
     </mat-card-title>
     <fieldset class="field-set">
+      <legend style="display: none">Arial Response Card</legend>
       <div class="news-form">
         <div class="field size-unset">
           <mat-form-field appearance="standard" floatLabel="always">
             <mat-label class="label">Helicopters</mat-label>
-            <input matInput type="text" #helicopters>
+            <input matInput type="number" #helicopters (change)="aviationValueChange()">
           </mat-form-field>
           <mat-form-field appearance="standard" floatLabel="always">
-            <mat-label class="label">Airtankets</mat-label>
-            <input matInput type="text" #airtankers>
+            <mat-label class="label">Airtankers</mat-label>
+            <input matInput type="number" #airtankers (change)="aviationValueChange()">
           </mat-form-field>
         </div>
         <div class="field size-third">
@@ -87,12 +91,13 @@
   </mat-card>
   <mat-card class="info-card news-form-card">
     <mat-card-title>
-      Incident Management Teams
+      Incident Management Team
     </mat-card-title>
     <fieldset class="field-set">
+      <legend style="display: none">Incident Management Response Card</legend>
       <div class="news-form">
         <div class="field size-third">
-          <mat-checkbox [(ngModel)]="incident.incidentManagementInd" formControlName="incidentManagementInd" class="example-margin" (change)="onIncidentManagementTeamsChecked($event)">Incident Management Teams</mat-checkbox>
+          <mat-checkbox [(ngModel)]="incident.incidentManagementInd" formControlName="incidentManagementInd" class="example-margin" (change)="onIncidentManagementTeamsChecked($event)">Incident Management Team</mat-checkbox>
         </div>
         <div class="field size-full">
           <mat-form-field class="item-full-width" appearance="outline" floatLabel="always">
@@ -114,11 +119,12 @@
       Heavy Equipment
     </mat-card-title>
     <fieldset class="field-set">
+      <legend style="display: none">Equipment Response Card</legend>
       <div class="news-form">
         <div class="field size-unset">
           <mat-form-field appearance="standard" floatLabel="always">
             <mat-label class="label">Heavy Equipment Pieces</mat-label>
-            <input matInput type="text" #pieces>
+            <input matInput type="number" #pieces (change)="heavyEquipmentValueChange()">
           </mat-form-field>
         </div>
         <div class="field size-third">
@@ -144,15 +150,16 @@
       Structure Protection
     </mat-card-title>
     <fieldset class="field-set">
+      <legend style="display: none">Structure Protection Response Card</legend>
       <div class="news-form">
-        <div class="field size-unset">
+        <!-- div class="field size-unset">
           <mat-form-field appearance="standard" floatLabel="always">
             <mat-label class="label">Structure protection</mat-label>
-            <input matInput type="text" #structure>
+            <input matInput type="number" #structure (change)="structuretValueChange()">
           </mat-form-field>
-        </div>
+        </div -->
         <div class="field size-third">
-          <mat-checkbox [(ngModel)]="incident.structureProtectionInd" formControlName="structureProtectionInd" class="example-margin"  (change)="onStructureProtectionChecked($event)">Structure Protection Units</mat-checkbox>
+          <mat-checkbox [(ngModel)]="incident.structureProtectionInd" formControlName="structureProtectionInd" class="example-margin"  (change)="onStructureProtectionChecked($event)">Structure Protection</mat-checkbox>
         </div>
         <div class="field size-full">
           <mat-form-field class="item-full-width" appearance="outline" floatLabel="always">

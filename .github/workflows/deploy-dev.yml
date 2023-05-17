@@ -63,13 +63,24 @@ jobs:
       SERVER_IMAGE: nr-bcws-wfnews-server
       LIQUIBASE_IMAGE: nr-bcws-wfnews-liquibase
       APISIX_IMAGE: nr-bcws-wfnews-apisix
-      ETCD_IMAGE: nr-bcws-wfnews-etcd
-      APISIX_GUI_IMAGE: nr-bcws-wfnews-apisix-gui
+
+      #1024 CPU units = 1 vCPU
+      CLIENT_CPU_UNITS: 1024
+      CLIENT_MEMORY: 2048
+      SERVER_CPU_UNITS: 1024
+      SERVER_MEMORY: 2048
+      DB_INSTANCE_TYPE: 'db.t3.micro'
+
+      INSTANCE_COUNT: 2
+
+      LOGGING_LEVEL: INFO
+
       TARGET_ENV: dev
       ALB_NAME: default
       VPC_NAME: Dev_vpc
       SUBNET_FILTER: App
-      WEBADE_OAUTH2_CLIENT_ID: WFNEWS-UI
+      WEBADE_OAUTH2_UI_CLIENT_ID: WFNEWS-UI
+      WEBADE_OAUTH2_REST_CLIENT_ID: WFNEWS-REST
       WEBADE-OAUTH2_TOKEN_CLIENT_URL: https://intapps.nrs.gov.bc.ca/pub/oauth2/v1/check_token?disableDeveloperFilter=true&grant_type=client_credentials
       WEBADE-OAUTH2_TOKEN_URL: https://intapps.nrs.gov.bc.ca/pub/oauth2/v1/oauth/token?disableDeveloperFilter=true
       WEBADE_OAUTH2_AUTHORIZE_URL: https://intapps.nrs.gov.bc.ca/ext/oauth2/v1/oauth/authorize
@@ -90,15 +101,26 @@ jobs:
       WFNEWS_USERNAME: wfnewsdev
       WFNEWS_MAX_CONNECTIONS: 10
       IMAGE_TAG: pr-${{ github.event.pull_request.number }}
+      AGOL_URL: https://services6.arcgis.com/ubm4tcTYICKBpist/ArcGIS/rest/services
+      DRIVEBC_BASE_URL: https://dev-maps.th.gov.bc.ca/geoV05/ows
+      OPENMAPS_BASE_URL: https://test.openmaps.gov.bc.ca/geo/pub/ows
+      SITEMINDER_URL_PREFIX: https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?returl=
+      AGOL_AREA_RESTRICTIONS: https://services6.arcgis.com/ubm4tcTYICKBpist/ArcGIS/rest/services/test_British_Columbia_Area_Restrictions/FeatureServer/0/
+      AGOL_BANS_AND_PROHIBITIONS: https://services6.arcgis.com/ubm4tcTYICKBpist/ArcGIS/rest/services/test_British_Columbia_Bans_and_Prohibition_Areas/FeatureServer/0/
 
     secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      CLOUDFRONT_HEADER: ${{ secrets.CLOUDFRONT_HEADER_DEV }}
       LICENSE_PLATE: ${{ secrets.LICENSE_PLATE }}
       DB_PASS: ${{ secrets.DEV_DB_PASS }}
       TFC_TEAM_TOKEN: ${{ secrets.TFC_TEAM_TOKEN }}
       SMTP_PASSWORD: ${{ secrets.DEV_SMTP_PASSWORD }}
       WEBADE_OAUTH2_WFNEWS_REST_CLIENT_SECRET: ${{ secrets.DEV_WEBADE_OAUTH2_WFNEWS_REST_CLIENT_SECRET }}
-      ETCD_PASSWORD: ${{ secrets.ETCD_PASSWORD_DEV }}
+      WEBADE_OAUTH2_WFNEWS_UI_CLIENT_SECRET: ${{ secrets.DEV_WEBADE_OAUTH2_WFNEWS_UI_CLIENT_SECRET}}
       API_KEY: ${{ secrets.API_KEY_DEV }}
       SNS_EMAIL_TARGETS: ${{ secrets.SNS_EMAIL_TARGETS_DEV }}
+
+  jmeter-test-dev:
+    uses: ./.github/workflows/jmeter.yml
+    needs: [terragrunt-deploy-dev]
+    with:
+      ENVIRONMENT: dev

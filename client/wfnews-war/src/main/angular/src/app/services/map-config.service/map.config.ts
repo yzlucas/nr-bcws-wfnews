@@ -1,9 +1,10 @@
+import { AppConfigService } from '@wf1/core-ui';
 import { WfDevice } from '@wf1/wfcc-application-ui';
 import { MapServices, MapServiceStatus } from '.';
 import { LayerDisplayConfig } from './layer-display.config';
 import { LayerConfig } from './layers';
 
-export function mapConfig( mapServices: MapServices, serviceStatus: MapServiceStatus, device: WfDevice ) {
+export function mapConfig( mapServices: MapServices, serviceStatus: MapServiceStatus, device: WfDevice, appConfigService: AppConfigService ) {
     return {
         viewer: {
             type: 'leaflet',
@@ -131,11 +132,29 @@ export function mapConfig( mapServices: MapServices, serviceStatus: MapServiceSt
 				timeDimensionOptions: {
 				}
 			},
-            {
-                type: 'search',
-                enabled: false
-            },
-        ],
-        layers: LayerConfig(mapServices,serviceStatus)
+      {
+        type: "scale",
+        enabled: 'desktop',
+        showZoom: true,
+        order: 2
+    },
+    {
+        type: "coordinate",
+        enabled: 'desktop',
+        order: 3,
+        format: 'DDM'
+    },
+    {
+        type: "measure",
+        enabled: 'desktop',
+        unit: 'kilometers',
+        order: 5
+    },
+    {
+        type: 'search',
+        enabled: false
+    },
+],
+        layers: LayerConfig(mapServices, serviceStatus, appConfigService)
     };
 }

@@ -1,9 +1,10 @@
-import { ChangeDetectorRef, Component, Input} from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
 import * as moment from 'moment';
 import { DefaultService as ExternalUriService } from '@wf1/incidents-rest-api';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { EditVideoDialogComponent } from '../edit-video-dialog/edit-video-dialog.component';
+import { convertToYoutubeId } from '../../../../utils';
 
 @Component({
   selector: 'video-card-panel',
@@ -13,6 +14,10 @@ import { EditVideoDialogComponent } from '../edit-video-dialog/edit-video-dialog
 export class VideoCardPanel{
   @Input() public incident
   @Input() public video: any
+  @Output('loadPage') loadPage: EventEmitter<any> = new EventEmitter();
+  @Output('removePrimaryFlags') removePrimaryFlags: EventEmitter<any> = new EventEmitter();
+
+  public convertToYoutubeId = convertToYoutubeId
 
   public includeInPublicGallery = false;
 
@@ -23,6 +28,28 @@ export class VideoCardPanel{
                protected snackbarService: MatSnackBar,
                protected dialog: MatDialog,
                protected cdr: ChangeDetectorRef) { /* Empty */}
+
+  changePrimary () {
+    this.video.primaryInd = !this.video.primaryInd;
+    if (this.video.primaryInd) {
+      this.removePrimaryFlags.emit({ event: this.video.externalUriGuid })
+      // safety catch
+      this.video.primaryInd = true
+    }
+    this.updateExternalUri(this.video.externalUri, this.video.externalUriDisplayLabel);
+  }
+
+  get isPrimary () {
+    if (!Object.prototype.hasOwnProperty.call(this.video, 'primaryInd')) {
+      this.video.primaryInd = false
+    }
+
+    return this.video.primaryInd
+  }
+
+  set isPrimary (primary) {
+    (this.video as any).primaryInd = primary
+  }
 
   edit () {
     let dialogRef = this.dialog.open(EditVideoDialogComponent, {
@@ -43,6 +70,7 @@ export class VideoCardPanel{
       this.externalUriService.deleteExternalUri(this.video.externalUriGuid,'response').toPromise().then(() => {
         this.snackbarService.open('Video Deleted Successfully', 'OK', { duration: 0, panelClass: 'snackbar-success' });
         this.loaded = false
+        this.loadPage.emit()
       }).catch(err => {
         this.snackbarService.open('Failed to Delete Video: ' + JSON.stringify(err.message), 'OK', { duration: 0, panelClass: 'snackbar-error' });
         this.loaded = false;
@@ -56,6 +84,7 @@ export class VideoCardPanel{
       this.externalUriService.updateExternalUri(this.video.externalUriGuid,this.video,'response').toPromise().then(() => {
         this.snackbarService.open('Video Updated Successfully', 'OK', { duration: 0, panelClass: 'snackbar-success' });
         this.loaded = false
+        this.loadPage.emit()
       }).catch(err => {
         this.snackbarService.open('Failed to Update Video: ' + JSON.stringify(err.message), 'OK', { duration: 0, panelClass: 'snackbar-error' });
         this.loaded = false;
@@ -65,16 +94,6 @@ export class VideoCardPanel{
   convertToDate(value: string | number | Date): string {
     if (value) {
       return moment(value).format('YYYY-MM-DD hh:mm:ss')
-    }
-  }
-
-  convertToYoutubeId (externalUri: string) {
-    if (externalUri) {
-      const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-      let match = externalUri.match(regExp);
-      if( match && match[7].length == 11) {
-        return match[7]
-      }
     }
   }
 

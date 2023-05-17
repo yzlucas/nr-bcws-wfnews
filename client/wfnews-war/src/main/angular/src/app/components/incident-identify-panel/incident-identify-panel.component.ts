@@ -60,8 +60,9 @@ export class IncidentIdentifyPanelComponent {
 
     // get the fire number, either from a perimeter or active fire feature
     const id = incidentRef.FIRE_NUMBER ? incidentRef.FIRE_NUMBER : incidentRef.incident_number_label
+    const year = incidentRef.fire_year
 
-    this.publishedIncidentService.fetchPublishedIncident(id).toPromise().then(result => {
+    this.publishedIncidentService.fetchPublishedIncident(id, year).toPromise().then(result => {
       this.incident = result;
 
       this.incident.geometry = {
@@ -71,10 +72,9 @@ export class IncidentIdentifyPanelComponent {
 
       // date formatting
       const options: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-
-      this.incident.discoveryDate = new Date(this.incident.discoveryDate).toLocaleTimeString("en-US", options);
-      this.incident.declaredOutDate = this.incident.declaredOutDate ? new Date(this.incident.declaredOutDate).toLocaleTimeString("en-US", options) : new Date(this.incident.discoveryDate).toLocaleTimeString("en-US", options);
-      this.incident.lastUpdatedTimestamp = new Date(this.incident.lastUpdatedTimestamp).toLocaleTimeString("en-US", options);
+      this.incident.discoveryDate = this.incident.discoveryDate? new Date(this.incident.discoveryDate).toLocaleTimeString("en-US", options) : 'Pending';
+      this.incident.declaredOutDate = this.incident.declaredOutDate ? new Date(this.incident.declaredOutDate).toLocaleTimeString("en-US", options) : 'Pending'
+      this.incident.lastUpdatedTimestamp = this.incident.lastUpdatedTimestamp ? new Date(this.incident.lastUpdatedTimestamp).toLocaleTimeString("en-US", options) : 'Pending';
 
       // load evac orders nearby
       this.getEvacOrders();
@@ -98,7 +98,7 @@ export class IncidentIdentifyPanelComponent {
   goToIncidentDetail () {
     // this.router.navigate([ResourcesRoutes.PUBLIC_INCIDENT], { queryParams: { incidentNumber: this.incident.incidentNumberLabel } })
     const url = this.router.serializeUrl(
-      this.router.createUrlTree([ResourcesRoutes.PUBLIC_INCIDENT], { queryParams: { incidentNumber: this.incident.incidentNumberLabel } })
+      this.router.createUrlTree([ResourcesRoutes.PUBLIC_INCIDENT], { queryParams: { fireYear: this.incident.fireYear, incidentNumber: this.incident.incidentNumberLabel } })
     )
     window.open(url, '_blank')
   }
@@ -122,15 +122,15 @@ export class IncidentIdentifyPanelComponent {
   }
 
   onWatchlist (): boolean {
-    return this.watchlistService.getWatchlist().includes(this.incident.incidentNumberLabel)
+    return this.watchlistService.getWatchlist().includes(this.incident.fireYear + ':' + this.incident.incidentNumberLabel)
   }
 
   addToWatchlist () {
-    this.watchlistService.saveToWatchlist(this.incident.incidentNumberLabel)
+    this.watchlistService.saveToWatchlist(this.incident.fireYear, this.incident.incidentNumberLabel)
   }
 
   removeFromWatchlist () {
-    this.watchlistService.removeFromWatchlist(this.incident.incidentNumberLabel)
+    this.watchlistService.removeFromWatchlist(this.incident.fireYear, this.incident.incidentNumberLabel)
   }
 
   getEvacOrders () {

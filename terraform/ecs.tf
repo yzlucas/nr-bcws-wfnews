@@ -1,40 +1,39 @@
 # ecs.tf
 
 resource "aws_ecs_cluster" "wfnews_main" {
-  name               = "wfnews-cluster"
+  name = "wfnews-cluster"
 
   tags = local.common_tags
 }
 
 resource "aws_ecs_cluster_capacity_providers" "wfnews_main_providers" {
-    cluster_name = aws_ecs_cluster.wfnews_main.name
+  cluster_name = aws_ecs_cluster.wfnews_main.name
 
-    capacity_providers = ["FARGATE","FARGATE_SPOT"]
+  capacity_providers = ["FARGATE", "FARGATE_SPOT"]
 
-    default_capacity_provider_strategy {
-        base              = 1
-        weight            = 100
-        capacity_provider = "FARGATE_SPOT"
-    }
+  default_capacity_provider_strategy {
+    base              = 1
+    weight            = 100
+    capacity_provider = "FARGATE_SPOT"
+  }
 }
 
 resource "aws_ecs_task_definition" "wfnews_server" {
-  count                    = local.create_ecs_service
   family                   = "wfnews-server-task-${var.target_env}"
   execution_role_arn       = aws_iam_role.wfnews_ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.wfnews_app_container_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = var.fargate_cpu
-  memory                   = var.fargate_memory
+  cpu                      = var.server_cpu_units
+  memory                   = var.server_memory
   tags                     = local.common_tags
   container_definitions = jsonencode([
     {
       essential   = true
       name        = var.server_container_name
       image       = var.server_image
-      cpu         = var.fargate_cpu
-      memory      = var.fargate_memory
+      cpu         = var.server_cpu_units
+      memory      = var.server_memory
       networkMode = "awsvpc"
       portMappings = [
         {
@@ -44,6 +43,10 @@ resource "aws_ecs_task_definition" "wfnews_server" {
         }
       ]
       environment = [
+        {
+          name  = "LOGGING_LEVEL"
+          value = "${var.logging_level}"
+        },
         {
           name  = "DB_NAME"
           value = "${aws_db_instance.wfnews_pgsqlDB.name}"
@@ -57,78 +60,78 @@ resource "aws_ecs_task_definition" "wfnews_server" {
           value = aws_s3_bucket.wfnews_upload_bucket.id
         },
         {
-          name = "WEBADE_OAUTH2_CLIENT_ID",
-          value = var.WEBADE_OAUTH2_CLIENT_ID
+          name  = "WEBADE_OAUTH2_CLIENT_ID",
+          value = var.WEBADE_OAUTH2_REST_CLIENT_ID
         },
         {
-          name = "WEBADE-OAUTH2_TOKEN_CLIENT_URL",
+          name  = "WEBADE-OAUTH2_TOKEN_CLIENT_URL",
           value = var.WEBADE-OAUTH2_TOKEN_CLIENT_URL
         },
         {
-          name = "WEBADE-OAUTH2_TOKEN_URL",
+          name  = "WEBADE-OAUTH2_TOKEN_URL",
           value = var.WEBADE-OAUTH2_TOKEN_URL
         },
         {
-          name = "WEBADE_OAUTH2_WFNEWS_REST_CLIENT_SECRET",
+          name  = "WEBADE_OAUTH2_WFNEWS_REST_CLIENT_SECRET",
           value = var.WEBADE_OAUTH2_WFNEWS_REST_CLIENT_SECRET
         },
         {
-          name = "WFDM_REST_URL",
+          name  = "WFDM_REST_URL",
           value = var.WFDM_REST_URL
         },
         {
-          name = "WFIM_CLIENT_URL",
+          name  = "WFIM_CLIENT_URL",
           value = var.WFIM_CLIENT_URL
         },
         {
-          name = "WFIM_CODE_TABLES_URL",
+          name  = "WFIM_CODE_TABLES_URL",
           value = var.WFIM_CODE_TABLES_URL
         },
         {
-          name = "WEBADE-OAUTH2_CHECK_TOKEN_URL",
+          name  = "WEBADE-OAUTH2_CHECK_TOKEN_URL",
           value = var.WEBADE-OAUTH2_CHECK_TOKEN_URL
         },
         {
-          name = "WFNEWS_EMAIL_NOTIFICATIONS_ENABLED_IND",
+          name  = "WFNEWS_EMAIL_NOTIFICATIONS_ENABLED_IND",
           value = var.WFNEWS_EMAIL_NOTIFICATIONS_ENABLED
         },
         {
-          name = "SMTP_HOST_NAME",
+          name  = "SMTP_HOST_NAME",
           value = var.SMTP_HOST_NAME
         },
         {
-          name = "SMTP_PASSWORD",
+          name  = "SMTP_PASSWORD",
           value = var.SMTP_PASSWORD
         },
         {
-          name = "SMTP_FROM_EMAIL",
+          name  = "SMTP_FROM_EMAIL",
           value = var.SMTP_FROM_EMAIL
         },
         {
-          name = "SMTP_ADMIN_EMAIL",
+          name  = "SMTP_ADMIN_EMAIL",
           value = var.SMTP_ADMIN_EMAIL
         },
         {
-          name = "SMTP_EMAIL_SYNC_ERROR_FREQ",
+          name  = "SMTP_EMAIL_SYNC_ERROR_FREQ",
           value = var.SMTP_EMAIL_SYNC_ERROR_FREQ
         },
         {
-          name = "SMTP_EMAIL_FREQ",
+          name  = "SMTP_EMAIL_FREQ",
           value = var.SMTP_EMAIL_FREQ
-        },{
-          name = "SMTP_EMAIL_ERROR_SUBJECT",
+          }, {
+          name  = "SMTP_EMAIL_ERROR_SUBJECT",
           value = var.SMTP_EMAIL_ERROR_SUBJECT
         },
         {
-          name = "SMTP_EMAIL_SUBJECT",
+          name  = "SMTP_EMAIL_SUBJECT",
           value = var.SMTP_EMAIL_SUBJECT
         },
         {
-          name = "DEFAULT_APPLICATION_ENVIRONMENT",
+          name  = "DEFAULT_APPLICATION_ENVIRONMENT",
           value = var.DEFAULT_APPLICATION_ENVIRONMENT
         },
         {
-          name = "WFNEWS_AGOL_QUERY_URL",
+          name  = "WFNEWS_AGOL_QUERY_URL",
           value = var.WFNEWS_AGOL_QUERY_URL
         },
         {
@@ -136,48 +139,53 @@ resource "aws_ecs_task_definition" "wfnews_server" {
           value = "jdbc:postgresql://${aws_db_instance.wfnews_pgsqlDB.endpoint}/${aws_db_instance.wfnews_pgsqlDB.name}"
         },
         {
-          name = "WFNEWS_USERNAME",
+          name  = "WFNEWS_USERNAME",
           value = var.WFNEWS_USERNAME
         },
         {
-          name = "WFNEWS_MAX_CONNECTIONS",
+          name  = "WFNEWS_MAX_CONNECTIONS",
           value = var.WFNEWS_MAX_CONNECTIONS
         },
         {
-          name = "DB_PASS",
+          name  = "DB_PASS",
           value = "${var.db_pass}"
         },
+        # Access keys and secret keys are not needed when using container-based authentication
+        # {
+        #   name = "WFNEWS_SNS_ACCESS_KEY",
+        #   value = "${var.aws_access_key_id}"
+        # },
+        # {
+        #   name = "WFNEWS_SNS_SECRET",
+        #   value = "${var.aws_secret_access_key}"
+        # },
+        # {
+        #   name = "WFNEWS_S3_ACCESS_KEY",
+        #   value = "${var.aws_access_key_id}"
+        # },
+        # {
+        #   name = "WFNEWS_S3_SECRET",
+        #   value = "${var.aws_secret_access_key}"
+        # },
         {
-          name = "WFNEWS_SNS_ACCESS_KEY",
+          name  = "WFNEWS_ACCESS_KEY_ID",
           value = "${var.aws_access_key_id}"
         },
         {
-          name = "WFNEWS_SNS_SECRET",
+          name  = "WFNEWS_SECRET_ACCESS_KEY",
           value = "${var.aws_secret_access_key}"
         },
         {
-          name = "WFNEWS_S3_ACCESS_KEY",
-          value = "${var.aws_access_key_id}"
-        },
-        {
-          name = "WFNEWS_S3_SECRET",
-          value = "${var.aws_secret_access_key}"
-        },
-        {
-          name = "WFNEWS_ACCESS_KEY_ID",
-          value = "${var.aws_access_key_id}"
-        },
-        {
-          name = "WFNEWS_SECRET_ACCESS_KEY",
-          value = "${var.aws_secret_access_key}"
-        },
-        {
-          name = "WFNEWS_SNS_TOPIC_ARN",
+          name  = "WFNEWS_SNS_TOPIC_ARN",
           value = "${aws_sns_topic.wfnews_sns_topic.arn}"
         },
         {
-          name = "WFNEWS_S3_BUCKET_NAME",
+          name  = "WFNEWS_S3_BUCKET_NAME",
           value = "${aws_s3_bucket.wfnews_upload_bucket.bucket}"
+        },
+        {
+          name  = "API_KEY",
+          value = "${var.api_key}"
         }
 
       ]
@@ -197,22 +205,21 @@ resource "aws_ecs_task_definition" "wfnews_server" {
 }
 
 resource "aws_ecs_task_definition" "wfnews_client" {
-  count                    = local.create_ecs_service
   family                   = "wfnews-client-task-${var.target_env}"
   execution_role_arn       = aws_iam_role.wfnews_ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.wfnews_app_container_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = var.fargate_cpu
-  memory                   = var.fargate_memory
+  cpu                      = var.client_cpu_units
+  memory                   = var.client_memory
   tags                     = local.common_tags
   container_definitions = jsonencode([
     {
       essential   = true
       name        = var.client_container_name
       image       = var.client_image
-      cpu         = var.fargate_cpu
-      memory      = var.fargate_memory
+      cpu         = var.client_cpu_units
+      memory      = var.client_memory
       networkMode = "awsvpc"
       portMappings = [
         {
@@ -223,6 +230,10 @@ resource "aws_ecs_task_definition" "wfnews_client" {
       ]
       environment = [
         {
+          name  = "LOGGING_LEVEL"
+          value = "${var.logging_level}"
+        },
+        {
           name  = "AWS_REGION",
           value = var.aws_region
         },
@@ -231,41 +242,75 @@ resource "aws_ecs_task_definition" "wfnews_client" {
           value = aws_s3_bucket.wfnews_upload_bucket.id
         },
         {
-          name = "BASE_URL",
-          value = "https://${aws_route53_record.wfnews_client.name}/"
+          #Base URL will use the 
+          name  = "BASE_URL",
+          value = var.target_env == "prod" ? "https://${var.gov_client_url}/" : "https://${aws_route53_record.wfnews_client.name}/"
         },
         {
-          name = "WEBADE_OAUTH2_WFNEWS_REST_CLIENT_SECRET",
-          value = var.WEBADE_OAUTH2_WFNEWS_REST_CLIENT_SECRET
+          name  = "WEBADE_OAUTH2_WFNEWS_REST_CLIENT_SECRET",
+          value = var.WEBADE_OAUTH2_WFNEWS_UI_CLIENT_SECRET
         },
         {
-          name = "WEBADE-OAUTH2_TOKEN_URL",
+          name  = "WEBADE-OAUTH2_TOKEN_URL",
           value = var.WEBADE-OAUTH2_TOKEN_URL
         },
         {
-          name = "WEBADE-OAUTH2_CHECK_TOKEN_V2_URL"
+          name  = "WEBADE-OAUTH2_CHECK_TOKEN_V2_URL"
           value = var.WEBADE-OAUTH2_CHECK_TOKEN_URL
         },
         {
-          name = "WFIM_API_URL",
+          name  = "WFIM_API_URL",
           value = var.WFIM_CLIENT_URL
         },
         {
-          name = "WFDM_API_URL",
+          name  = "WFDM_API_URL",
           value = var.WFDM_REST_URL
         },
         {
-          name = "ORG_UNIT_URL",
+          name  = "ORG_UNIT_URL",
           value = ""
         },
-        {
-          name = "WFNEWS_API_URL",
-          value = "https://${aws_route53_record.wfnews_server.name}/"
+        { //Will be phased out from prod eventually, but not yet
+          name  = "WFNEWS_API_URL",
+          value = var.target_env == "prod" ? "https://${var.gov_api_url}/" : "https://${aws_route53_record.wfnews_apisix.name}/"
         },
         {
-          name = "WEBADE_OAUTH2_AUTHORIZE_URL"
+          name  = "WFNEWS_API_KEY",
+          value = "${var.api_key}"
+        },
+        {
+          name  = "WEBADE_OAUTH2_AUTHORIZE_URL",
           value = var.WEBADE_OAUTH2_AUTHORIZE_URL
+        },
+        {
+          name  = "APPLICATION_ENVIRONMENT",
+          value = var.target_env != "prod" ? var.target_env : " "
+        },
+        {
+          name  = "AGOL_URL",
+          value = var.agolUrl
+        },
+        {
+          name  = "DRIVEBC_BASE_URL",
+          value = var.drivebcBaseUrl
+        },
+        {
+          name  = "OPENMAPS_BASE_URL",
+          value = var.openmapsBaseUrl
+        },
+        {
+          name  = "SITEMINDER_URL_PREFIX",
+          value = var.siteMinderURLPrefix
+        },
+        {
+          name  = "AGOL_AREA_RESTRICTIONS",
+          value = var.agolAreaRestrictions
+        },
+        {
+          name  = "AGOL_BANS_AND_PROHIBITIONS",
+          value = var.agolBansAndProhibitions
         }
+
       ]
       logConfiguration = {
         logDriver = "awslogs"
@@ -288,16 +333,16 @@ resource "aws_ecs_task_definition" "wfnews_liquibase" {
   task_role_arn            = aws_iam_role.wfnews_app_container_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = var.fargate_cpu
-  memory                   = var.fargate_memory
+  cpu                      = var.server_cpu_units
+  memory                   = var.server_memory
   tags                     = local.common_tags
   container_definitions = jsonencode([
     {
       essential   = true
       name        = var.liquibase_container_name
       image       = var.liquibase_image
-      cpu         = var.fargate_cpu
-      memory      = var.fargate_memory
+      cpu         = var.server_cpu_units
+      memory      = var.server_memory
       networkMode = "awsvpc"
       portMappings = [
         {
@@ -316,7 +361,7 @@ resource "aws_ecs_task_definition" "wfnews_liquibase" {
           value = "${aws_db_instance.wfnews_pgsqlDB.username}"
         },
         {
-          name = "DB_PASS"
+          name  = "DB_PASS"
           value = "${var.db_pass}"
         }
       ]
@@ -336,33 +381,32 @@ resource "aws_ecs_task_definition" "wfnews_liquibase" {
 }
 
 resource "aws_ecs_task_definition" "wfnews_apisix" {
-  count                    = 1
   family                   = "wfnews-apisix-task-${var.target_env}"
   execution_role_arn       = aws_iam_role.wfnews_ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.wfnews_app_container_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = var.fargate_cpu
-  memory                   = var.fargate_memory
+  cpu                      = var.server_cpu_units
+  memory                   = var.server_memory
   tags                     = local.common_tags
   container_definitions = jsonencode([
     {
       essential   = true
       name        = var.apisix_container_name
       image       = var.apisix_image
-      cpu         = var.fargate_cpu
-      memory      = var.fargate_memory
+      cpu         = var.server_cpu_units
+      memory      = var.server_memory
       networkMode = "awsvpc"
       portMappings = [
         {
-          protocol = "tcp"
+          protocol      = "tcp"
           containerPort = var.apisix_ports[0]
-          hostPort = var.apisix_ports[0]
+          hostPort      = var.apisix_ports[0]
         },
         {
-          protocol = "tcp"
+          protocol      = "tcp"
           containerPort = var.apisix_ports[1]
-          hostPort = var.apisix_ports[1]
+          hostPort      = var.apisix_ports[1]
         }
         # {
         #   protocol = "tcp"
@@ -378,16 +422,24 @@ resource "aws_ecs_task_definition" "wfnews_apisix" {
       ]
       environment = [
         {
-          name: "API_KEY",
-          value: "${var.api_key}"
+          name  = "LOGGING_LEVEL"
+          value = "${var.logging_level}"
         },
         {
-          name: "TARGET_ENV",
-          value: "${var.target_env}"
+          name  = "API_KEY",
+          value = "${var.api_key}"
         },
         {
-          name: "LICENSE_PLATE",
-          value: "${var.license_plate}"
+          name  = "TARGET_ENV",
+          value = "${var.target_env}"
+        },
+        {
+          name  = "LICENSE_PLATE",
+          value = "${var.license_plate}"
+        },
+        {
+          name  = "MAX_SIZE",
+          value = "${var.max_upload_size}"
         }
         # {
         #   name: "ETCD_ROOT_PASSWORD",
@@ -398,7 +450,7 @@ resource "aws_ecs_task_definition" "wfnews_apisix" {
         logDriver = "awslogs"
         options = {
           awslogs-create-group  = "true"
-          awslogs-group         = "/ecs/${var.etcd_names[0]}"
+          awslogs-group         = "/ecs/${var.apisix_names[0]}"
           awslogs-region        = var.aws_region
           awslogs-stream-prefix = "ecs"
         }
@@ -417,16 +469,16 @@ resource "aws_ecs_task_definition" "wfnews_etcd" {
   task_role_arn            = aws_iam_role.wfnews_app_container_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = var.fargate_cpu
-  memory                   = var.fargate_memory
+  cpu                      = var.server_cpu_units
+  memory                   = var.server_memory
   tags                     = local.common_tags
   container_definitions = jsonencode([
     {
       essential   = true
       name        = var.etcd_container_name
       image       = var.etcd_image
-      cpu         = var.fargate_cpu
-      memory      = var.fargate_memory
+      cpu                      = var.server_cpu_units
+      memory                   = var.server_memory
       networkMode = "awsvpc"
       portMappings = [
         {
@@ -502,22 +554,21 @@ resource "aws_ecs_task_definition" "wfnews_etcd" {
 }
 
 resource "aws_ecs_task_definition" "wfnews_apisix_gui" {
-  count                    = local.create_ecs_service
   family                   = "wfnews-apisix-gui-task-${var.target_env}"
   execution_role_arn       = aws_iam_role.wfnews_ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.wfnews_app_container_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = var.fargate_cpu
-  memory                   = var.fargate_memory
+  cpu                      = var.server_cpu_units
+  memory                   = var.server_memory
   tags                     = local.common_tags
   container_definitions = jsonencode([
     {
       essential   = true
       name        = var.apisix_gui_container_name
       image       = var.apisix_image
-      cpu         = var.fargate_cpu
-      memory      = var.fargate_memory
+      cpu                      = var.server_cpu_units
+      memory                   = var.server_memory
       networkMode = "awsvpc"
       portMappings = [
         {
@@ -566,8 +617,8 @@ resource "aws_ecs_service" "wfnews_liquibase" {
 
   capacity_provider_strategy {
     capacity_provider = "FARGATE"
-    weight = 100
-    base = 1
+    weight            = 100
+    base              = 1
   }
 
   network_configuration {
@@ -589,10 +640,9 @@ resource "aws_ecs_service" "wfnews_liquibase" {
 
 
 resource "aws_ecs_service" "wfnews_main" {
-  count                             = local.create_ecs_service
   name                              = "wfnews-server-service-${var.target_env}"
   cluster                           = aws_ecs_cluster.wfnews_main.id
-  task_definition                   = aws_ecs_task_definition.wfnews_server[count.index].arn
+  task_definition                   = aws_ecs_task_definition.wfnews_server.arn
   desired_count                     = var.app_count
   enable_ecs_managed_tags           = true
   propagate_tags                    = "TASK_DEFINITION"
@@ -606,8 +656,8 @@ resource "aws_ecs_service" "wfnews_main" {
   }
   capacity_provider_strategy {
     capacity_provider = "FARGATE"
-    weight = 20
-    base = 1
+    weight            = 20
+    base              = 1
   }
 
 
@@ -629,10 +679,9 @@ resource "aws_ecs_service" "wfnews_main" {
 }
 
 resource "aws_ecs_service" "client" {
-  count                             = local.create_ecs_service
   name                              = "wfnews-client-service-${var.target_env}"
   cluster                           = aws_ecs_cluster.wfnews_main.id
-  task_definition                   = aws_ecs_task_definition.wfnews_client[count.index].arn
+  task_definition                   = aws_ecs_task_definition.wfnews_client.arn
   desired_count                     = var.app_count
   enable_ecs_managed_tags           = true
   propagate_tags                    = "TASK_DEFINITION"
@@ -646,8 +695,8 @@ resource "aws_ecs_service" "client" {
   }
   capacity_provider_strategy {
     capacity_provider = "FARGATE"
-    weight = 20
-    base = 1
+    weight            = 20
+    base              = 1
   }
 
 
@@ -669,10 +718,9 @@ resource "aws_ecs_service" "client" {
 }
 
 resource "aws_ecs_service" "apisix" {
-  count                             = 1
   name                              = "wfnews-apisix-service-${var.target_env}"
   cluster                           = aws_ecs_cluster.wfnews_main.id
-  task_definition                   = aws_ecs_task_definition.wfnews_apisix[count.index].arn
+  task_definition                   = aws_ecs_task_definition.wfnews_apisix.arn
   desired_count                     = 1
   enable_ecs_managed_tags           = true
   propagate_tags                    = "TASK_DEFINITION"
@@ -686,8 +734,8 @@ resource "aws_ecs_service" "apisix" {
   }
   capacity_provider_strategy {
     capacity_provider = "FARGATE"
-    weight = 20
-    base = 1
+    weight            = 20
+    base              = 1
   }
 
 

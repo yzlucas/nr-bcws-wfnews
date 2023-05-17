@@ -152,7 +152,7 @@ export class MapsPanel extends BaseComponent implements OnInit, OnChanges {
             (self.statusBar as MatSnackBarRef<TextOnlySnackBar>).instance.data.message = self.uploadStatus
           }
         }).then(doc => {
-          self.attachmentCreator(doc.fileId, doc.filePath, result.file.type, 'Perimeter Map', 'INCID_MAP').then(() => {
+          self.attachmentCreator(doc.fileId, doc.filePath, result.file.type, 'Perimeter Map', 'INCID_MAP', result.title).then(() => {
             this.snackbarService.open('File Uploaded Successfully', 'OK', { duration: 10000, panelClass: 'snackbar-success' });
             this.loadPage()
           }).catch(err => {
@@ -175,7 +175,7 @@ export class MapsPanel extends BaseComponent implements OnInit, OnChanges {
     } )
   }
 
-  attachmentCreator (fileId: string, uploadPath: string, mimeType: string, description: string, category: string) {
+  attachmentCreator (fileId: string, uploadPath: string, mimeType: string, description: string, category: string, title: string) {
     const attachment = {
       '@type': 'http://wfim.nrs.gov.bc.ca/v1/attachment',
       type: 'http://wfim.nrs.gov.bc.ca/v1/attachment',
@@ -184,7 +184,9 @@ export class MapsPanel extends BaseComponent implements OnInit, OnChanges {
       attachmentDescription: description,
       attachmentTypeCode: category,
       fileIdentifier: fileId,
-      mimeType: mimeType
+      mimeType: mimeType,
+      commsSuitable: true,
+      attachmentTitle: title
     } as AttachmentResource;
 
     return this.incidentAttachmentsService.createIncidentAttachment(
@@ -220,9 +222,14 @@ export class MapsPanel extends BaseComponent implements OnInit, OnChanges {
     this.documentManagementService.downloadDocument(item.fileIdentifier).toPromise().then(response => {
       const blob = (response as any).body
       if (blob) {
+        let fileName = item.attachmentTitle || item.fileName;
+        if (!fileName.endsWith('.pdf')) {
+          fileName += '.pdf'
+        }
+
         const url = window.URL.createObjectURL(blob);
         const anchor = document.createElement("a");
-        anchor.download = item.fileName;
+        anchor.download = fileName;
         anchor.href = url;
         anchor.click();
         anchor.remove();

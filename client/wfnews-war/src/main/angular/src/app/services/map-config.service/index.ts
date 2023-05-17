@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { mapConfig } from './map.config';
 import { AppConfigService } from '@wf1/core-ui';
-import { WfDevice } from '@wf1/wfcc-application-ui';
 
 export interface MapServiceStatus {
     useSecure: boolean;
@@ -24,6 +23,6 @@ export class MapConfigService {
             token: null,
         };
 
-		return this.appConfig.loadAppConfig().then( ( config ) => mapConfig( this.appConfig.getConfig()[ 'mapServices' ], status, 'desktop' ) );
+		return this.appConfig.loadAppConfig().then( ( config ) => mapConfig( this.appConfig.getConfig()[ 'mapServices' ], status, 'desktop', this.appConfig ) );
 	}
 }

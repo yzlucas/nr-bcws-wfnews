@@ -1,6 +1,8 @@
 <ng-container [formGroup]="contactForm">
     <div class="dialog-container contact-widget-dialog-container">
-        <h1 mat-dialog-title>Contact Information <mat-icon [mat-dialog-close]="false">close</mat-icon></h1>
+        <h1 mat-dialog-title>Contact Information <mat-icon [color]="closeColor"
+          (mouseover)="closeColor = 'warn'"
+          (mouseout)="closeColor = null" [mat-dialog-close]="false" style="cursor: pointer;">close</mat-icon></h1>
         <div class="dialog-content" mat-dialog-content>
             <div class="contact-widget-dialog-content">
                 <div class="panel left-panel">
@@ -14,14 +16,13 @@
                     <div class="form">
                         <div class="row">
                             <div class="field">
-                                <mat-label class="label required">Name</mat-label>
+                                <mat-label class="label required">Name<span style="color: red">*</span></mat-label>
                                 <input matInput type="text" formControlName="name" aria-label="Name" />
-                                <mat-error [style.visibility]="error('name', 'required') ? 'visible':'hidden'">Name is required</mat-error>
                             </div>
                             <div class="field">
-                                <mat-label class="label  required">Email</mat-label>
+                                <mat-label class="label required">Email<span style="color: red">*</span></mat-label>
                                 <input  matInput type="text" formControlName="email" aria-label="Email" />
-                                <mat-error>{{ mailErrorMessages }}</mat-error>
+                                <mat-error style="font-size: 15px; padding-top: 7px; ">{{ mailErrorMessages }}</mat-error>
                             </div>
                         </div>
                         <div class="row">
@@ -32,13 +33,12 @@
                         </div>
                         <div class="row">
                             <div class="field">
-                                <mat-label class="label">Message</mat-label>
+                                <mat-label class="label">Message<span style="color: red">*</span></mat-label>
                                 <textarea rows="3" style="height:auto;" matInput formControlName="message" aria-label="Message" maxlength="500"></textarea>
-                                <mat-error [style.visibility]="error('message', 'required') ? 'visible':'hidden'">Message is required</mat-error>
                             </div>
                         </div>
                         <div class="row submit-row">
-                            <button class="contact-submit" (click)="onSubmit()">Submit Message</button>
+                            <button class="contact-submit" (click)="onSubmit()" [disabled]="!contactForm.valid">Submit Message</button>
                         </div>
                     </div>
                 </div>

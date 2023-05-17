@@ -1,19 +1,18 @@
 import { ChangeDetectorRef,  Directive, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { IncidentCauseResource, WildfireIncidentResource, PublishedIncidentResource } from '@wf1/incidents-rest-api';
+import { IncidentCauseResource, WildfireIncidentResource } from '@wf1/incidents-rest-api';
 import * as Editor from '@ckeditor/ckeditor5-build-decoupled-document';
 import { CustomImageUploader } from './incident-details-panel/custom-uploader';
-import { RootState } from '../../store';
-import { Store } from '@ngrx/store';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PublishDialogComponent } from './publish-dialog/publish-dialog.component';
 import { PublishedIncidentService } from '../../services/published-incident-service';
 import { IncidentDetailsPanel } from './incident-details-panel/incident-details-panel.component';
-import { getIncident } from '../../store/incident/incident.action';
 import { ContactsDetailsPanel } from './contacts-details-panel/contacts-details-panel.component';
 import { HttpClient } from '@angular/common/http';
+import { EvacOrdersDetailsPanel } from './evac-orders-details-panel/evac-orders-details-panel.component';
+import { AreaRestrictionsDetailsPanel } from './area-restrictions-details-panel/area-restrictions-details-panel.component';
 
 @Directive()
 export class AdminIncidentForm implements OnInit, OnChanges {
@@ -24,14 +23,17 @@ export class AdminIncidentForm implements OnInit, OnChanges {
   @Input() adminIncidentCause: any;
   @ViewChild('detailsPanelComponent') detailsPanelComponent: IncidentDetailsPanel;
   @ViewChild('ContactDetailsPanel') contactDetailsPanelComponent: ContactsDetailsPanel;
+  @ViewChild('EvacOrderPanel') evacOrdersDetailsPanel: EvacOrdersDetailsPanel;
+  @ViewChild('AreaRestrictionsPanel') areaRestrictionsDetailsPanel: AreaRestrictionsDetailsPanel;
 
   public Editor = Editor;
 
-  // TODO: Remove the default values here.
+  public publishDisabled = false;
 
   public incident = {
     fireNumber: 0,
     wildfireYear: new Date().getFullYear(),
+    wildfireIncidentGuid: '',
     incidentNumberSequence: 0,
     fireName: undefined,
     traditionalTerritory: undefined,
@@ -63,8 +65,8 @@ export class AdminIncidentForm implements OnInit, OnChanges {
       emailAddress: null
     },
     geometry: {
-      x: -115,
-      y: 50
+      x: null,
+      y: null
     },
     incidentOverview: '',
     evacOrders: [],
@@ -86,7 +88,6 @@ export class AdminIncidentForm implements OnInit, OnChanges {
   constructor(private readonly formBuilder: FormBuilder,
               private router: ActivatedRoute,
               private componentRouter: Router,
-              private store: Store<RootState>,
               protected cdr: ChangeDetectorRef,
               protected dialog: MatDialog,
               private publishedIncidentService: PublishedIncidentService,
@@ -120,11 +121,23 @@ export class AdminIncidentForm implements OnInit, OnChanges {
       structureProtectionComments: [],
       contact: this.formBuilder.group({
         fireCentre: [],
-        phoneNumber: [],
-        emailAddress: []
+        phoneNumber: new FormControl('', [Validators.pattern(/^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$/)]),
+        emailAddress: new FormControl('', [Validators.pattern(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)])
       }),
       evacOrders: this.formBuilder.array([])
     })
+  }
+
+  getPublishedDate () {
+    return this.incident.lastPublished ? new Date(this.incident.lastPublished) : new Date(0)
+  }
+
+  validFormCheck () {
+    const contactControl = this.incidentForm.get('contact')
+    return (contactControl.get('emailAddress').hasError('required') ||
+           contactControl.get('emailAddress').hasError('pattern') ||
+           contactControl.get('phoneNumber').hasError('required') ||
+           contactControl.get('phoneNumber').hasError('pattern'))
   }
 
   ngOnInit() {
@@ -137,10 +150,14 @@ export class AdminIncidentForm implements OnInit, OnChanges {
           const self = this;
 
           this.publishedIncidentService.fetchIMIncident(this.wildFireYear, this.incidentNumberSequnce).subscribe(incidentResponse => {
-            console.log('Loading incicent...', incidentResponse)
             self.currentAdminIncident = incidentResponse.response;
             this.publishedIncidentType = self.currentAdminIncident.type;
+            (self.incident as any).discoveryDate = new Date(self.currentAdminIncident.discoveryTimestamp).toLocaleString();
+            (self.incident as any).fireCentreOrgUnitName = self.currentAdminIncident.fireCentreOrgUnitName;
+            (self.incident as any).incidentStatusCode = self.currentAdminIncident.incidentStatusCode;
             self.incident.incidentData = self.currentAdminIncident
+            self.incident.geometry.x = self.currentAdminIncident.incidentLocation.longitude
+            self.incident.geometry.y = self.currentAdminIncident.incidentLocation.latitude
             self.incident.fireNumber = self.currentAdminIncident.incidentNumberSequence;
             self.incident.wildfireYear = self.currentAdminIncident.wildfireYear;
             self.incident.fireOfNote = self.currentAdminIncident.fireOfNotePublishedInd;
@@ -148,11 +165,13 @@ export class AdminIncidentForm implements OnInit, OnChanges {
             self.incident.fireName = self.currentAdminIncident.incidentName || self.currentAdminIncident.incidentLabel;
             self.incident.publishedStatus = 'DRAFT';
             self.incident.location = self.currentAdminIncident.incidentLocation.geographicDescription;
+            self.incident.wildfireIncidentGuid = self.currentAdminIncident.wildfireIncidentGuid;
 
-            self.incident.sizeType = 0
+            self.incident.sizeType = 2
             self.incident.sizeHectares = self.currentAdminIncident.incidentSituation.fireSizeHectares
+            self.incident.sizeComments = 'Fire size is based on most current information available.'
 
-            const causeCode = self.currentAdminIncident.suspectedCauseCategoryCode === 'Undetermined' ? 3 : self.currentAdminIncident.suspectedCauseCategoryCode === 'Lightning' ? 2 : 1
+            const causeCode = self.currentAdminIncident.suspectedCauseCategoryCode === 'Undetermined' ? 3 : self.currentAdminIncident.suspectedCauseCategoryCode === 'Natural' ? 2 : 1
             self.incident.cause = causeCode
             self.detailsPanelComponent.setCauseDisclaimer(causeCode)
             self.incident.causeComments = self.detailsPanelComponent.causeOptions.find(c => c.id === causeCode).disclaimer
@@ -161,34 +180,26 @@ export class AdminIncidentForm implements OnInit, OnChanges {
 
             self.incident.contact.fireCentre = self.currentAdminIncident.fireCentreOrgUnitIdentifier
 
-            let mappedCentre = 6
-            if (self.incident.contact.fireCentre == 50) mappedCentre = 2
-            else if (self.incident.contact.fireCentre == 42) mappedCentre = 3
-            else if (self.incident.contact.fireCentre == 34) mappedCentre = 4
-            else if (self.incident.contact.fireCentre == 25) mappedCentre = 5
-            else if (self.incident.contact.fireCentre == 2) mappedCentre = 7
+            this.areaRestrictionsDetailsPanel.getAreaRestrictions()
 
-            self.incident.contact.fireCentre = '' + mappedCentre
-
-            this.http.get('../../../../assets/data/fire-center-contacts.json').subscribe(data => {
-              self.incident.contact.phoneNumber = data[mappedCentre].phone
-              self.incident.contact.emailAddress = data[mappedCentre].url
+            this.http.get('../../../../assets/data/fire-center-contacts-agol.json').subscribe(data => {
+              self.incident.contact.phoneNumber = data[self.incident.contact.fireCentre].phone
+              self.incident.contact.emailAddress = data[self.incident.contact.fireCentre].url
               this.incidentForm.patchValue(this.incident);
               this.cdr.detectChanges();
             });
 
             incidentResponse.getPublishedIncident.subscribe((response) => {
-              console.log('Loading Published data...', response)
               self.publishedIncidentDetailGuid = response.publishedIncidentDetailGuid;
               self.incident.traditionalTerritory = response.traditionalTerritoryDetail;
               self.incident.lastPublished = response.publishedTimestamp;
-              self.incident.location = response.incidentLocation;
-
-              self.incident.sizeComments = response.incidentSizeDetail;
-              self.incident.causeComments = response.causeComments;
+              self.incident.location = response.incidentLocation
+              self.incident.sizeComments = response.incidentSizeDetail ? response.incidentSizeDetail : 'Fire size is based on most current information available.';
+              self.incident.sizeType = response.incidentSizeDetail ? response.incidentSizeDetail.includes('estimated') ? 1 : 0 : 2;
+              self.incident.causeComments = response.incidentCauseDetail;
 
               self.incident.publishedStatus = response.newsPublicationStatusCode;
-              self.incident.responseComments = self.currentAdminIncident.responseObjectiveDescription;
+              self.incident.responseComments = response.resourceDetail;
 
               self.incident.wildifreCrewsInd = response.wildfireCrewResourcesInd;
               self.incident.crewsComments = response.wildfireCrewResourcesDetail;
@@ -203,10 +214,12 @@ export class AdminIncidentForm implements OnInit, OnChanges {
               self.incident.structureProtectionInd = response.structureProtectionRsrcInd;
               self.incident.structureProtectionComments = response.structureProtectionRsrcDetail;
 
-              self.incident.contact.fireCentre = response.contactOrgUnitIdentifer;
+              self.incident.contact.fireCentre = response.contactOrgUnitIdentifer.toString();
               self.incident.contact.phoneNumber = response.contactPhoneNumber;
               self.incident.contact.emailAddress = response.contactEmailAddress;
               self.incident.incidentOverview = response.incidentOverview;
+
+              this.evacOrdersDetailsPanel.getEvacOrders()
             }, (error) => {
               console.log('No published data found...')
               console.error(error)
@@ -229,7 +242,13 @@ export class AdminIncidentForm implements OnInit, OnChanges {
     // TODO: This can be removed once the onInit is updated to map the form correctly
   }
 
+  nullEmptyStrings(value: string) {
+    return !value ? null : value
+  }
+
   publishChanges () {
+    this.publishDisabled = true;
+    this.cdr.detectChanges();
     const self = this;
     let dialogRef = this.dialog.open(PublishDialogComponent, {
       width: '350px',
@@ -242,26 +261,28 @@ export class AdminIncidentForm implements OnInit, OnChanges {
           newsCreatedTimestamp: new Date().valueOf().toString(),
           discoveryDate: new Date().valueOf().toString(),
           newsPublicationStatusCode: 'PUBLISHED',
+          publishedTimestamp: new Date(),
           fireOfNoteInd: this.incident.fireOfNote,
           incidentName: this.incident.fireName,
-          incidentLocation: this.incident.location,
-          incidentOverview: this.incident.incidentOverview,
-          traditionalTerritoryDetail: this.incident.traditionalTerritory,
-          incidentSizeDetail: this.incident.sizeComments,
-          incidentCauseDetail: this.incident.causeComments,
+          incidentLocation: this.nullEmptyStrings(this.incident.location),
+          incidentOverview: this.nullEmptyStrings(this.incident.incidentOverview),
+          traditionalTerritoryDetail: this.nullEmptyStrings(this.incident.traditionalTerritory),
+          incidentSizeDetail: this.nullEmptyStrings(this.incident.sizeComments),
+          incidentCauseDetail: this.nullEmptyStrings(this.incident.causeComments),
           contactOrgUnitIdentifer: this.incident.contact.fireCentre,
-          contactPhoneNumber: this.incident.contact.phoneNumber,
-          contactEmailAddress: this.incident.contact.emailAddress,
+          contactPhoneNumber: this.nullEmptyStrings(this.incident.contact.phoneNumber),
+          contactEmailAddress: this.nullEmptyStrings(this.incident.contact.emailAddress),
+          resourceDetail: this.nullEmptyStrings(this.incident.responseComments),
           wildfireCrewResourcesInd: this.incident.wildifreCrewsInd,
-          wildfireCrewResourcesDetail: this.incident.crewsComments,
+          wildfireCrewResourcesDetail: this.nullEmptyStrings(this.incident.crewsComments),
           wildfireAviationResourceInd: this.incident.aviationInd,
-          wildfireAviationResourceDetail: this.incident.aviationComments,
+          wildfireAviationResourceDetail: this.nullEmptyStrings(this.incident.aviationComments),
           heavyEquipmentResourcesInd: this.incident.heavyEquipmentInd,
-          heavyEquipmentResourcesDetail: this.incident.heavyEquipmentComments,
+          heavyEquipmentResourcesDetail: this.nullEmptyStrings(this.incident.heavyEquipmentComments),
           incidentMgmtCrewRsrcInd: this.incident.incidentManagementInd,
-          incidentMgmtCrewRsrcDetail: this.incident.incidentManagementComments,
+          incidentMgmtCrewRsrcDetail: this.nullEmptyStrings(this.incident.incidentManagementComments),
           structureProtectionRsrcInd: this.incident.structureProtectionInd,
-          structureProtectionRsrcDetail: this.incident.structureProtectionComments,
+          structureProtectionRsrcDetail: this.nullEmptyStrings(this.incident.structureProtectionComments),
           type: this.publishedIncidentType,
           '@type' : 'http://wfim.nrs.gov.bc.ca/v1/publishedIncident'
         };
@@ -269,14 +290,20 @@ export class AdminIncidentForm implements OnInit, OnChanges {
         self.publishIncident(publishedIncidentResource).then(doc => {
           this.snackbarService.open('Incident Published Successfully', 'OK', { duration: 100000, panelClass: 'snackbar-success-v2' });
           this.publishedIncidentDetailGuid = doc.publishedIncidentDetailGuid
+          // Handle evac orders
+          this.evacOrdersDetailsPanel.persistEvacOrders()
         }).catch(err => {
             this.snackbarService.open('Failed to Publish Incident: ' + JSON.stringify(err.message), 'OK', { duration: 10000, panelClass: 'snackbar-error' });
           }).finally(() => {
             self.loaded = false;
+            self.publishDisabled = false;
             this.cdr.detectChanges();
           }).catch(err => {
             this.snackbarService.open('Failed to Publish Incident: ' + JSON.stringify(err.message), 'OK', { duration: 10000, panelClass: 'snackbar-error' });
           })
+      } else {
+        this.publishDisabled = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -288,21 +315,21 @@ export class AdminIncidentForm implements OnInit, OnChanges {
   onShowPreview() {
     let mappedIncident = {
       incidentGuid: this.currentAdminIncident['wildfireIncidentGuid'],
-      incidentNumberLabel: this.currentAdminIncident.incidentLabel,
-      stageOfControlCode: this.incident.incidentData.incidentStatusCode,
-      generalIncidentCauseCatId: this.incidentForm.controls['cause'].value == 'Human' ? 1 : this.incidentForm.controls['cause'].value == 'Lightning' ? 2 : 3,
+      incidentNumberLabelFull: this.currentAdminIncident.incidentLabel,
+      stageOfControlCode: this.currentAdminIncident.incidentSituation.stageOfControlCode,
+      generalIncidentCauseCatId: this.incidentForm.controls['cause'].value,
       discoveryDate: new Date(this.incident.incidentData.discoveryTimestamp).toString(),
       fireCentre: this.currentAdminIncident.fireCentreOrgUnitIdentifier,
       fireOfNoteInd: this.incidentForm.controls['fireOfNote'].value,
       incidentName: this.incidentForm.controls['fireName'].value,
-      incidentLocation: this.incidentForm.controls['location'].value,
+      incidentLocation: this.incidentForm.controls['location'].value || this.currentAdminIncident.incidentLocation.geographicDescription,
       incidentOverview: this.incident.incidentOverview,
       traditionalTerritoryDetail: this.incidentForm.controls['traditionalTerritory'].value,
       incidentSizeType: this.incidentForm.controls['sizeType'].value,
       incidentSizeEstimatedHa: this.incidentForm.controls['sizeHectares'].value,
       incidentSizeDetail: this.incidentForm.controls['sizeComments'].value,
       incidentCauseDetail: this.incidentForm.controls['causeComments'].value,
-      contactOrgUnitIdentifer: this.currentAdminIncident.fireCentreOrgUnitIdentifier,
+      contactOrgUnitIdentifer: (this.incidentForm.controls['contact'] as FormGroup).controls['fireCentre'].value,
       contactPhoneNumber:  (this.incidentForm.controls['contact'] as FormGroup).controls['phoneNumber'].value,
       contactEmailAddress:  (this.incidentForm.controls['contact'] as FormGroup).controls['emailAddress'].value,
       wildfireCrewResourcesInd: this.incidentForm.controls['wildifreCrewsInd'].value,
@@ -318,7 +345,8 @@ export class AdminIncidentForm implements OnInit, OnChanges {
       lastUpdatedTimestamp: new Date(this.incident.incidentData.lastUpdatedTimestamp).toString(),
       latitude: this.incident.incidentData.incidentLocation.latitude,
       longitude: this.incident.incidentData.incidentLocation.longitude,
-      fireYear: this.incident.wildfireYear
+      fireYear: this.incident.wildfireYear,
+      resourceDetail: this.incidentForm.controls['responseComments'].value,
     }
 
     if (localStorage.getItem('preview_incident') != null) {

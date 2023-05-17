@@ -13,9 +13,8 @@ import { ErrorPageComponent } from './components/error-page/error-page.component
 import { PublicIncidentPage } from './components/public-incident-page/public-incident-page.component';
 import { WildfiresListHeaderComponent } from './components/wildfires-list-header/wildfires-list-header.component';
 // Components
-// import {ActionsPanelComponent} from './panels';
 
-const PROFILE_SCOPES = [[ROLES_UI.GENERAL_STAFF]];
+const PROFILE_SCOPES = [[ROLES_UI.ADMIN, ROLES_UI.IM_ADMIN]];
 
 const PANEL_ROUTES: Routes = [
 	// { path: '', component: ActionsPanelComponent, pathMatch: 'full', canActivate: [AuthGuard] },

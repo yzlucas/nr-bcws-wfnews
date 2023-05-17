@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { EvacOrderOption } from '../../conversion/models';
 import { AGOLService } from '../../services/AGOL-service';
 import { MapConfigService } from '../../services/map-config.service';
+import { snowPlowHelper } from '../../utils';
 import L from 'leaflet';
+import { AppConfigService } from '@wf1/core-ui';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'panel-evacuation-orders-and-alerts',
@@ -12,15 +15,34 @@ import L from 'leaflet';
 export class PanelEvacuationOrdersAndAlertsComponent implements OnInit {
   public evacOrders : EvacOrderOption[] = []
 
+  public snowPlowHelper = snowPlowHelper
+
   constructor(private agolService: AGOLService,
-              private mapConfigService: MapConfigService) {
+              private mapConfigService: MapConfigService,
+              private appConfigService: AppConfigService,
+              private router: Router) {
   }
 
   ngOnInit() {
     this.getEvacOrders();
   }
 
+  async snowplow (action: string, link: string, area: string | null = null) {
+    const url = this.appConfigService.getConfig().application.baseUrl.toString() + this.router.url.slice(1)
+    const snowPlowPackage = {
+      action: action.toLowerCase(),
+      text: link
+    }
+
+    if (area) {
+      snowPlowPackage['area'] = area
+    }
+
+    this.snowPlowHelper(url, snowPlowPackage)
+  }
+
   zoomToEvac (evac) {
+    this.snowplow(`${evac.orderAlertStatus}_list_click`, `${evac.emrgOAAsysID}:${evac.eventName}`, evac.issuingAgency)
     this.mapConfigService.getMapConfig().then(() => {
       const SMK = window['SMK'];
       let viewer = null;
@@ -43,7 +65,7 @@ export class PanelEvacuationOrdersAndAlertsComponent implements OnInit {
         for (const set in viewer.identified.featureSet) {
           if (Object.prototype.hasOwnProperty.call(viewer.identified.featureSet, set)) {
             const feature = viewer.identified.featureSet[set]
-            if (feature.type === 'Feature' && feature.layerId === 'evacuation-orders-and-alerts-wms') {
+            if (feature.type === 'Feature' && feature.layerId === 'evacuation-orders-and-alerts-wms' && feature.properties.ISSUING_AGENCY === evac.issuingAgency) {
               viewer.identified.pick(feature.id)
               break;
             }

@@ -2,20 +2,29 @@
 
 variable "target_env" {
   description = "AWS workload account env (e.g. dev, test, prod, sandbox, unclass)"
-  type = string
+  type        = string
 }
 
+variable "github_release_name" {
+  description = "Name of github release, if it exists"
+  type        = string
+  default     = ""
+}
+
+#Access key ID and secret access key are not used with container-based authentication
 variable "aws_access_key_id" {
-  type = string
+  type    = string
+  default = ""
 }
 
 variable "aws_secret_access_key" {
-  type = string
+  type    = string
+  default = ""
 }
 
 variable "target_aws_account_id" {
   description = "AWS workload account id"
-  type = string
+  type        = string
 }
 
 variable "aws_region" {
@@ -74,7 +83,7 @@ variable "client_port" {
 
 variable "api_key" {
   description = "value for api key"
-  type = string
+  type        = string
 }
 
 variable "app_count" {
@@ -96,14 +105,34 @@ variable "health_check_path" {
   default = "/"
 }
 
-variable "fargate_cpu" {
-  description = "Fargate instance CPU units to provision (1 vCPU = 1024 CPU units)"
-  default     = 1024
+variable "client_cpu_units" {
+  description = "client instance CPU units to provision (1 vCPU = 1024 CPU units)"
+  type        = number
 }
 
-variable "fargate_memory" {
-  description = "Fargate instance memory to provision (in MiB)"
-  default     = 2048
+variable "client_memory" {
+  description = "client instance memory to provision (in MiB)"
+  type        = number
+}
+
+variable "server_cpu_units" {
+  description = "server CPU units to provision (1 vCPU = 1024 CPU units)"
+  type        = number
+}
+
+variable "server_memory" {
+  description = "server memory to provision (in MiB)"
+  type        = number
+}
+
+variable "db_instance_type" {
+  description = "Instance type to use for database vm"
+  type        = string
+}
+
+variable "logging_level" {
+  type        = string
+  description = "Logging level for components"
 }
 
 # variable "db_name" {
@@ -158,28 +187,28 @@ variable "apisix_names" {
   type        = list(string)
 }
 
-variable "apisix_admin_names" {
-  description = "List of service names to use as subdomains"
-  default     = ["wfnews-api-admin"]
-  type        = list(string)
-}
+# variable "apisix_admin_names" {
+#   description = "List of service names to use as subdomains"
+#   default     = ["wfnews-api-admin"]
+#   type        = list(string)
+# }
 
-variable "etcd_names" {
-  description = "List of service names to use as subdomains"
-  default     = ["wfnews-etcd"]
-  type        = list(string)
-}
+# variable "etcd_names" {
+#   description = "List of service names to use as subdomains"
+#   default     = ["wfnews-etcd"]
+#   type        = list(string)
+# }
 
-variable "etcd_password" {
-  description = "Password to use for etcd access"
-  type = string
-}
+# variable "etcd_password" {
+#   description = "Password to use for etcd access"
+#   type = string
+# }
 
-variable "apisix_gui_names" {
-  description = "List of service names to use as subdomains"
-  default     = ["wfnews-api-gui"]
-  type        = list(string)
-}
+# variable "apisix_gui_names" {
+#   description = "List of service names to use as subdomains"
+#   default     = ["wfnews-api-gui"]
+#   type        = list(string)
+# }
 
 variable "alb_name" {
   description = "Name of the internal alb"
@@ -194,7 +223,49 @@ variable "cloudfront" {
 
 variable "cloudfront_origin_domain" {
   description = "domain name of the ssp"
-  default = ""
+  default     = ""
+  type        = string
+}
+
+variable "gov_client_url" {
+  description = "domain name if using *.nrs.gov.bc.ca url"
+  default     = ""
+  type        = string
+}
+
+variable "gov_api_url" {
+  description = "domain name if using *-api.nrs.gov.bc.ca url"
+  default     = ""
+  type        = string
+}
+
+variable "cloudfront_gov_origin_name" {
+  description = "base for the gov url"
+  default     = "wildfiresituation"
+  type        = string
+}
+
+variable "cloudfront_gov_origin_tail" {
+  description = "common element on gov urls"
+  default     = "nrs.gov.bc.ca"
+  type        = string
+}
+
+variable "gov_certificate_arn" {
+  description = "ARN of certificate to use on .nrs.gov.bc.ca certs"
+  default     = ""
+  type        = string
+}
+
+variable "gov_api_certificate_arn" {
+  description = "ARN of certificate to use on -api.nrs.gov.bc.ca certs"
+  default     = ""
+  type        = string
+}
+
+variable "cloudfront_header" {
+  description = "Header added when passing through cloudfront"
+  default     = ""
   type        = string
 }
 
@@ -204,119 +275,131 @@ variable "cloudfront_origin_domain" {
 }*/
 
 variable "aws_sec_group" {
-    description = "Security group limiting access to app"
-    type = string
+  description = "Security group limiting access to app"
+  type        = string
 }
 
-variable db_pass {
-    description = "db password, passed in as env variable at runtime"
-    type=string
+variable "db_pass" {
+  description = "db password, passed in as env variable at runtime"
+  type        = string
 }
 
-variable vpc_name {
+variable "db_size" {
+  description = "size of db, in GB"
+  type        = number
+  default     = 10
+}
+
+variable "vpc_name" {
   description = "name of VPC to use"
-  type=string
+  type        = string
 }
 
-variable subnet_filter {
+variable "subnet_filter" {
   description = "Text to filter subnet on"
-  type=string
+  type        = string
 }
 
-variable license_plate {
+variable "license_plate" {
   description = "license plate number to use"
-  type=string
+  type        = string
 }
 
-variable certificate_arn {
+variable "certificate_arn" {
   description = "ARN of bcwildfire certificate"
-  type = string
+  type        = string
 }
 
-variable liquibase_container_name {
+variable "liquibase_container_name" {
   description = "Name of DB container"
-  default = "wfnews-liquibase-app"
-  type = string
+  default     = "wfnews-liquibase-app"
+  type        = string
 }
 
-variable liquibase_image {
+variable "liquibase_image" {
   description = "Full name of liquibase image"
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
-variable apisix_name {
+variable "apisix_name" {
   description = "Name of apisix app"
-  type = string
-  default = "wfnews-apisix-app"
+  type        = string
+  default     = "wfnews-apisix-app"
 }
 
-variable apisix_container_name {
+variable "apisix_container_name" {
   description = "Name of apisix container"
-  default = "wfnews-apisix-app"
-  type = string
-} 
+  default     = "wfnews-apisix-app"
+  type        = string
+}
 
-variable etcd_container_name {
-  description = "Name of etcd container"
-  default = "wfnews-etcd-app"
-  type = string
-} 
+variable "max_upload_size" {
+  description = "Maximum upload size permitted"
+  default     = "10M"
+  type        = string
+}
 
-variable apisix_gui_container_name {
-  description = "Name of apisix gui container"
-  default = "wfnews-apisix-gui-app"
-  type = string
-} 
+# variable etcd_container_name {
+#   description = "Name of etcd container"
+#   default = "wfnews-etcd-app"
+#   type = string
+# } 
 
-variable apisix_image {
+# variable apisix_gui_container_name {
+#   description = "Name of apisix gui container"
+#   default = "wfnews-apisix-gui-app"
+#   type = string
+# } 
+
+variable "apisix_image" {
   description = "Full name of apisix image"
-  default = ""
-  type = string
-} 
+  default     = ""
+  type        = string
+}
 
-variable etcd_image {
+variable "etcd_image" {
   description = "Full name of etcd image"
-  default = ""
-  type = string
-} 
+  default     = ""
+  type        = string
+}
 
-variable apisix_gui_image {
+variable "apisix_gui_image" {
   description = "Full name of apisix gui image"
-  default = ""
-  type = string
-} 
+  default     = ""
+  type        = string
+}
 
-variable apisix_ports {
+variable "apisix_ports" {
   description = "Port apisix listens on"
-  default = [8080,9080,9443]
-  type = list(number)
+  default     = [8080, 9080, 9443]
+  type        = list(number)
 }
 
-variable apisix_admin_port {
+variable "apisix_admin_port" {
   description = "Port apisix listens on for config updates/changes"
-  default = 9180
-  type = number
+  default     = 9180
+  type        = number
 }
 
-variable etcd_port {
+variable "etcd_port" {
   description = "Port etcd listens on"
-  default = 2379
+  default     = 2379
 }
 
-variable apisix_gui_port {
+variable "apisix_gui_port" {
   description = "Port the apisix gui listens on"
-  default = 9000
+  default     = 9000
 }
 
-variable db_port {
+variable "db_port" {
   description = "Port used to communicate with database"
-  type = number
-  default = 8080
+  type        = number
+  default     = 8080
 }
 
-variable health_check_port {
-  type = number
+variable "health_check_port" {
+  type    = number
   default = 8080
 }
 
@@ -326,104 +409,152 @@ variable "db_names" {
   type        = list(string)
 }
 
+variable "db_multi_az" {
+  description = "Whether to make db deployment a multi-AZ deployment"
+  default     = false
+  type        = bool
+}
+
 variable "sns_email_targets" {
   description = "Emails to use for SNS"
-  default = ""
-  type = string
+  default     = ""
+  type        = string
 }
 
 //wfnews server property variables
 variable "WEBADE-OAUTH2_TOKEN_CLIENT_URL" {
-  type = string
+  type    = string
   default = ""
 }
 variable "WEBADE-OAUTH2_TOKEN_URL" {
-  type = string
+  type    = string
   default = ""
 }
 
-variable "WEBADE_OAUTH2_CLIENT_ID" {
-  type = string
+variable "WEBADE_OAUTH2_REST_CLIENT_ID" {
+  type    = string
+  default = ""
+}
+
+variable "WEBADE_OAUTH2_UI_CLIENT_ID" {
+  type    = string
   default = ""
 }
 
 variable "WEBADE_OAUTH2_WFNEWS_REST_CLIENT_SECRET" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "WEBADE_OAUTH2_AUTHORIZE_URL" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "WFDM_REST_URL" {
-  type = string
+  type    = string
   default = ""
 }
 variable "WFIM_CLIENT_URL" {
-  type = string
+  type    = string
   default = ""
 }
-variable  "WFIM_CODE_TABLES_URL" {
-  type = string
+variable "WFIM_CODE_TABLES_URL" {
+  type    = string
   default = ""
 }
 variable "WEBADE-OAUTH2_CHECK_TOKEN_URL" {
-  type = string
+  type    = string
   default = ""
 }
-variable "WFNEWS_EMAIL_NOTIFICATIONS_ENABLED"{
-  type = string
+variable "WFNEWS_EMAIL_NOTIFICATIONS_ENABLED" {
+  type    = string
   default = ""
 }
 variable "SMTP_HOST_NAME" {
-  type = string
+  type    = string
   default = ""
 }
 variable "SMTP_PASSWORD" {
-  type = string
+  type    = string
   default = ""
 }
 variable "SMTP_FROM_EMAIL" {
-  type = string
+  type    = string
   default = ""
 }
 variable "SMTP_ADMIN_EMAIL" {
-  type = string
+  type    = string
   default = ""
 }
 variable "SMTP_EMAIL_SYNC_ERROR_FREQ" {
-  type = string
+  type    = string
   default = ""
 }
 variable "SMTP_EMAIL_FREQ" {
-  type = string
+  type    = string
   default = ""
 }
 variable "SMTP_EMAIL_ERROR_SUBJECT" {
-  type = string
+  type    = string
   default = ""
 }
 variable "SMTP_EMAIL_SUBJECT" {
-  type = string
+  type    = string
   default = ""
 }
 variable "DEFAULT_APPLICATION_ENVIRONMENT" {
-  type = string
+  type    = string
   default = ""
 }
 variable "WFNEWS_AGOL_QUERY_URL" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "WFNEWS_USERNAME" {
-  type = string
+  type    = string
   default = ""
 }
 
-variable WFNEWS_MAX_CONNECTIONS {
-  type = string
+variable "WFNEWS_MAX_CONNECTIONS" {
+  type    = string
   default = "10"
+}
+
+//Client-only variables
+
+variable "agolUrl" {
+  type    = string
+  default = ""
+}
+
+variable "drivebcBaseUrl" {
+  type    = string
+  default = ""
+}
+
+variable "openmapsBaseUrl" {
+  type    = string
+  default = ""
+}
+
+variable "siteMinderURLPrefix" {
+  type    = string
+  default = ""
+}
+
+variable "agolAreaRestrictions" {
+  type    = string
+  default = ""
+}
+
+variable "agolBansAndProhibitions" {
+  type    = string
+  default = ""
+}
+
+variable "WEBADE_OAUTH2_WFNEWS_UI_CLIENT_SECRET" {
+  type    = string
+  default = ""
 }

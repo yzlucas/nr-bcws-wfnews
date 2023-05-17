@@ -36,10 +36,7 @@ import { AppConfigService, CoreUIModule, TokenService } from '@wf1/core-ui';
 import { ApiModule as IncidentsApiModule, Configuration as IncidentsConfiguration } from '@wf1/incidents-rest-api';
 import { ApiModule as OrgUnitApiModule, OrgUnitConfiguration } from '@wf1/orgunit-rest-api';
 import { WildfireApplicationModule } from '@wf1/wfcc-application-ui';
-import {
-    ApiModule as DocumentAPIServiceModule,
-    Configuration as DocumentAPIServiceConfiguration
-} from '@wf1/wfdm-document-management-api';
+import { Configuration as DocumentAPIServiceConfiguration } from '@wf1/wfdm-document-management-api';
 import { OwlDateTimeModule, OWL_DATE_TIME_FORMATS } from 'ng-pick-datetime';
 import { OwlMomentDateTimeModule } from 'ng-pick-datetime-moment';
 import { environment } from '../environments/environment';
@@ -128,6 +125,8 @@ import { UploadVideoDialogComponent } from './components/admin-incident-form/vid
 import { YouTubePlayerModule } from "@angular/youtube-player"
 import { DownloadPMDialogComponent } from './components/download-pm-dialog/download-pm-dialog.component';
 import { PublishDialogComponent } from './components/admin-incident-form/publish-dialog/publish-dialog.component';
+import { SummaryPanel } from './components/admin-incident-form/summary-panel/summary-panel.component';
+import { DisclaimerDialogComponent } from './components/disclaimer-dialog/disclaimer-dialog.component';
 
 // Copied from im-external.module  TODO: consolidate in one place
 export const DATE_FORMATS = {
@@ -189,6 +188,7 @@ export const DATE_FORMATS = {
         IncidentInfoPanel,
         IncidentMapsPanel,
         IncidentOverviewPanel,
+        SummaryPanel,
         CurrentAlertComponentComponent,
         WildfiresListHeaderComponent,
         SafePipe,
@@ -196,7 +196,8 @@ export const DATE_FORMATS = {
         VideoCardPanel,
         EditVideoDialogComponent,
         UploadVideoDialogComponent,
-        DownloadPMDialogComponent
+        DownloadPMDialogComponent,
+        DisclaimerDialogComponent
     ],
     imports: [
         MatSortModule,
@@ -255,7 +256,7 @@ export const DATE_FORMATS = {
             logOnly: environment.production, // Restrict extension to log-only mode
         }),
         EffectsModule.forRoot([]),
-        ServiceWorkerModule.register('wfim-service-worker.js', { enabled: environment.production, scope: './' }),
+        ServiceWorkerModule.register('wfnews-service-worker.js', { enabled: environment.production, scope: './' }),
         ScrollingModule,
         WildfireApplicationModule.forRoot(),
         MatToolbarModule,

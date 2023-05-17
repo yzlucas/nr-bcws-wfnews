@@ -1,6 +1,6 @@
 import { layerSettings } from '.';
 
-export function ActiveWildfiresLayerConfig(ls: layerSettings) {
+export function ActiveWildfiresLayerConfig(ls: layerSettings, key: string) {
     return [
         {
           type: 'vector',
@@ -8,9 +8,10 @@ export function ActiveWildfiresLayerConfig(ls: layerSettings) {
           title: 'BC Wildfires - Active Fires - Fire of Note',
           isQueryable: true,
           useClustering: false,
-          dataUrl: ls.wfnewsUrl + "/publicPublishedIncident/features?stageOfControl=FIRE_OF_NOTE&cachBust=" + Math.floor(new Date().getTime() / 600000),
+          dataUrl: ls.wfnewsUrl + "/publicPublishedIncident/features?stageOfControl=FIRE_OF_NOTE",
           titleAttribute: "incident_name",
           popupTemplate: '@wf-incident-feature',
+          header: { "apiKey": key },
           attributes: [
             {
                 name: "incident_name",
@@ -36,9 +37,10 @@ export function ActiveWildfiresLayerConfig(ls: layerSettings) {
           title: 'BC Wildfires - Active Fires - Out of Control',
           isQueryable: true,
           useClustering: false,
-          dataUrl: ls.wfnewsUrl + "/publicPublishedIncident/features?stageOfControl=OUT_CNTRL&cachBust=" + Math.floor(new Date().getTime() / 600000),
+          dataUrl: ls.wfnewsUrl + "/publicPublishedIncident/features?stageOfControl=OUT_CNTRL",
           titleAttribute: "incident_name",
           popupTemplate: '@wf-incident-feature',
+          header: { "apiKey": key },
           attributes: [
             {
                 name: "incident_name",
@@ -51,7 +53,7 @@ export function ActiveWildfiresLayerConfig(ls: layerSettings) {
             strokeStyle:"1",
             strokeColor:"#00000069",
             strokeOpacity:"1",
-            fillColor:"#aa0d0d",
+            fillColor:"#FF0000",
             fillOpacity:"1",
             fill: true
           }
@@ -62,9 +64,10 @@ export function ActiveWildfiresLayerConfig(ls: layerSettings) {
           title: 'BC Wildfires - Active Fires - Being Held',
           isQueryable: true,
           useClustering: false,
-          dataUrl: ls.wfnewsUrl + "/publicPublishedIncident/features?stageOfControl=HOLDING&cachBust=" + Math.floor(new Date().getTime() / 600000),
+          dataUrl: ls.wfnewsUrl + "/publicPublishedIncident/features?stageOfControl=HOLDING",
           titleAttribute: "incident_name",
           popupTemplate: '@wf-incident-feature',
+          header: { "apiKey": key },
           attributes: [
             {
                 name: "incident_name",
@@ -77,7 +80,7 @@ export function ActiveWildfiresLayerConfig(ls: layerSettings) {
             strokeStyle:"1",
             strokeColor:"#00000069",
             strokeOpacity:"1",
-            fillColor:"#ffd966",
+            fillColor:"#FFFF00",
             fillOpacity:"1",
             fill: true
           }
@@ -88,9 +91,10 @@ export function ActiveWildfiresLayerConfig(ls: layerSettings) {
           title: 'BC Wildfires - Active Fires - Under Control',
           isQueryable: true,
           useClustering: false,
-          dataUrl: ls.wfnewsUrl + "/publicPublishedIncident/features?stageOfControl=UNDR_CNTRL&cachBust=" + Math.floor(new Date().getTime() / 600000),
+          dataUrl: ls.wfnewsUrl + "/publicPublishedIncident/features?stageOfControl=UNDR_CNTRL",
           titleAttribute: "incident_name",
           popupTemplate: '@wf-incident-feature',
+          header: { "apiKey": key },
           attributes: [
             {
                 name: "incident_name",
@@ -103,7 +107,7 @@ export function ActiveWildfiresLayerConfig(ls: layerSettings) {
             strokeStyle:"1",
             strokeColor:"#00000069",
             strokeOpacity:"1",
-            fillColor:"#207148",
+            fillColor:"#98E600",
             fillOpacity:"1",
             fill: true
           }

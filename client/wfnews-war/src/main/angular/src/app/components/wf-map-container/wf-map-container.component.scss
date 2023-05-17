@@ -11,6 +11,10 @@
     }
 }
 
+::ng-deep .smk-map-frame .smk-overlay .smk-status {
+  bottom: 50px !important;
+}
+
 ::ng-deep .smk-map-frame {
     &.smk-theme-wf .smk-actionbar {
         padding: 5px 0;
@@ -156,6 +160,7 @@
         order: -1;
         align-self: flex-start;
         bottom: 0;
+        left: 0;
         .play-pause {
             margin-right: 5px;
             display: flex;

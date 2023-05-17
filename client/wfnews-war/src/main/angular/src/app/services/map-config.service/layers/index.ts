@@ -10,7 +10,6 @@ import { FirePerimetersLayerConfig } from './fire-perimeters.config';
 import { WeatherLayerConfig } from './weather.config';
 import { EvacuationOrdersLayerConfig } from './evacuation-orders-and-alerts-wms.config';
 import { SmokeForecastLayerConfig } from './hourly-currentforecast-firesmoke.config';
-import { PrescribedFireLayerConfig } from './prescribed-fire.config';
 import { WeatherStationsLayerConfig } from './weather-stations.config';
 import { PrecipitationLayerConfig } from './precipitation.config';
 import { ForestServiceRoadsLayerConfig } from './fsr-safety.config';
@@ -20,6 +19,8 @@ import { AbmsMunicipalitiesLayerConfig } from './abms-municipalities.config';
 import { AbmsRegionalDistrictsLayerConfig } from './abms-regional-districts.config';
 import { MapServices, MapServiceStatus } from '..';
 import { ActiveWildfiresHeatmapLayerConfig } from './active-wildfires.heatmap.config';
+import { AppConfigService } from '@wf1/core-ui';
+import { ProtectedLandsAccessRestrictionsLayerConfig } from './bc-parks-closures.config';
 
 export interface layerSettings {
     openmapsBaseUrl: string;
@@ -27,7 +28,7 @@ export interface layerSettings {
     wfnewsUrl: string;
 
 };
-export function LayerConfig( mapServices: MapServices, serviceStatus: MapServiceStatus ) {
+export function LayerConfig( mapServices: MapServices, serviceStatus: MapServiceStatus, appConfigService: AppConfigService ) {
     const ls: layerSettings = {
         openmapsBaseUrl: mapServices[ 'openmapsBaseUrl' ],
         drivebcBaseUrl: mapServices[ 'drivebcBaseUrl' ],
@@ -35,7 +36,7 @@ export function LayerConfig( mapServices: MapServices, serviceStatus: MapService
     };
 
 	return [
-		...ActiveWildfiresLayerConfig( ls ),
+		...ActiveWildfiresLayerConfig( ls, appConfigService.getConfig().application['wfnewsApiKey'] ),
 		...AreaRestrictionsLayerConfig( ls ),
 		...BansAndProhibitionsLayerConfig( ls ),
 		...FireCentresLayerConfig( ls ),
@@ -46,7 +47,8 @@ export function LayerConfig( mapServices: MapServices, serviceStatus: MapService
 		...EvacuationOrdersLayerConfig( ls ),
 		...FirePerimetersLayerConfig( ls ),
 		...SmokeForecastLayerConfig( ls ),
-		...PrescribedFireLayerConfig( ls ),
+    // Hiding temporarily as the dataset is reconfigured
+    // ...PrescribedFireLayerConfig( ls ),
 		...WeatherLayerConfig( ls ),
     ...WeatherStationsLayerConfig( ls ),
     ...PrecipitationLayerConfig( ls ),
@@ -55,6 +57,7 @@ export function LayerConfig( mapServices: MapServices, serviceStatus: MapService
     ...CLABIndianReservesLayerConfig( ls ),
     ...FntTreatyLandLayerConfig( ls ),
     ...AbmsMunicipalitiesLayerConfig( ls ),
-    ...AbmsRegionalDistrictsLayerConfig( ls )
+    ...AbmsRegionalDistrictsLayerConfig( ls ),
+    ...ProtectedLandsAccessRestrictionsLayerConfig( ls )
 	];
 }

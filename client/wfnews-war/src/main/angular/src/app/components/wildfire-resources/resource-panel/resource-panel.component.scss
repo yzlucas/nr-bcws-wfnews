@@ -17,16 +17,21 @@
     width: 100%;
   }
   .panel-container> * {
-    flex: 1 1 20vw;
+    flex: 1 1 275px;
   }
   .resource-info {
     border: 1px solid #e9eff5;
     padding: 20px;
+    max-width: 50%;
     .info-title {
       font-size: 18px;
       font-weight: 700;
       color: #0e5fa9;
       padding-bottom: 10px;
+      a {
+        color: #0e5fa9;
+        text-decoration: none;
+      }
     }
     .info-subtitle {
       font-size: 15px;

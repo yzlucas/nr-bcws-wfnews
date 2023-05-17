@@ -58,7 +58,7 @@ mat-tab-group {
   height: auto;
   overflow: hidden;
   font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
-  padding: 20px;
+  padding: 40px;
   margin: auto;
   background-color: white;
   max-width: 1300px;
@@ -69,6 +69,7 @@ mat-tab-group {
     padding-bottom: 0;
     color: #1c5a97;
     text-align: center;
+    padding-top: 80px;
   }
 }
 
@@ -127,14 +128,14 @@ mat-tab-group {
   border-radius: 3px;
   background: white;
   font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
+  margin-top: 40px;
   width: 300px;
   .title {
     color: black;
     background: #e9eff5;
     font-size: 16px;
     padding: 10px;
-    text-transform: capitalize;
   }
   .summary-data {
     padding: 10px;
@@ -188,7 +189,7 @@ mat-tab-group {
   flex-flow: row;
   flex-wrap: wrap;
   border-bottom: 1px solid #e9eff5;
-  padding-bottom: 20px;
+  padding-bottom: 80px;
   .info-text {
     padding: 5px;
     width: 45%;
@@ -203,15 +204,14 @@ mat-tab-group {
   flex: 1 1 315px;
 }
 
-:host ::ng-deep .mat-tab-label {
-  color: #003366 !important;
-  font-weight: 400;
-  font-size: 1rem;
-}
-
 :host ::ng-deep .mat-ink-bar {
   background-color: #003366 !important;
 }
+
+:host ::ng-deep .mat-tab-label-active {
+  font-weight: 700 !important
+}
+
 
 @media (min-width: 768px)and (max-width: 1023px) {
   .stages-of-control{

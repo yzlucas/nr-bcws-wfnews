@@ -80,6 +80,10 @@ export function LayerDisplayConfig(mapServices: MapServices) {
             class: 'smk-inline-legend'
         },
         {
+            id: 'protected-lands-access-restrictions',
+            isVisible: false
+        },
+        {
             id: 'closed-recreation-sites',
             isVisible: false,
             class: 'smk-inline-legend'
@@ -109,19 +113,19 @@ export function LayerDisplayConfig(mapServices: MapServices) {
             isVisible: true,
             class: 'smk-inline-legend'
         },
-        {
-            id: 'prescribed-fire',
-            isVisible: false,
-            class: 'smk-inline-legend'
-        },
+        //{
+        //    id: 'prescribed-fire',
+        //   isVisible: false,
+        //   class: 'smk-inline-legend'
+        //},
         //{
         //  id: 'active-wildfires-heatmap',
         //  isVisible: false
         //},
         {
             id: "weather-stations",
-            isVisible: true,
-            showItem: false
+            isVisible: false,
+            showItem: true  // false to hide in layer list
         },
         {
             id: "clab-indian-reserves",

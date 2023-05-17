@@ -14,7 +14,7 @@ import ca.bc.gov.nrs.wfnews.api.rest.v1.resource.types.ResourceTypes;
 @XmlRootElement(namespace = ResourceTypes.NAMESPACE, name = ResourceTypes.PUBLISHED_INCIDENT_NAME)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type")
 @JsonTypeName(ResourceTypes.PUBLISHED_INCIDENT)
-public class PublishedIncidentResource extends BaseResource implements PublishedIncident {
+public class PublishedIncidentResource extends SimplePublishedIncidentResource implements PublishedIncident {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -27,7 +27,8 @@ public class PublishedIncidentResource extends BaseResource implements Published
 	private String newsPublicationStatusCode;
 	private Date discoveryDate;
 	private Date declaredOutDate;
-	private String fireCentre;
+	private String fireCentreCode;
+	private String fireCentreName;
 	private Integer fireZoneUnitIdentifier;
 	private Boolean fireOfNoteInd;
 	private String incidentName;
@@ -67,6 +68,8 @@ public class PublishedIncidentResource extends BaseResource implements Published
 	private String latitude;
 	private String longitude;
 	private Integer fireYear;
+	private String responseTypeCode;
+	private String responseTypeDetail;
 
 	public String getPublishedIncidentDetailGuid() {
 		return publishedIncidentDetailGuid;
@@ -453,13 +456,23 @@ public class PublishedIncidentResource extends BaseResource implements Published
 	}
 
 	@Override
-	public String getFireCentre() {
-		return fireCentre;
+	public String getFireCentreCode() {
+		return fireCentreCode;
 	}
 
 	@Override
-	public void setFireCentre(String fireCentre) {
-		this.fireCentre = fireCentre;
+	public void setFireCentreCode(String fireCentreCode) {
+		this.fireCentreCode = fireCentreCode;
+	}
+
+	@Override
+	public String getFireCentreName() {
+		return fireCentreName;
+	}
+
+	@Override
+	public void setFireCentreName(String fireCentreName) {
+		this.fireCentreName = fireCentreName;
 	}
 
 	@Override
@@ -470,5 +483,25 @@ public class PublishedIncidentResource extends BaseResource implements Published
 	@Override
 	public void setFireYear(Integer fireYear) {
 		this.fireYear = fireYear;
+	}
+
+	@Override
+	public String getResponseTypeCode() {
+		return this.responseTypeCode;
+	}
+
+	@Override
+	public void setResponseTypeCode(String responseTypeCode) {
+		this.responseTypeCode = responseTypeCode;
+	}
+
+	@Override
+	public String getResponseTypeDetail() {
+		return this.responseTypeDetail;
+	}
+
+	@Override
+	public void setResponseTypeDetail(String responseTypeDetail) {
+		this.responseTypeDetail = responseTypeDetail;
 	}
 }

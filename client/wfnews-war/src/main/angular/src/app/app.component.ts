@@ -9,11 +9,11 @@ import { RouterLink, WfApplicationConfiguration, WfApplicationState } from '@wf1
 import { WfMenuItems } from '@wf1/wfcc-application-ui/application/components/wf-menu/wf-menu.component';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
+import { DisclaimerDialogComponent } from './components/disclaimer-dialog/disclaimer-dialog.component';
 import { DownloadPMDialogComponent } from './components/download-pm-dialog/download-pm-dialog.component';
 import { ApplicationStateService } from './services/application-state.service';
 import { UpdateService } from './services/update.service';
-import { ResourcesRoutes, snowPlowHelper } from './utils';
-import { isMobileView as mobileView } from './utils';
+import { ResourcesRoutes, snowPlowHelper, isMobileView as mobileView } from './utils';
 
 export const ICON = {
   TWITTER: 'twitter',
@@ -29,6 +29,7 @@ export const ICON = {
   FILTER_CANCEL: "filter-cancel",
   BOOKMARK: 'bookmark',
   MAP: 'map',
+  BACK_ICON: 'back-icon',
 };
 
 @Component({
@@ -98,7 +99,7 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
       this.appConfigService.configEmitter.subscribe((config) => {
         this.applicationConfig.version.short = config.application.version.replace(/-snapshot/i, '');
         this.applicationConfig.version.long = config.application.version;
-        this.applicationConfig.environment = config.application.environment.replace(/^.*prod.*$/i, '');
+        this.applicationConfig.environment = config.application.environment.replace(/^.*prod.*$/i, ' ') || ' ';
         this.onResize();
       });
     }
@@ -114,22 +115,25 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
     this.initFooterMenu();
 
     window['SPLASH_SCREEN'].remove();
-    if ((localStorage.getItem('dontShowPublicMobileDownload') !== 'true') && (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
-      let downloadLink;
-      let app;;
-      if ((navigator.userAgent.toLowerCase().indexOf("iphone") > -1) || (navigator.userAgent.toLowerCase().indexOf("ipad") > -1)) {
-        downloadLink = this.appConfigService.getConfig().externalAppConfig['appStoreUrl'].toString();
-        app = 'App Store'
-      } else {
-        downloadLink = this.appConfigService.getConfig().externalAppConfig['googlePlayUrl'].toString();
-        app = 'Google Play'
-      }
-
+    if (localStorage.getItem('dontShowDisclaimer') !== 'true'){
+      let dialogRef = this.dialog.open(DisclaimerDialogComponent, {
+        autoFocus: false,
+        width: '600px',
+      });
+      dialogRef.afterClosed().subscribe(result => {
+        if (result['dontShowAgain']) {
+          localStorage.setItem('dontShowDisclaimer', 'true');
+        } else {
+          localStorage.removeItem('dontShowDisclaimer');
+        }
+      });
+    }
+    if (!this.redirectToPublicMobile() && (localStorage.getItem('dontShowPublicMobileDownload') !== 'true') && (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
       let dialogRef = this.dialog.open(DownloadPMDialogComponent, {
         width: '600px',
         data: {
-          downloadLink: downloadLink,
-          app: app
+          downloadLink: this.getAppStoreLink(),
+          app: this.getAppStoreName()
         }
       });
       dialogRef.afterClosed().subscribe(result => {
@@ -141,11 +145,44 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
       });
     }
 
-    document.getElementById('main-app').classList.remove('menu-collapsed');
-    document.getElementById('main-app').classList.add('menu-hidden');
-    if (document.getElementsByTagName('wf-menu')[0]) {
-      (document.getElementsByTagName('wf-menu')[0] as HTMLElement).removeAttribute('style');
+    const mainApp = document.getElementById('main-app')
+    if (mainApp) {
+      setTimeout(() => {
+        mainApp.classList.remove('menu-collapsed');
+        mainApp.classList.add('menu-hidden');
+        if (document.getElementsByTagName('wf-menu')[0]) {
+          (document.getElementsByTagName('wf-menu')[0] as HTMLElement).removeAttribute('style');
+        }
+      }, 200)
     }
+  }
+
+  isIncidentsPage () {
+    return window.location.pathname === '/incidents'
+  }
+
+  redirectToPublicMobile () {
+    return ((window.innerWidth < 768 && window.innerHeight < 1024) || (window.innerWidth < 1024 && window.innerHeight < 768))
+  }
+
+  getAppStoreLink () {
+    if ((navigator.userAgent.toLowerCase().indexOf("iphone") > -1) || (navigator.userAgent.toLowerCase().indexOf("ipad") > -1)) {
+      return this.appConfigService.getConfig().externalAppConfig['appStoreUrl'].toString();
+    } else {
+      return this.appConfigService.getConfig().externalAppConfig['googlePlayUrl'].toString();
+    }
+  }
+
+  getAppStoreName () {
+    if ((navigator.userAgent.toLowerCase().indexOf("iphone") > -1) || (navigator.userAgent.toLowerCase().indexOf("ipad") > -1)) {
+      return 'App Store'
+    } else {
+      return 'Google Play'
+    }
+  }
+
+  download () {
+    window.open(this.getAppStoreLink(), '_blank')
   }
 
   initAppMenu() {
@@ -177,6 +214,17 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
   ngAfterViewInit() {
     setInterval(() => {
       this.getLastSync();
+    }, 1000);
+
+    setTimeout(() => {
+        const headerImg = document.getElementsByClassName('bc-logo')
+        if (headerImg && headerImg[0]) {
+          const node = document.createElement("span")
+          node.style.color = '#fcba19'
+          node.style.marginLeft = '20px'
+          node.append(this.applicationConfig.environment)
+          headerImg[0].appendChild(node)
+      }
     }, 1000);
   }
 
@@ -218,7 +266,7 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
       if (this.isAdminPage() && classList.contains('device-mobile')) {
         classList.remove('device-mobile')
         classList.add('device-desktop')
-      } else if(classList.contains('device-desktop')) {
+      } else if(!this.isAdminPage() && this.applicationConfig.environment.toLowerCase() === '' && classList.contains('device-desktop')) {
         classList.remove('device-desktop')
         classList.add('device-mobile')
       }
@@ -247,8 +295,6 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
 
   navigateToBcWebsite() {
     window.open('https://www2.gov.bc.ca/gov/content/safety/wildfire-status', '_blank');
-    this.url = this.appConfigService.getConfig().application.baseUrl.toString() + this.router.url.slice(1)
-    this.snowPlowHelper(this.url, 'BCGovLogo')
   }
 
   navigateToFooterPage(event: any) {
@@ -319,6 +365,11 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
     this.matIconRegistry.addSvgIcon(
       ICON.MAP,
       this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/map.svg')
+    );
+
+    this.matIconRegistry.addSvgIcon(
+      ICON.BACK_ICON,
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/back-icon.svg')
     );
   }
 

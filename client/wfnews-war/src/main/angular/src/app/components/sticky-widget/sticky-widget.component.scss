@@ -4,9 +4,9 @@
 
 .sticky-widget{
     position: fixed;
-    bottom: 55px;
-    right: 37px;
-    z-index: 2;
+    bottom: 8px;
+    right: 0px;
+    z-index: 1000001;
     display: flex;
     transition: 0.5s;
 }

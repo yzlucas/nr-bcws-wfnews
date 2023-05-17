@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, Component, ElementRef, Input, NgZone, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatExpansionPanel } from '@angular/material/expansion';
@@ -12,6 +11,7 @@ import * as L from 'leaflet';
 import { debounceTime } from 'rxjs/operators';
 import { isMobileView as mobileView, snowPlowHelper } from '../../utils';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { PublishedIncidentService } from '../../services/published-incident-service';
 
 
 export type SelectedLayer =
@@ -70,12 +70,11 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
     protected appConfigService: AppConfigService,
     protected router: Router,
     protected activedRouter: ActivatedRoute,
-    private http: HttpClient,
     private appConfig: AppConfigService,
     private mapConfigService: MapConfigService,
     private agolService: AGOLService,
+    private publishedIncidentService: PublishedIncidentService,
     private commonUtilityService: CommonUtilityService,
-    private ngZone: NgZone
   ) {
     this.incidentsServiceUrl = this.appConfig.getConfig().rest['newsLocal'];
     this.placeData = new PlaceData();
@@ -271,8 +270,8 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
     this.searchLayerGroup.clearLayers();
 
     this.filteredOptions.forEach((result) => {
-      var first = this.serializeLatLng({ lat: latLng[0], lng: latLng[1] });
-      var second = this.serializeLatLng({ lat: result.loc[0], lng: result.loc[1] });
+      const first = this.serializeLatLng({ lat: latLng[0], lng: latLng[1] });
+      const second = this.serializeLatLng({ lat: result.loc[0], lng: result.loc[1] });
       if (first != second) {
         self.highlight(result);
       }
@@ -280,7 +279,10 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
   }
 
   onLocationSelected(selectedOption) {
-    this.snowPlowHelper(this.url, 'WILDFIRESMAP-SEARCHBAR')
+    this.snowPlowHelper(this.url, {
+      action: 'location_search',
+      text: selectedOption.address
+  })
     const self = this;
     self.searchLayerGroup.clearLayers();
     let locationControlValue = selectedOption.address ? selectedOption.address : selectedOption.localityName;
@@ -298,12 +300,12 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
     if (this.activeFireCountPromise) {
       return this.activeFireCountPromise;
     }
-    this.activeFireCountPromise = this.agolService.getActiveFireCount().toPromise()
+    this.activeFireCountPromise = this.publishedIncidentService.getActiveFireCount()
       .then((resp: any) => {
-        return resp?.features[0].attributes.value;
+        return resp || 0
       }).catch((e) => {
         console.error('COUNTSTATS-FAIL');
-        return 123;
+        return 'loading...';
       });
 
     return this.activeFireCountPromise;
@@ -320,7 +322,10 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
   onSelectLayer(selectedLayer: SelectedLayer) {
     this.selectedLayer = selectedLayer;
     this.selectedPanel = selectedLayer
-    this.snowPlowHelper(this.url, selectedLayer)
+    this.snowPlowHelper(this.url, {
+      action: 'feature_layer_navigation',
+      text: selectedLayer
+    })
     const layers = [
             /* 00 */ { itemId: 'active-wildfires', visible: true },
             /* 01 */ { itemId: 'evacuation-orders-and-alerts-wms', visible: false },
@@ -384,7 +389,9 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
   }
 
   async useMyCurrentLocation() {
-    this.snowPlowHelper(this.url, 'WILDFIRESMAP-FINDMYLOCATION')
+    this.snowPlowHelper(this.url, {
+      action: 'find_my_location'
+    })
 
     this.searchText = undefined;
 
@@ -429,7 +436,6 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
 
   searchTextUpdated() {
     // will need to call News API to fetch the results
-    console.log(this.searchText)
   }
 
   @ViewChild('grabber') grabber: ElementRef;
@@ -471,5 +477,25 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
       this.resizeBoxElement.style.top = window.innerHeight - 50 + 'px'
     }
     this.resizeBoxElement.style.height = `${window.innerHeight - this.lastPointerPosition + 20}px`
+  }
+
+  openLink(link:string) {
+    if (link === 'Disclaimer') {
+      window.open('https://www2.gov.bc.ca/gov/content/home/disclaimer', "_blank");
+    }
+    else if  (link === 'Privacy') {
+      window.open('https://www2.gov.bc.ca/gov/content/home/privacy', "_blank");
+    }
+    else if (link === 'Copyright') {
+      window.open('https://www2.gov.bc.ca/gov/content/home/copyright', "_blank");
+    }
+  }
+
+  disclaimerText() {
+    if (screen.width <= 1200) {
+      return 'Legal';
+    } else {
+      return 'Disclaimer and Legal Links';
+    }
   }
 }

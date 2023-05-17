@@ -39,19 +39,19 @@ export function searchWildfires(
     pageInfoRequest: PagingInfoRequest,
     selectedFireCentre: string,
     fireOfNoteInd: boolean,
-    outFires: boolean,
+    stageOfControlList: string[],
+    newFires: boolean,
     bbox: string,
     displayLabel: string,
     lat: number,
     long: number,
     radius: number,
     callback: Function | null = null): SearchWildfiresAction {
-        let filters = {};
-        filters["fireCentre"] = selectedFireCentre ? selectedFireCentre : undefined;
+        let filters = {}
+        filters["fireCentreCode"] = selectedFireCentre ? selectedFireCentre : undefined
         filters["fireOfNote"] = fireOfNoteInd ? fireOfNoteInd : undefined
-        if(outFires != undefined){
-            filters["out"] = outFires ? outFires : false
-        }
+        filters["stageOfControlList"] = stageOfControlList ? stageOfControlList : []
+        filters["newFires"] = newFires ? newFires : false
         filters["bbox"] = bbox ? bbox : undefined
 
         return {

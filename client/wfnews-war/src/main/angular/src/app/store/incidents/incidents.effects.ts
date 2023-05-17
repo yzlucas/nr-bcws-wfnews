@@ -48,8 +48,8 @@ export class IncidentsEffect {
                 if (sortParam == "wildFireOfNote") {
                     sortParam = "fireOfNotePublishedInd";
                 }
-                if (sortParam == "lastPublished") {
-                    sortParam = "discoveryTimestamp";
+                if (sortParam == "lastUpdated") {
+                    sortParam = "lastUpdatedTimestamp";
                 }
 
 
@@ -67,10 +67,16 @@ export class IncidentsEffect {
                 let fireCentreFilter = typedaction.payload.filters["selectedFireCentreCode"] ? typedaction.payload.filters["selectedFireCentreCode"] : savedFireCentreFilter;
                 let fireOfNotePublishedInd = typedaction.payload.filters["selectedFireOfNotePublishedInd"] ? typedaction.payload.filters["selectedFireOfNotePublishedInd"] : savedFireOfNotePublishedIndFilter;
 
+                const now = new Date()
+                let currentFireYear = now.getFullYear()
+                if (now.getMonth() < 3) {
+                  currentFireYear -= 1
+                }
+
                 return this.incidentListService.getWildfireIncidentList(
                     undefined,
                     searchText,
-                    [`2022`],
+                    [`${currentFireYear-1}`, `${currentFireYear}`],
                     undefined,
                     undefined,
                     undefined,
@@ -99,7 +105,7 @@ export class IncidentsEffect {
                     undefined,
                     undefined,
                     undefined,
-                    undefined,
+                    ['FIRE'],
                     fireOfNotePublishedInd[0],
                     undefined,
                     `${pageNumber}`,

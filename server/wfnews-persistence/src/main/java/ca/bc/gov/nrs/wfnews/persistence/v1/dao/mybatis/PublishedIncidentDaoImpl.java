@@ -1,5 +1,8 @@
 package ca.bc.gov.nrs.wfnews.persistence.v1.dao.mybatis;
 
+import java.time.Year;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,7 +94,7 @@ public class PublishedIncidentDaoImpl extends BaseDao implements
 	}
 	
 	@Override
-	public PublishedIncidentDto fetch(String publishedIncidentDetailGuid) throws DaoException {
+	public PublishedIncidentDto fetch(String publishedIncidentDetailGuid, Integer fireYear) throws DaoException {
 		logger.debug("<fetch");
 
 		PublishedIncidentDto result = null;
@@ -100,6 +103,7 @@ public class PublishedIncidentDaoImpl extends BaseDao implements
 
 			Map<String, Object> parameters = new HashMap<String, Object>();
 			parameters.put("publishedIncidentDetailGuid", publishedIncidentDetailGuid);
+			parameters.put("fireYear", fireYear);
 			result = this.publishedIncidentMapper.fetch(parameters);
 
 		} catch (RuntimeException e) {
@@ -173,6 +177,7 @@ public class PublishedIncidentDaoImpl extends BaseDao implements
 			parameters.put("ymin", Double.parseDouble(bbox.split(",")[1]));
 			parameters.put("xmax", Double.parseDouble(bbox.split(",")[2]));
 			parameters.put("ymax", Double.parseDouble(bbox.split(",")[3]));
+			parameters.put("currentFireYear", getCurrentFireYear());
 
 			json = this.publishedIncidentMapper.selectAsJson(parameters);
 		} catch (RuntimeException e) {
@@ -201,7 +206,7 @@ public class PublishedIncidentDaoImpl extends BaseDao implements
 	}
 
 	@Override
-	public PagedDtos<PublishedIncidentDto> select(String searchText, Integer pageNumber, Integer pageRowCount, List<String> orderBy, Boolean fireOfNote, Boolean out, String fireCentre, String bbox, Double latitude, Double longitude, Double radius) throws DaoException{
+	public PagedDtos<PublishedIncidentDto> select(String searchText, Integer pageNumber, Integer pageRowCount, List<String> orderBy, Boolean fireOfNote, List<String> stageOfControlList, Boolean newFires, String fireCentreCode, String fireCentreName, Date fromCreateDate, Date toCreateDate, Date fromDiscoveryDate, Date toDiscoveryDate, String bbox, Double latitude, Double longitude, Integer fireYear, Double radius) throws DaoException{
 		
 		PagedDtos<PublishedIncidentDto> results = new PagedDtos<>();
 		
@@ -223,8 +228,14 @@ public class PublishedIncidentDaoImpl extends BaseDao implements
 			parameters.put("pageRowCount", pageRowCount);
 			parameters.put("orderBy", orderBy.toArray());
 			parameters.put("fireOfNote", fireOfNote);
-			parameters.put("out", out);
-			parameters.put("fireCentre", fireCentre);
+			parameters.put("stageOfControlList", stageOfControlList);
+			parameters.put("newFires", newFires);
+			parameters.put("fireCentreCode", fireCentreCode);
+			parameters.put("fireCentreName", fireCentreName);
+			parameters.put("fromCreateDate", fromCreateDate);
+			parameters.put("toCreateDate", toCreateDate);
+			parameters.put("fromDiscoveryDate", fromDiscoveryDate);
+			parameters.put("toDiscoveryDate", toDiscoveryDate);
 			parameters.put("xmin", bbox != null ? Double.parseDouble(bbox.split(",")[0]) : null);
 			parameters.put("ymin", bbox != null ? Double.parseDouble(bbox.split(",")[1]) : null);
 			parameters.put("xmax", bbox != null ? Double.parseDouble(bbox.split(",")[2]) : null);
@@ -233,6 +244,7 @@ public class PublishedIncidentDaoImpl extends BaseDao implements
 			parameters.put("longitude", longitude);
 			parameters.put("radius", radius);
 			parameters.put("searchText", searchText);
+			parameters.put("currentFireYear", fireYear != null ? fireYear.intValue() : getCurrentFireYear());
 			
 			int totalRowCount = this.publishedIncidentMapper.selectCount(parameters);
 			List<PublishedIncidentDto> dtos = this.publishedIncidentMapper.select(parameters);
@@ -246,8 +258,14 @@ public class PublishedIncidentDaoImpl extends BaseDao implements
 		}
 		
 		return results;
-
 	}
-	
 
+	private int getCurrentFireYear() {
+		int currentYear = Year.now().getValue();
+		if (Calendar.getInstance().get(Calendar.MONTH) < 3) {
+			currentYear -= 1;
+		}
+		return currentYear;
+	}
 }
+	

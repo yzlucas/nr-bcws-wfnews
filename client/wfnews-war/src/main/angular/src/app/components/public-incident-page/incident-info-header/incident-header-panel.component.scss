@@ -56,7 +56,6 @@
         width: 24px;
         height: 24px;
         border-radius: 50%;
-        background-color:#AA1D3E ;
         margin-right: 8px;
         margin-left: 8px;
         .fire-icon{
@@ -116,6 +115,7 @@
     padding-top: 7px;
     .label {
       text-decoration: underline;
+      cursor: pointer;
     }
     .issued-by {
       padding: 4px;
@@ -130,35 +130,8 @@
   }
 }
 
-@media (min-width: 768px)and (max-width: 1023px) {
-  
+@media (max-width: 768px) {
   .header-container {
-    padding: 15px;
+    padding: 0px !important;
   }
-  
-  .header-container> * {
-    flex: 1 1 100%;
-  }
-
-  .incident-details {
-    padding: 0;
-    .title-bar {
-      padding-bottom: 1rem;
-      .title{
-        padding-bottom: 5px;
-      }
-      
-    }
-    .info-panel {
-      line-height: 1.5;
-      padding:17px 0;
-      .label {
-        font-weight: bold;
-      }
-    }
-  }
-  .map-container {
-    padding-top: 10px;
-    min-height: 320px !important;
-  } 
 }

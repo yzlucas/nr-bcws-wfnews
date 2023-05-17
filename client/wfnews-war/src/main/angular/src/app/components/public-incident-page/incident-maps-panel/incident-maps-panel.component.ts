@@ -3,6 +3,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { HttpClient, HttpEventType, HttpRequest, HttpResponse } from "@angular/common/http";
 import { PublishedIncidentService } from "../../../services/published-incident-service";
 import { AppConfigService } from "@wf1/core-ui";
+import { ActivatedRoute, ParamMap } from "@angular/router";
 
 export class DownloadableMap {
   name :string;
@@ -18,14 +19,17 @@ export class DownloadableMap {
 })
 export class IncidentMapsPanel implements OnInit {
   @Input() public incident;
+  @Input() public showMapsWarning;
 
   maps: DownloadableMap[];
-
+  isPreview: boolean;
+  
   constructor(private snackbarService: MatSnackBar,
               private httpClient: HttpClient,
               private publishedIncidentService: PublishedIncidentService,
               private appConfigService: AppConfigService,
-              protected cdr: ChangeDetectorRef) {
+              protected cdr: ChangeDetectorRef,
+              private router: ActivatedRoute) {
   }
 
   ngOnInit() {
@@ -39,6 +43,12 @@ export class IncidentMapsPanel implements OnInit {
       });
       this.cdr.detectChanges();
     });
+
+    this.router.queryParams.subscribe((params: ParamMap) => {
+      if(params && params['preview']) {
+        this.isPreview = true;
+      }
+    });
   }
 
   loadMaps(): Promise<any> {
@@ -47,9 +57,8 @@ export class IncidentMapsPanel implements OnInit {
         // remove any non-image types
         const data = []
         for (const doc of docs.collection) {
-          const idx = docs.collection.indexOf(doc)
-          if (!doc.imageURL.toLowerCase().endsWith('.pdf') || (doc.mimeType && idx && !['image/jpg', 'image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/tiff'].includes(doc.mimeType.toLowerCase()))) {
-            docs.collection.splice(idx, 1);
+          if (doc.mimeType && ['image/jpg', 'image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/tiff'].includes(doc.mimeType.toLowerCase())) {
+            // splice is not longer needed here as we return a new object
           } else {
             data.push(doc)
           }
@@ -60,7 +69,7 @@ export class IncidentMapsPanel implements OnInit {
     })
   }
 
-  downloadMap(mapLink) {
+  downloadMap(mapLink, fileName) {
     const url = mapLink;
     let request = this.httpClient.request( new HttpRequest( 'GET', url, {
         reportProgress: true,
@@ -73,7 +82,7 @@ export class IncidentMapsPanel implements OnInit {
             this.snackbarService.open('Generating PDF. Please wait...', 'Close', { duration: 10000, panelClass: 'snackbar-info' });
           }
           else if ( ev instanceof HttpResponse ) {
-            this.downloadFile(ev as HttpResponse<Blob>);
+            this.downloadFile(ev as HttpResponse<Blob>, fileName);
             this.snackbarService.open('PDF downloaded successfully.', 'Close', { duration: 10000, panelClass: 'snackbar-success-v2' });
           }
       },
@@ -81,12 +90,16 @@ export class IncidentMapsPanel implements OnInit {
     )
   }
 
-  downloadFile (data: HttpResponse<Blob>) {
+  downloadFile (data: HttpResponse<Blob>, fileName: string) {
+    if (!fileName.endsWith('.pdf')) {
+      fileName += '.pdf'
+    }
+
     const downloadedFile = new Blob([data.body], { type: data.body.type });
     const a = document.createElement('a');
     a.setAttribute('style', 'display:none;');
     document.body.appendChild(a);
-    a.download = "test.pdf";
+    a.download = fileName;
     a.href = URL.createObjectURL(downloadedFile);
     a.target = '_blank';
     a.click();

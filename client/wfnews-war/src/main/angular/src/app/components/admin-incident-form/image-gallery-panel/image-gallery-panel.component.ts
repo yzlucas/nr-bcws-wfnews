@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { DefaultService as IncidentAttachmentsService, DefaultService as IncidentAttachmentService, AttachmentResource } from '@wf1/incidents-rest-api';
+import { DefaultService as ExternalUriService, DefaultService as IncidentAttachmentsService, DefaultService as IncidentAttachmentService, AttachmentResource } from '@wf1/incidents-rest-api';
 import { BaseComponent } from "../../base/base.component";
 import { Overlay } from '@angular/cdk/overlay';
 import { HttpClient } from '@angular/common/http';
@@ -35,6 +35,7 @@ export class ImageGalleryPanel extends BaseComponent implements OnInit, OnChange
   public statusBar
 
   public attachments: AttachmentResource[] = []
+  public externalUriList: any[] = []
 
   constructor(protected router: Router,
               protected route: ActivatedRoute,
@@ -52,6 +53,7 @@ export class ImageGalleryPanel extends BaseComponent implements OnInit, OnChange
               protected watchlistService: WatchlistService,
               protected incidentAttachmentsService: IncidentAttachmentsService,
               protected incidentAttachmentService: IncidentAttachmentService,
+              private externalUriService: ExternalUriService,
               private documentManagementService: DocumentManagementService) {
     super(router, route, sanitizer, store, fb, dialog, applicationStateService, tokenService, snackbarService, overlay, cdr, appConfigService, http, watchlistService);
   }
@@ -100,6 +102,20 @@ export class ImageGalleryPanel extends BaseComponent implements OnInit, OnChange
     }).catch(err => {
       this.snackbarService.open('Failed to load Image Attachments: ' + err, 'OK', { duration: 10000, panelClass: 'snackbar-error' });
     })
+
+    this.externalUriService.getExternalUriList('' + this.incident.wildfireIncidentGuid, '' + 1, '' + 100, 'response', undefined, undefined)
+    .toPromise().then((response) => {
+      this.externalUriList = []
+      const uris = response.body
+      for (const uri of uris.collection) {
+        if (uri.externalUriCategoryTag.includes('video') && uri.primaryInd === true) {
+          this.externalUriList.push(uri)
+        }
+      }
+      this.cdr.detectChanges()
+    }).catch(err => {
+      console.error('Failed to sync video URLs')
+    })
   }
 
   ngOnchanges(changes: SimpleChanges) {
@@ -142,7 +158,7 @@ export class ImageGalleryPanel extends BaseComponent implements OnInit, OnChange
             (self.statusBar as MatSnackBarRef<TextOnlySnackBar>).instance.data.message = self.uploadStatus
           }
         }).then(doc => {
-          self.attachmentCreator(doc.fileId, doc.filePath, result.file.type, 'Incident Photo', 'INFO').then(() => {
+          self.attachmentCreator(doc.fileId, doc.filePath, result.file.type, 'Incident Photo', 'INFO', result.title).then(() => {
             this.snackbarService.open('File Uploaded Successfully', 'OK', { duration: 10000, panelClass: 'snackbar-success' });
             this.loadPage();
           }).catch(err => {
@@ -165,7 +181,7 @@ export class ImageGalleryPanel extends BaseComponent implements OnInit, OnChange
     } )
   }
 
-  attachmentCreator (fileId: string, uploadPath: string, mimeType: string, description: string, category: string) {
+  attachmentCreator (fileId: string, uploadPath: string, mimeType: string, description: string, category: string, title: string) {
     const attachment = {
       '@type': 'http://wfim.nrs.gov.bc.ca/v1/attachment',
       type: 'http://wfim.nrs.gov.bc.ca/v1/attachment',
@@ -174,7 +190,12 @@ export class ImageGalleryPanel extends BaseComponent implements OnInit, OnChange
       attachmentDescription: description,
       attachmentTypeCode: category,
       fileIdentifier: fileId,
-      mimeType: mimeType
+      mimeType: mimeType,
+      sourceObjectUniqueId: '' + this.incident.wildfireIncidentGuid,
+      archived: false,
+      privateIndicator: false,
+      commsSuitable: true,
+      attachmentTitle: title
     } as AttachmentResource;
 
     return this.incidentAttachmentsService.createIncidentAttachment(
@@ -182,5 +203,35 @@ export class ImageGalleryPanel extends BaseComponent implements OnInit, OnChange
       '' + this.incident.incidentNumberSequence,
       undefined,
       attachment, 'response').toPromise()
+  }
+
+  /**
+   * This should be moved into the IM API
+   */
+  async removePrimaryFlags (guid: string) {
+    for (const attachment of this.attachments) {
+      const isPrimary = (attachment as any).primaryInd as Boolean
+      if (isPrimary && attachment.attachmentGuid !== (guid as any).event) {
+        (attachment as any).primaryInd = false
+        await this.incidentAttachmentService.updateIncidentAttachment(this.incident.wildfireYear, this.incident.incidentNumberSequence, attachment.attachmentGuid, undefined, attachment)
+        .toPromise().catch(err => {
+          // Ignore this
+          console.error(err)
+        })
+      }
+    }
+
+    for (const videoLink of this.externalUriList) {
+      if (videoLink.primaryInd === true) {
+        videoLink.primaryInd = false
+        await this.externalUriService.updateExternalUri(videoLink.externalUriGuid, videoLink)
+        .toPromise().catch(err => {
+          // Ignore this
+          console.error(err)
+        })
+      }
+    }
+
+    this.loadPage()
   }
 }

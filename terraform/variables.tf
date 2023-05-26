@@ -558,3 +558,13 @@ variable "WEBADE_OAUTH2_WFNEWS_UI_CLIENT_SECRET" {
   type    = string
   default = ""
 }
+
+variable "WFONE_USERNAME" {
+  type    = string
+  default = ""
+}
+
+variable "WFONE_MAX_CONNECTIONS"" {
+  type    = string
+  default = "1000"
+}

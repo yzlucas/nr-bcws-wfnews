@@ -186,6 +186,22 @@ resource "aws_ecs_task_definition" "wfnews_server" {
         {
           name  = "API_KEY",
           value = "${var.api_key}"
+        },
+        {
+          name = "wfone.datasource.url",
+          value = "jdbc:postgresql://${aws_db_instance.wfone_public_mobile_pgsqlDB.endpoint}/${aws_db_instance.wfnews_pgsqlDB.name}"
+        },
+        {
+          name = "wfone.datasource.username",
+          value = var.WFONE_USERNAME
+        },
+        {
+          name  = "wfone.datasource.max.connections",
+          value = var.WFONE_MAX_CONNECTIONS
+        },
+        {
+          name  = "wfone.datasource.password",
+          value = "${var.wfone_db_pass}"
         }
 
       ]

@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-wildfires-list-header',
   templateUrl: './wildfires-list-header.component.html',
-  styleUrls: ['./wildfires-list-header.component.scss']
+  styleUrls: ['./wildfires-list-header.component.scss'],
 })
 export class WildfiresListHeaderComponent {
 

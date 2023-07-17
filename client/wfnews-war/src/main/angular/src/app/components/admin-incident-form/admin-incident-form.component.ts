@@ -4,8 +4,6 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { IncidentCauseResource, WildfireIncidentResource } from '@wf1/incidents-rest-api';
 import * as Editor from '@ckeditor/ckeditor5-build-decoupled-document';
 import { CustomImageUploader } from './incident-details-panel/custom-uploader';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { PublishDialogComponent } from './publish-dialog/publish-dialog.component';
 import { PublishedIncidentService } from '../../services/published-incident-service';
 import { IncidentDetailsPanel } from './incident-details-panel/incident-details-panel.component';
@@ -14,6 +12,8 @@ import { HttpClient } from '@angular/common/http';
 import { EvacOrdersDetailsPanel } from './evac-orders-details-panel/evac-orders-details-panel.component';
 import { AreaRestrictionsDetailsPanel } from './area-restrictions-details-panel/area-restrictions-details-panel.component';
 import { CauseOptionDisclaimer, SizeTypeOptionDisclaimer } from './incident-details-panel/incident-details-panel.constants';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Directive()
 export class AdminIncidentForm implements OnInit, OnChanges {

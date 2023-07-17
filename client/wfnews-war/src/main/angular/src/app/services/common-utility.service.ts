@@ -1,8 +1,7 @@
 import { NumberFormatStyle } from "@angular/common";
 import { Injectable } from "@angular/core";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { Geolocation } from '@capacitor/geolocation';
-import { MatLegacySnackBar as MatSnackBar } from "@angular/material/legacy-snack-bar";
-
 const MAX_CACHE_AGE = 30 * 1000
 
 export interface Coordinates {

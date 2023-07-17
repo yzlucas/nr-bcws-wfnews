@@ -1,6 +1,5 @@
 import { Location } from '@angular/common';
 import { AfterViewInit, ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -13,6 +12,7 @@ import { DisclaimerDialogComponent } from './components/disclaimer-dialog/discla
 import { ApplicationStateService } from './services/application-state.service';
 import { UpdateService } from './services/update.service';
 import { ResourcesRoutes, snowPlowHelper, isMobileView as mobileView } from './utils';
+import { MatDialog } from '@angular/material/dialog';
 
 export const ICON = {
   ADVISORIES: 'advisories',

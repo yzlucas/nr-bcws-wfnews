@@ -2,8 +2,6 @@ import { Overlay } from '@angular/cdk/overlay';
 import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectorRef, Directive, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl } from '@angular/forms';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -21,6 +19,8 @@ import { initWildfiresListPaging, SEARCH_WILDFIRES_COMPONENT_ID } from '../../st
 import { convertFromTimestamp, convertToStageOfControlDescription, FireCentres, convertToFireCentreDescription, ResourcesRoutes, snowPlowHelper, convertFireNumber } from '../../utils';
 import { CollectionComponent } from '../common/base-collection/collection.component';
 import { WildFiresListComponentModel } from './wildfires-list.component.model';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Directive()
 export class WildFiresListComponent extends CollectionComponent implements OnChanges, AfterViewInit, OnInit {

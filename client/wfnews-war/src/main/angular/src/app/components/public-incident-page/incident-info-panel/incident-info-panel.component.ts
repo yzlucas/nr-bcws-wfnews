@@ -4,10 +4,10 @@ import { toCanvas } from 'qrcode'
 import { convertToFireCentreDescription, findFireCentreByName, convertToYoutubeId, isMobileView } from '../../../utils'
 import { PublishedIncidentService } from "../../../services/published-incident-service";
 import { AppConfigService } from "@wf1/core-ui";
-import { MatLegacySnackBar as MatSnackBar } from "@angular/material/legacy-snack-bar";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { Observable } from "rxjs";
 import { HttpClient } from "@angular/common/http";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: 'incident-info-panel',

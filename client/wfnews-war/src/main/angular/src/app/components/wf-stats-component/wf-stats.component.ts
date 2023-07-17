@@ -1,10 +1,10 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { Router } from '@angular/router';
 import { AppConfigService } from '@wf1/core-ui';
 import { interval, Subscription } from 'rxjs';
 import { PublishedIncidentService } from '../../services/published-incident-service';
 import { snowPlowHelper } from '../../utils';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'wf-stats',

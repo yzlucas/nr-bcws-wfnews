@@ -2,8 +2,6 @@ import { Overlay } from '@angular/cdk/overlay';
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, Injector, Input, NgZone, OnChanges, OnDestroy, OnInit, SimpleChanges, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -21,8 +19,10 @@ import { CollectionComponent } from '../common/base-collection/collection.compon
 import { IncidentIdentifyPanelComponent } from '../incident-identify-panel/incident-identify-panel.component';
 import { PanelWildfireStageOfControlComponentModel } from './panel-wildfire-stage-of-control.component.model';
 import * as L from 'leaflet'
-import { MatLegacyCheckboxChange as MatCheckboxChange } from '@angular/material/legacy-checkbox';
-import { MatLegacyTabChangeEvent as MatTabChangeEvent } from '@angular/material/legacy-tabs';
+import { MatTabChangeEvent } from '@angular/material/tabs';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 const delay = t => new Promise(resolve => setTimeout(resolve, t));
 
 @Directive()

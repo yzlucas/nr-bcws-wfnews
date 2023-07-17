@@ -4,8 +4,6 @@ import { BaseComponent } from "../../base/base.component";
 import { Overlay } from '@angular/cdk/overlay';
 import { HttpClient } from '@angular/common/http';
 import { UntypedFormBuilder } from '@angular/forms';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
-import { MatLegacySnackBar as MatSnackBar, MatLegacySnackBarRef as MatSnackBarRef, LegacyTextOnlySnackBar as TextOnlySnackBar } from '@angular/material/legacy-snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -15,6 +13,8 @@ import { RootState } from '../../../store';
 import { UploadImageDialogComponent } from './upload-image-dialog/upload-image-dialog.component';
 import { DocumentManagementService } from '../../../services/document-management.service';
 import { WatchlistService } from '../../../services/watchlist-service';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'image-gallery-panel',

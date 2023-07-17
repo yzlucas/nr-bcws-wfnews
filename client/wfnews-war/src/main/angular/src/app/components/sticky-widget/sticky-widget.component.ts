@@ -1,10 +1,10 @@
 import { ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { Router } from '@angular/router';
 import { PublishedIncidentService } from '../../services/published-incident-service';
 import { WatchlistService } from '../../services/watchlist-service';
 import { ResourcesRoutes, isMobileView as mobileView } from '../../utils';
 import { ContactWidgetDialogComponent } from './contact-widget-dialog/contact-widget-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
     selector: 'sticky-widget',

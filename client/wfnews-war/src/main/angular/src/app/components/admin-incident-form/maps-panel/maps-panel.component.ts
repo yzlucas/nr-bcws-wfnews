@@ -5,8 +5,6 @@ import * as moment from 'moment';
 import { Overlay } from '@angular/cdk/overlay';
 import { HttpClient } from '@angular/common/http';
 import { UntypedFormBuilder } from '@angular/forms';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
-import { MatLegacySnackBar as MatSnackBar, MatLegacySnackBarRef as MatSnackBarRef, LegacyTextOnlySnackBar as TextOnlySnackBar } from '@angular/material/legacy-snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -18,6 +16,8 @@ import { EditMapDialogComponent } from './edit-map-dialog/edit-map-dialog.compon
 import { UploadMapDialogComponent } from './upload-map-dialog/upload-map-dialog.component';
 import { DocumentManagementService } from '../../../services/document-management.service';
 import { WatchlistService } from '../../../services/watchlist-service';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'maps-panel',

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RoFPage } from "../rofPage";
 import { ReportOfFire } from '../reportOfFireModel';
 import { CommonUtilityService } from "../../../services/common-utility.service";
@@ -27,7 +27,8 @@ export class RoFCompassPage extends RoFPage implements OnInit {
   equalsIgnoreCase = equalsIgnoreCase; 
 
   constructor(private commonUtilityService: CommonUtilityService,
-              protected dialog: MatDialog) {
+              protected dialog: MatDialog,
+              protected cdr: ChangeDetectorRef) {
     super();
   }
 
@@ -86,6 +87,7 @@ handler(e, self) {
     }
     else {
       this.reportOfFire.motionSensor = true;
+      this.cdr.detectChanges();
     }
 
     try {

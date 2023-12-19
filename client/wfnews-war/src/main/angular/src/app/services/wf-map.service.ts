@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
-import { getActiveMap, isMobileView } from '@app/utils';
+import { getActiveMap} from '@app/utils';
 import { AppConfigService } from '@wf1/core-ui';
-import * as esriLeaflet from 'esri-leaflet'
 import * as esriVector from 'esri-leaflet-vector'
 
 import * as nightStyle from '../../assets/data/vector-basemap-night.json';
 import * as topoStyle from '../../assets/data/vector-basemap-topo.json';
 import * as navStyle from '../../assets/data/vector-basemap-navigation.json';
 import * as satelliteStyle from '../../assets/data/vector-basemap-imagery.json';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { CapacitorService } from "./capacitor-service";
 
 export type Smk = any
 export type SmkPromise = Promise< Smk >
@@ -21,7 +23,7 @@ export class WFMapService {
     identifyCallback;
     identifyDoneCallback;
 
-    constructor(protected appConfigService: AppConfigService) {
+    constructor(private httpClient: HttpClient, private capacitorService: CapacitorService, protected appConfigService: AppConfigService) {
 
     }
 
@@ -98,6 +100,7 @@ export class WFMapService {
     }
 
     public patch(): Promise<any> {
+        var service = this
         try {
         const self = this;
 
@@ -443,69 +446,72 @@ export class WFMapService {
                     return this.config.combiningClass && this.config.combiningClass === other.config.combiningClass;
                 };
 
-                SMK.TYPE.Layer[ 'wms' ]['leaflet'].prototype.getFeaturesInArea = function( area, view, option ) {
-                    const self = this;
-
-                    let extraFilter = this.config.where || '';
-                    if ( extraFilter ) {
-                      extraFilter = ' AND ' + extraFilter;
+                SMK.TYPE.Layer['wms']['leaflet'].prototype.getFeaturesInArea = async function (area, view, option) {
+                    try {
+                      let extraFilter = this.config.where || '';
+                      if (extraFilter) {
+                        extraFilter = ' AND ' + extraFilter;
+                      }
+                  
+                      const polygon =
+                        'SRID=4326;POLYGON ((' +
+                        area.geometry.coordinates[0]
+                          .map(c => c.join(' '))
+                          .join(',') +
+                        '))';
+                  
+                      const data = {
+                        service: 'WFS',
+                        version: '1.1.0',
+                        request: 'GetFeature',
+                        srsName: 'EPSG:4326',
+                        typename: this.config.layerName,
+                        outputformat: 'application/json',
+                        cql_filter:
+                          'INTERSECTS(' +
+                          (this.config.geometryAttribute || 'GEOMETRY') +
+                          ',' +
+                          polygon +
+                          ')' +
+                          extraFilter,
+                      };
+                  
+                      const url = encodeUrl(this.config.serviceUrl, data);
+                  
+                      const res: Blob = await service.httpGet(url, this.config.header).toPromise();
+                      const blob: Blob = res;
+                      console.log(blob)
+                      console.log('wqeqwe')
+                      const dataResult: any = await new Promise((res, rej) => {
+                        const reader = new FileReader();
+                        reader.onload = function () {
+                          try {
+                            res(JSON.parse(reader.result.toString()));
+                          } catch (e) {
+                            rej(e);
+                          }
+                        };
+                        reader.readAsBinaryString(blob);
+                      });
+                  
+                      if (!dataResult || !dataResult.features || dataResult.features.length === 0) {
+                        throw new Error('no features');
+                      }
+                  
+                      return dataResult.features.map((f, i) => {
+                        if (this.config.titleAttribute) {
+                          f.title = f.properties[this.config.titleAttribute];
+                        } else {
+                          f.title = 'Feature #' + (i + 1);
+                        }
+                  
+                        return f;
+                      });
+                    } catch (error) {
+                      console.error('Error in getFeaturesInArea:', error);
+                      throw error;
                     }
-
-                    const polygon = 'SRID=4326;POLYGON ((' + area.geometry.coordinates[ 0 ].map( function( c ) {
-                      return c.join( ' ' );
-                    } ).join( ',' ) + '))';
-
-                    const data = {
-                        service:        'WFS',
-                        version:        '1.1.0',
-                        request:        'GetFeature',
-                        srsName:        'EPSG:4326',
-                        typename:       this.config.layerName,
-                        outputformat:   'application/json',
-                        cql_filter:     'INTERSECTS(' + (this.config.geometryAttribute||'GEOMETRY') + ',' + polygon + ')' + extraFilter
-                    };
-
-                    const url = encodeUrl( this.config.serviceUrl, data );
-
-                    return fetch( url, {
-                        method: 'GET',
-                        headers: this.config.header,
-                    } )
-                    .then( function( res ) {
-                        return res.blob();
-                    } )
-                    .then( function( blob ) {
-                        return new Promise( ( res, rej ) => {
-                            const reader = new FileReader();
-                            reader.onload = function() {
-                                try {
-                                    res( JSON.parse( reader.result.toString() ) );
-                                } catch ( e ) {
-                                  rej( e );
-                                }
-                            };
-                            reader.readAsBinaryString( blob );
-                        } );
-                    } )
-                    .then( function( data: any ) {
-                        if ( !data ) {
-                          throw new Error( 'no features' );
-                        }
-                        if ( !data.features || data.features.length == 0 ) {
-                          throw new Error( 'no features' );
-                        }
-
-                        return data.features.map( function( f, i ) {
-                            if ( self.config.titleAttribute ) {
-                              f.title = f.properties[ self.config.titleAttribute ];
-                            } else {
-                              f.title = 'Feature #' + ( i + 1 );
-                            }
-
-                            return f;
-                        } );
-                    } );
-                };
+                  };
 
                 SMK.TYPE.Layer[ 'wms-time-cql' ]['leaflet'].prototype.initLegends =
                 SMK.TYPE.Layer[ 'wms' ]['leaflet'].prototype.initLegends = function() {
@@ -600,6 +606,15 @@ export class WFMapService {
             }
         }
         return viewer?.currentBasemap;
+    }
+    
+    httpGet(url: any, header: any): Observable<Blob> {
+        if (this.capacitorService.isMobile) {
+
+        }
+        else {
+            return this.httpClient.get(url, { headers: header, responseType: 'blob' });
+        }
     }
 }
 

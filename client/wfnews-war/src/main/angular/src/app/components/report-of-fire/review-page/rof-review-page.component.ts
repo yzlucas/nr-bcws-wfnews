@@ -1,15 +1,15 @@
-import { Component, ChangeDetectionStrategy, AfterViewInit, ChangeDetectorRef, OnInit } from "@angular/core";
-import { RoFPage } from "../rofPage";
-import { ReportOfFire } from "../reportOfFireModel";
+import { Component, ChangeDetectionStrategy, AfterViewInit, ChangeDetectorRef, OnInit } from '@angular/core';
+import { RoFPage } from '../rofPage';
+import { ReportOfFire } from '../reportOfFireModel';
 import ConfigJson from '../report-of-fire.config.json';
-import * as L from 'leaflet'
-import { ReportOfFirePage } from "@app/components/report-of-fire/report-of-fire.component";
-import { CommonUtilityService } from "@app/services/common-utility.service";
-import { MatSnackBar } from "@angular/material/snack-bar";
-import { ReportOfFireService, ReportOfFireType } from "@app/services/report-of-fire-service";
+import * as L from 'leaflet';
+import { ReportOfFirePage } from '@app/components/report-of-fire/report-of-fire.component';
+import { CommonUtilityService } from '@app/services/common-utility.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ReportOfFireService, ReportOfFireType } from '@app/services/report-of-fire-service';
 import { equalsIgnoreCase } from '../../../utils';
-import offlineMapJson from '../../../../assets/maps/british-columbia.json'
-import { SmkApi } from "@app/utils/smk";
+import offlineMapJson from '../../../../assets/maps/british-columbia.json';
+import { SmkApi } from '@app/utils/smk';
 import { LatLng } from 'leaflet';
 
 
@@ -29,25 +29,25 @@ export class RoFReviewPage extends RoFPage implements AfterViewInit, OnInit {
   currentLocation: any;
   public constructor(
     private reportOfFirePage: ReportOfFirePage,
-    private commonUtilityService : CommonUtilityService,
+    private commonUtilityService: CommonUtilityService,
     private cdr: ChangeDetectorRef,
     private reportOfFireService: ReportOfFireService,
     protected snackbarService: MatSnackBar,
   ) {
-    super()
+    super();
   }
 
   ngAfterViewInit(): void {
-    this.loadMap()
+    this.loadMap();
   }
 
   ngOnInit(): void {
     const runPreviouslySubmitted = this.ionViewDidEnter();
   }
 
-  initialize (data: any, index: number, reportOfFire: ReportOfFire) {
+  initialize(data: any, index: number, reportOfFire: ReportOfFire) {
     super.initialize(data, index, reportOfFire);
-    this.reportOfFirePages = ConfigJson.pages
+    this.reportOfFirePages = ConfigJson.pages;
     const pagesToRemove = [
       'first-page',
       'permissions-page',
@@ -66,17 +66,17 @@ export class RoFReviewPage extends RoFPage implements AfterViewInit, OnInit {
       } else{
         this.isOffLine = false;
       }
-    })
+    });
   }
 
-  selectedAnswer(page:any) {
+  selectedAnswer(page: any) {
     switch(page.id){
       case 'contact-page' : 
         return this.reportOfFire.consentToCall ? this.reportOfFire.consentToCall.charAt(0).toUpperCase() + this.reportOfFire.consentToCall.slice(1) : null;
       case 'location-page' :
-        return this.reportOfFire.fireLocation
+        return this.reportOfFire.fireLocation;
       case 'photo-page' :
-        return this.photoNumber()
+        return this.photoNumber();
       case 'smoke-color-page' :
         return this.reportOfFire.smokeColor? this.reportOfFire.smokeColor.map(item => this.findLabelByValue(page.id,item)).join(', ') : null;
       case 'fire-size-page' :
@@ -102,8 +102,8 @@ export class RoFReviewPage extends RoFPage implements AfterViewInit, OnInit {
   selectedAnswerPart2(page: any) {
     switch(page.id) {
       case 'contact-page' :
-        let phoneNumber = ('' + this.reportOfFire.phoneNumber).replace(/\D/g, '');
-        let match = phoneNumber.match(/^(\d{3})(\d{3})(\d{4})$/); 
+        const phoneNumber = ('' + this.reportOfFire.phoneNumber).replace(/\D/g, '');
+        const match = phoneNumber.match(/^(\d{3})(\d{3})(\d{4})$/); 
         // reformate to phonenumber
         if (match) {
           return (this.reportOfFire.fullName) + '\n' + '(' + match[1] + ') ' + match[2] + '-' + match[3];
@@ -115,17 +115,14 @@ export class RoFReviewPage extends RoFPage implements AfterViewInit, OnInit {
     }
   }
 
-  twoPartsQuestions(page:any) {
+  twoPartsQuestions(page: any) {
     if ((page.id === 'contact-page') && (this.reportOfFire.consentToCall === 'yes' ) ) {
       return true;
-    }
-    else if ((page.id === 'response-details-page') && (this.reportOfFire.ifSignsOfResponse === 'yes')){
-      return true
-    }
-    else if ((page.id === 'infrastructure-details-page') && (this.reportOfFire.ifAssetsAtRisk === 'yes')){
-      return true
-    } 
-    else {
+    } else if ((page.id === 'response-details-page') && (this.reportOfFire.ifSignsOfResponse === 'yes')){
+      return true;
+    } else if ((page.id === 'infrastructure-details-page') && (this.reportOfFire.ifAssetsAtRisk === 'yes')){
+      return true;
+    } else {
       return false;
     }
   }
@@ -142,13 +139,11 @@ export class RoFReviewPage extends RoFPage implements AfterViewInit, OnInit {
       photoNumber++;
     }
     if ( photoNumber === 0) {
-      return 'Skipped'
-    }
-    else if ( photoNumber === 1) {
-      return photoNumber + ' photo added'
-    }
-    else  {
-      return photoNumber + ' photos added'
+      return 'Skipped';
+    } else if ( photoNumber === 1) {
+      return photoNumber + ' photo added';
+    } else  {
+      return photoNumber + ' photos added';
     }
   }
 
@@ -165,13 +160,13 @@ export class RoFReviewPage extends RoFPage implements AfterViewInit, OnInit {
       boxZoom: false,
       trackResize: false,
       scrollWheelZoom: false
-    })
+    });
 
     // Calculate the bounding box
     if (this.reportOfFire.currentLocation && this.reportOfFire.fireLocation) {
       const bbox = L.latLngBounds(this.reportOfFire.currentLocation, this.reportOfFire.fireLocation);
       const zoomLevel = this.map.getBoundsZoom(bbox);
-      this.map.setView(bbox.getCenter(), zoomLevel)
+      this.map.setView(bbox.getCenter(), zoomLevel);
     }
     // Calculate the ideal zoom level to fit the bounding box within the map's view
     // configure map data
@@ -182,26 +177,26 @@ export class RoFReviewPage extends RoFPage implements AfterViewInit, OnInit {
 
     this.commonUtilityService.checkOnline().then((result) => {
       if(!result) {
-        const geoJsonData = offlineMapJson
+        const geoJsonData = offlineMapJson;
         L.geoJson(geoJsonData,{
           style:{
-            color:"#6495ED",
+            color:'#6495ED',
             weight:8,
             fillColor:'',
             fillOpacity:0.00001
           },
           zoom:6,
           subdomains:['mt0','mt1','mt2','mt3']
-        }).addTo(this.map)
+        }).addTo(this.map);
       }
-    })
+    });
 
     const fireLocationIcon = L.divIcon({
       html: '<i class="fireLocationIcon material-icons">location_searching</i>',
       iconSize: [48, 48],
       className: 'fireLocationIcon'
-    })
-    L.marker(location, {icon:fireLocationIcon}).addTo(this.map)
+    });
+    L.marker(location, {icon:fireLocationIcon}).addTo(this.map);
 
     L.marker( this.reportOfFire.currentLocation, {
       icon: L.divIcon( {
@@ -209,30 +204,30 @@ export class RoFReviewPage extends RoFPage implements AfterViewInit, OnInit {
           iconSize:   [ 20, 20 ],
           iconAnchor: [ 14, 14 ]
       } )
-    }).addTo(this.map)
+    }).addTo(this.map);
 
     // draw the arrow and lines between fire location and current location
-    let latlngs = Array();
+    const latlngs = Array();
     if (this.reportOfFire?.fireLocation?.length && this.reportOfFire?.currentLocation?.length && this.reportOfFire.estimatedDistance) {
       // Code to be executed if both fireLocation and currentLocation arrays have elements
-      let direction = this.commonUtilityService.calculateBearing(this.reportOfFire.currentLocation[0], this.reportOfFire.currentLocation[1], this.reportOfFire.fireLocation[0],this.reportOfFire.fireLocation[1])
+      const direction = this.commonUtilityService.calculateBearing(this.reportOfFire.currentLocation[0], this.reportOfFire.currentLocation[1], this.reportOfFire.fireLocation[0],this.reportOfFire.fireLocation[1]);
 
       const initialFirePoint: LatLng = L.latLng(this.reportOfFire.fireLocation[0],this.reportOfFire.fireLocation[1]);
       const currentLocationFirePoint: LatLng = L.latLng(this.reportOfFire.currentLocation[0],this.reportOfFire.currentLocation[1]);
       const pointI = this.map.latLngToContainerPoint(initialFirePoint); // convert to containerpoint (px);
       const pointC = this.map.latLngToContainerPoint(currentLocationFirePoint); // convert to containerpoint (px);
 
-      const distanceInPixels = this.calculateDistanceInPixels(pointI.x, pointI.y, pointC.x, pointC.y)
-      const metersPerPixel = this.reportOfFire.estimatedDistance / distanceInPixels 
-      const offSet = metersPerPixel * 35
+      const distanceInPixels = this.calculateDistanceInPixels(pointI.x, pointI.y, pointC.x, pointC.y);
+      const metersPerPixel = this.reportOfFire.estimatedDistance / distanceInPixels; 
+      const offSet = metersPerPixel * 35;
       const angleInRadians = ((direction + 180) * Math.PI) / 180;
       // calculates a new latitude value by adding a offset (in meters) to the initial latitude, considering the angle and the Earth's radius
       const newLatitude = initialFirePoint.lat + offSet * Math.cos(angleInRadians) / (Math.PI * 6378137 / 180);
       const newLongitude = initialFirePoint.lng + offSet * Math.sin(angleInRadians) / (Math.PI * 6378137 / 180) / Math.cos(initialFirePoint.lat * Math.PI / 180);
-      const newFirePoint = [newLatitude,newLongitude]
+      const newFirePoint = [newLatitude,newLongitude];
 
       latlngs.push(newFirePoint);
-      latlngs.push(this.reportOfFire.currentLocation)
+      latlngs.push(this.reportOfFire.currentLocation);
       L.polyline(latlngs, {color: 'yellow', opacity:0.7}).addTo(this.map);
 
       L.marker( newFirePoint, {
@@ -242,30 +237,27 @@ export class RoFReviewPage extends RoFPage implements AfterViewInit, OnInit {
             iconSize:   [ 24, 24 ],
             iconAnchor: [ 12, 12 ]
         } )
-      }).addTo(this.map)
+      }).addTo(this.map);
   
-      const middlePoint = this.calculateMiddlePoint(this.reportOfFire.fireLocation[0],this.reportOfFire.fireLocation[1],this.reportOfFire.currentLocation[0],this.reportOfFire.currentLocation[1])
+      const middlePoint = this.calculateMiddlePoint(this.reportOfFire.fireLocation[0],this.reportOfFire.fireLocation[1],this.reportOfFire.currentLocation[0],this.reportOfFire.currentLocation[1]);
       L.tooltip({
       })
       .setContent((this.reportOfFire.estimatedDistance/1000).toFixed( 3 ) + ' km')
       .setLatLng(middlePoint)
-      .addTo(this.map)
+      .addTo(this.map);
     }
     
   }
 
-  edit(pageId:string, secondStep?:boolean) {
+  edit(pageId: string, secondStep?: boolean) {
     if((pageId === 'contact-page') && !secondStep) {
-      this.reportOfFirePage.edit('callback-page')
-    } 
-    else if((pageId === 'response-details-page') && !secondStep) {
-      this.reportOfFirePage.edit('response-page')
-    }
-    else if((pageId === 'infrastructure-details-page') && !secondStep) {
-      this.reportOfFirePage.edit('infrastructure-page')
-    }
-    else {
-      this.reportOfFirePage.edit(pageId)
+      this.reportOfFirePage.edit('callback-page');
+    } else if((pageId === 'response-details-page') && !secondStep) {
+      this.reportOfFirePage.edit('response-page');
+    } else if((pageId === 'infrastructure-details-page') && !secondStep) {
+      this.reportOfFirePage.edit('infrastructure-page');
+    } else {
+      this.reportOfFirePage.edit(pageId);
     }
   }
 
@@ -274,11 +266,11 @@ export class RoFReviewPage extends RoFPage implements AfterViewInit, OnInit {
       const page = this.reportOfFirePages.find(page => page.id === pageId);
       const button = page.buttons.find(button => button.value === valueToFind);
       if (valueToFind === 'I\'m not sure') {
-        return 'I\'m not sure'
+        return 'I\'m not sure';
       }
       if (button) {
         const label = button.label;
-        return label
+        return label;
       }
     }
   }
@@ -290,27 +282,27 @@ export class RoFReviewPage extends RoFPage implements AfterViewInit, OnInit {
     // if server is reachable look for previously stored offline RoFs to be submitted 
       await (this.commonUtilityService.checkOnlineStatus().then(result => {
         if (result){
-            this.commonUtilityService.syncDataWithServer()
+            this.commonUtilityService.syncDataWithServer();
         }
       }));
   }
 
   async useMyCurrentLocation() {
-    this.currentLocation = await this.commonUtilityService.getCurrentLocationPromise()
+    this.currentLocation = await this.commonUtilityService.getCurrentLocationPromise();
   }
 
 async submitRof(){
   await this.commonUtilityService.checkOnline().then(async (result) => {
     if(!result) {
-      await this.useMyCurrentLocation()
-      this.reportOfFire.fireLocation = [ this.currentLocation.coords.latitude, this.currentLocation.coords.longitude ]
+      await this.useMyCurrentLocation();
+      this.reportOfFire.fireLocation = [ this.currentLocation.coords.latitude, this.currentLocation.coords.longitude ];
     }
-  })
+  });
 
   const rofResource: ReportOfFireType = {
     fullName: this.nullEmptyStrings(this.reportOfFire.fullName),
     phoneNumber: this.nullEmptyStrings(this.reportOfFire.phoneNumber),
-    consentToCall: equalsIgnoreCase(this.reportOfFire.consentToCall, "Yes") ? true : false,
+    consentToCall: equalsIgnoreCase(this.reportOfFire.consentToCall, 'Yes') ? true : false,
     estimatedDistance: this.reportOfFire.estimatedDistance,
     fireLocation: this.reportOfFire.fireLocation,
     deviceLocation: this.reportOfFire.deviceLocation,
@@ -324,7 +316,7 @@ async submitRof(){
     otherInfo: this.reportOfFire.otherInfo,
     submittedTimestamp: new Date().getTime().toString(),
     visibleFlame: new Array<string>(this.reportOfFire.visibleFlame),
-  }
+  };
 
   try {   
     const response = this.reportOfFireService.saveReportOfFire(rofResource, this.reportOfFire.image1, this.reportOfFire.image2, this.reportOfFire.image3);
@@ -345,17 +337,17 @@ async submitRof(){
     return !value ? null : value;
   }
 
-  calculateMiddlePoint(lat1: number, lon1: number, lat2: number, lon2: number): { lat: number, lon: number } {
+  calculateMiddlePoint(lat1: number, lon1: number, lat2: number, lon2: number): { lat: number; lon: number } {
     const middleLat = (lat1 + lat2) / 2;
     const middleLon = (lon1 + lon2) / 2;
     return { lat: middleLat, lon: middleLon };
   }
 
   calculateDistanceInPixels(x1, y1, x2, y2) {
-    var xDistance = x2 - x1;
-    var yDistance = y2 - y1;
+    const xDistance = x2 - x1;
+    const yDistance = y2 - y1;
     // Calculate the distance using the Pythagorean theorem
-    var distance = Math.sqrt(xDistance * xDistance + yDistance * yDistance);
+    const distance = Math.sqrt(xDistance * xDistance + yDistance * yDistance);
     
     return distance;
 }

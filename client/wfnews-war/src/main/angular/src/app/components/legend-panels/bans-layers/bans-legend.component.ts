@@ -7,7 +7,7 @@ import { checkLayerVisible } from '@app/utils';
   styleUrls: ['./bans-legend.component.scss']
 })
 export class BansLegendComponent {
-  public checkLayerVisible = checkLayerVisible
+  public checkLayerVisible = checkLayerVisible;
   
   constructor() {}
 }

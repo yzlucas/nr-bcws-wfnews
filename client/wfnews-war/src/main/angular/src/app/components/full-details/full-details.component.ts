@@ -12,33 +12,37 @@ import { BanProhibition } from './bans-full-details/bans-full-details.component'
   styleUrls: ['./full-details.component.scss']
 })
 export class FullDetailsComponent implements OnInit, OnDestroy {
-  public params: ParamMap
+  public params: ParamMap;
 
   constructor(private router: Router, private route: ActivatedRoute, private agolService: AGOLService) {
   }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params: ParamMap) => {
-      this.params = params
-    })
-    if (document.getElementById('mobile-navigation-bar')) document.getElementById('mobile-navigation-bar').style.display = 'none';
+      this.params = params;
+    });
+    if (document.getElementById('mobile-navigation-bar')) {
+document.getElementById('mobile-navigation-bar').style.display = 'none';
+}
   }
 
   ngOnDestroy(): void {
-    if (document.getElementById('mobile-navigation-bar')) document.getElementById('mobile-navigation-bar').style.display = 'block';
+    if (document.getElementById('mobile-navigation-bar')) {
+document.getElementById('mobile-navigation-bar').style.display = 'block';
+}
   }
 
   getTitle() {
     switch (this.params['type']) {
       case 'area-restriction':
-        return 'Area Restriction'
+        return 'Area Restriction';
       case 'danger-rating':
-        return 'Wildfire Danger Rating'
+        return 'Wildfire Danger Rating';
       case 'bans-prohibitions':
-        return 'Fire Bans'
+        return 'Fire Bans';
       case 'evac-alert':
       case 'evac-order':
-        return 'Evacuation Notice'
+        return 'Evacuation Notice';
     }
   }
 
@@ -62,8 +66,12 @@ export class FullDetailsComponent implements OnInit, OnDestroy {
               fireYear: this.params['sourceYear'], incidentNumber: this.params['sourceNumber']
             }
           });
-      } else this.router.navigate(this.params['source']);
-      } else throw new Error('No previous screen to route too')
+      } else {
+this.router.navigate(this.params['source']);
+}
+      } else {
+throw new Error('No previous screen to route too');
+}
     } catch (err) {
       console.error(err);
       this.router.navigate([ResourcesRoutes.DASHBOARD]);

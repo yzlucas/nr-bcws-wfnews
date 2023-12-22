@@ -19,35 +19,35 @@ import { ResourcesRoutes } from '@app/utils';
 })
 export class AreaRestrictionListComponent implements OnInit {
   public dataSource = new MatTableDataSource<any>();
-  public selectedSortValue = ''
-  public selectedSortOrder = 'desc'
-  public sortOptions = [{ description: 'Fire Centre', code: 'fireCentre'}, { description: 'Name', code: 'name'}, { description: 'Issued On', code: 'issuedOn'}]
-  public searchText
-  public searchTimer
-  public searchingComplete = false
-  public columnsToDisplay = ["name", "issuedOn", "fireCentre", "distance", "viewMap"];
+  public selectedSortValue = '';
+  public selectedSortOrder = 'desc';
+  public sortOptions = [{ description: 'Fire Centre', code: 'fireCentre'}, { description: 'Name', code: 'name'}, { description: 'Issued On', code: 'issuedOn'}];
+  public searchText;
+  public searchTimer;
+  public searchingComplete = false;
+  public columnsToDisplay = ['name', 'issuedOn', 'fireCentre', 'distance', 'viewMap'];
 
-  public locationData: LocationData
+  public locationData: LocationData;
 
   private isExtraSmall: Observable<BreakpointState> = this.breakpointObserver.observe(Breakpoints.XSmall);
 
-  constructor ( private agolService: AGOLService, private cdr: ChangeDetectorRef, private commonUtilityService: CommonUtilityService, private breakpointObserver: BreakpointObserver, private dialog: MatDialog, protected router: Router ) {}
+  constructor( private agolService: AGOLService, private cdr: ChangeDetectorRef, private commonUtilityService: CommonUtilityService, private breakpointObserver: BreakpointObserver, private dialog: MatDialog, protected router: Router ) {}
 
   ngOnInit(): void {
-    this.search()
+    this.search();
   }
 
   async search(location: LocationData | null = null) {
-    this.searchingComplete = false
-    const userLocation = await this.commonUtilityService.getCurrentLocationPromise()
+    this.searchingComplete = false;
+    const userLocation = await this.commonUtilityService.getCurrentLocationPromise();
 
-    const whereString = this.searchText && this.searchText.length > 0 ? `NAME LIKE '%${this.searchText}%' OR FIRE_CENTRE_NAME LIKE '%${this.searchText}%'` : null
+    const whereString = this.searchText && this.searchText.length > 0 ? `NAME LIKE '%${this.searchText}%' OR FIRE_CENTRE_NAME LIKE '%${this.searchText}%'` : null;
 
     this.agolService.getAreaRestrictions(whereString, location ? { x: location.longitude, y: location.latitude, radius: location.radius} : null, { returnCentroid: true, returnGeometry: false}).subscribe(areaRestrictions => {
-      const areaRestrictionData = []
+      const areaRestrictionData = [];
       if (areaRestrictions && areaRestrictions.features) {
         for (const element of areaRestrictions.features) {
-          let distance = null
+          let distance = null;
           if (userLocation) {
               const currentLat = Number(userLocation.coords.latitude);
               const currentLong = Number(userLocation.coords.longitude);
@@ -63,25 +63,25 @@ export class AreaRestrictionListComponent implements OnInit {
               fireCentre: element.attributes.FIRE_CENTRE_NAME,
               fireZone: element.attributes.FIRE_ZONE_NAME,
               bulletinUrl: element.attributes.BULLETIN_URL,
-              distance: distance,
+              distance,
               latitude: element.centroid.y,
               longitude: element.centroid.x
-          })
+          });
         }
       }
       if (this.selectedSortValue !== '') {
-        this.selectedSortOrder = this.selectedSortOrder === 'asc' ? 'desc' : 'asc'
-        const sortVal = this.selectedSortOrder === 'asc' ? 1 : -1
-        areaRestrictionData.sort((a,b) =>(a[this.selectedSortValue] > b[this.selectedSortValue]) ? sortVal : ((b[this.selectedSortValue] > a[this.selectedSortValue]) ? sortVal * -1 : 0))
-        this.selectedSortValue = ''
+        this.selectedSortOrder = this.selectedSortOrder === 'asc' ? 'desc' : 'asc';
+        const sortVal = this.selectedSortOrder === 'asc' ? 1 : -1;
+        areaRestrictionData.sort((a,b) =>(a[this.selectedSortValue] > b[this.selectedSortValue]) ? sortVal : ((b[this.selectedSortValue] > a[this.selectedSortValue]) ? sortVal * -1 : 0));
+        this.selectedSortValue = '';
       }
-      this.dataSource.data = areaRestrictionData
-      this.searchingComplete = true
-      this.cdr.detectChanges()
+      this.dataSource.data = areaRestrictionData;
+      this.searchingComplete = true;
+      this.cdr.detectChanges();
     });
   }
 
-  openLocationFilter () {
+  openLocationFilter() {
     const dialogRef = this.dialog.open(FilterByLocationDialogComponent, {
       width: '380px',
       height: '453px',
@@ -101,17 +101,17 @@ export class AreaRestrictionListComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result: LocationData | boolean) => {
       smallDialogSubscription.unsubscribe();
       if ((result as boolean) === false) {
-        this.locationData = null
+        this.locationData = null;
       } else {
-        this.locationData = result as LocationData
+        this.locationData = result as LocationData;
       }
-      this.search(result as LocationData)
+      this.search(result as LocationData);
     });
   }
 
   convertToDate(value: string) {
     if (value) {
-      return moment(value).format('MMM Do YYYY h:mm:ss a')
+      return moment(value).format('MMM Do YYYY h:mm:ss a');
     }
   }
 
@@ -121,19 +121,19 @@ export class AreaRestrictionListComponent implements OnInit {
     }, 100);
   }
 
-  sortData (event: any) {
-    this.selectedSortValue = event.active
-    this.search()
+  sortData(event: any) {
+    this.selectedSortValue = event.active;
+    this.search();
   }
 
   searchByText() {
     if (this.searchTimer) {
-      clearTimeout(this.searchTimer)
-      this.searchTimer = null
+      clearTimeout(this.searchTimer);
+      this.searchTimer = null;
     }
 
     this.searchTimer = setTimeout(() => {
-      this.search()
-    }, 1000)
+      this.search();
+    }, 1000);
   }
 }

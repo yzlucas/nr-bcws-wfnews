@@ -10,20 +10,20 @@ import { AGOLService } from '../../../services/AGOL-service';
 
 })
 export class AreaRestrictionsDetailsPanel implements OnInit {
-  @Input() public readonly formGroup: UntypedFormGroup
-  @Input() public incident
+  @Input() public readonly formGroup: UntypedFormGroup;
+  @Input() public incident;
 
-  areaRestrictions : AreaRestrictionsOption[] = []
+  areaRestrictions: AreaRestrictionsOption[] = [];
 
   constructor(private agolService: AGOLService) {
   }
 
   ngOnInit() {
-    this.getAreaRestrictions()
+    this.getAreaRestrictions();
   }
 
 
-  getAreaRestrictions () {
+  getAreaRestrictions() {
     if(this.incident.geometry.x && this.incident.geometry.y){
       this.agolService.getAreaRestrictions(null, { x: this.incident.geometry.x, y: this.incident.geometry.y, radius: null}).subscribe(response => {
         if (response.features) {
@@ -35,10 +35,10 @@ export class AreaRestrictionsDetailsPanel implements OnInit {
               fireCentre: element.attributes.FIRE_CENTRE_NAME,
               fireZone: element.attributes.FIRE_ZONE_NAME,
               bulletinUrl: element.attributes.BULLETIN_URL
-            })
+            });
           }
         }
-      })
+      });
     }
   }
 }

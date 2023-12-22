@@ -1,5 +1,5 @@
-import { Component } from "@angular/core";
-import { EvacListComponent } from "./evac-list.component";
+import { Component } from '@angular/core';
+import { EvacListComponent } from './evac-list.component';
 
 @Component({
     selector: 'wf-evac-list-desktop',
@@ -10,5 +10,5 @@ import { EvacListComponent } from "./evac-list.component";
   })
 
 export class EvacListComponentDesktop extends EvacListComponent {
-    columnsToDisplay = ["name", "status", "issuedOn", "agency", "distance", "viewMap"];
+    columnsToDisplay = ['name', 'status', 'issuedOn', 'agency', 'distance', 'viewMap'];
 }

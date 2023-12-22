@@ -8,8 +8,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   styleUrls: ['./wildfire-notification-dialog.component.scss']
 })
 export class WildfireNotificationDialogComponent {
-  constructor(private dialogRef: MatDialogRef<WildfireNotificationDialogComponent>, @Inject(MAT_DIALOG_DATA) public data)
-  { }
+  constructor(private dialogRef: MatDialogRef<WildfireNotificationDialogComponent>, @Inject(MAT_DIALOG_DATA) public data) { }
 
   closeDialog() {
     this.dialogRef.close({fullDetail: false});

@@ -1,23 +1,23 @@
-import { AfterContentInit, ChangeDetectorRef, Component, ComponentRef, OnInit, ViewChild, ViewContainerRef } from "@angular/core"
-import { RoFTitlePage } from "./title-page/rof-title-page.component";
-import { Location } from '@angular/common'
-import { RoFPermissionsPage } from "./permissions-page/rof-permissions-page.component";
-import { RoFSimpleQuestionPage } from "./simple-question-page/rof-simple-question-page.component";
-import { RoFContactPage } from "./contact-page/rof-contact-page.component";
-import { RoFLocationPage } from "./location-page/rof-location-page.component";
-import { RoFPhotoPage } from "./photo-page/rof-photo-page.component";
-import { ReportOfFire } from "./reportOfFireModel";
-import { RoFComplexQuestionPage } from "./complex-question-page/rof-complex-question-page.component";
+import { AfterContentInit, ChangeDetectorRef, Component, ComponentRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { RoFTitlePage } from './title-page/rof-title-page.component';
+import { Location } from '@angular/common';
+import { RoFPermissionsPage } from './permissions-page/rof-permissions-page.component';
+import { RoFSimpleQuestionPage } from './simple-question-page/rof-simple-question-page.component';
+import { RoFContactPage } from './contact-page/rof-contact-page.component';
+import { RoFLocationPage } from './location-page/rof-location-page.component';
+import { RoFPhotoPage } from './photo-page/rof-photo-page.component';
+import { ReportOfFire } from './reportOfFireModel';
+import { RoFComplexQuestionPage } from './complex-question-page/rof-complex-question-page.component';
 import ConfigJson from './report-of-fire.config.json';
-import { RoFCommentsPage } from "./comment-page/rof-comments-page.component";
-import { RoFReviewPage } from "./review-page/rof-review-page.component";
-import { Router } from "@angular/router";
-import { RoFCompassPage } from "./compass-page/rof-compass-page.component";
-import { CommonUtilityService } from "@app/services/common-utility.service";
-import { RoFDisclaimerPage } from "./disclaimer-page/rof-disclaimer-page.component";
-import { RofCallPage } from "@app/components/report-of-fire/rof-callback-page/rof-call-page.component";
-import { MatDialog } from "@angular/material/dialog";
-import { DialogExitComponent } from "@app/components/report-of-fire/dialog-exit/dialog-exit.component";
+import { RoFCommentsPage } from './comment-page/rof-comments-page.component';
+import { RoFReviewPage } from './review-page/rof-review-page.component';
+import { Router } from '@angular/router';
+import { RoFCompassPage } from './compass-page/rof-compass-page.component';
+import { CommonUtilityService } from '@app/services/common-utility.service';
+import { RoFDisclaimerPage } from './disclaimer-page/rof-disclaimer-page.component';
+import { RofCallPage } from '@app/components/report-of-fire/rof-callback-page/rof-call-page.component';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogExitComponent } from '@app/components/report-of-fire/dialog-exit/dialog-exit.component';
 
 enum PageOperation {
   Next = 1,
@@ -63,46 +63,46 @@ export class ReportOfFirePage implements OnInit, AfterContentInit {
     // index in the config rather than rely on order
     for (let index = 0; ConfigJson.pages.length > index; index++) {
       const page = ConfigJson.pages[index];
-      let component = undefined;
+      let component;
       // Create a new instance of an RoF.
       // This may change to load from local store for offline support in the future
       this.reportOfFire = new ReportOfFire();
 
       switch(page.type) {
-        case "RoFTitlePage":
+        case 'RoFTitlePage':
           component = this.dynamicContainer.createComponent(RoFTitlePage);
         break;
-        case "RofCallPage":
+        case 'RofCallPage':
           component = this.dynamicContainer.createComponent(RofCallPage);
         break;
-        case "RoFDisclaimerPage":
+        case 'RoFDisclaimerPage':
           component = this.dynamicContainer.createComponent(RoFDisclaimerPage);
         break;
-        case "RoFPermissionsPage":
+        case 'RoFPermissionsPage':
           component = this.dynamicContainer.createComponent(RoFPermissionsPage);
         break;
-        case "RoFSimpleQuestionPage":
+        case 'RoFSimpleQuestionPage':
           component = this.dynamicContainer.createComponent(RoFSimpleQuestionPage);
         break;
-        case "RoFContactPage":
+        case 'RoFContactPage':
           component = this.dynamicContainer.createComponent(RoFContactPage);
         break;
-        case "RoFLocationPage":
+        case 'RoFLocationPage':
           component = this.dynamicContainer.createComponent(RoFLocationPage);
         break;
-        case "RoFPhotoPage":
+        case 'RoFPhotoPage':
           component = this.dynamicContainer.createComponent(RoFPhotoPage);
         break;
-        case "RoFComplexQuestionPage":
+        case 'RoFComplexQuestionPage':
           component = this.dynamicContainer.createComponent(RoFComplexQuestionPage);
         break;
-        case "RoFCommentsPage":
+        case 'RoFCommentsPage':
           component = this.dynamicContainer.createComponent(RoFCommentsPage);
         break;
-        case "RoFReviewPage":
+        case 'RoFReviewPage':
           component = this.dynamicContainer.createComponent(RoFReviewPage);
         break;
-        case "RoFCompassPage":
+        case 'RoFCompassPage':
           component = this.dynamicContainer.createComponent(RoFCompassPage);
         break;
       }
@@ -112,23 +112,31 @@ export class ReportOfFirePage implements OnInit, AfterContentInit {
         component.instance.initialize(page, index, this.reportOfFire);
 
         if (page.showProgress && !this.progressSteps.includes(page.title)) {
-          this.progressSteps.push(page.title)
+          this.progressSteps.push(page.title);
         }
         // button definitions for go back, next question, and skip question.
-        component.instance.previous = () => { this.selectPage(component.instance.previousId, PageOperation.previous) }
-        component.instance.next = () => { this.selectPage(component.instance.nextId, PageOperation.Next) }
+        component.instance.previous = () => {
+ this.selectPage(component.instance.previousId, PageOperation.previous); 
+};
+        component.instance.next = () => {
+ this.selectPage(component.instance.nextId, PageOperation.Next); 
+};
         // on skip, go to the "skip" id. If unset, go to "next" instead. some pages may use a different
         // page on skip vs. next.
-        component.instance.skip = () => { this.selectPage(component.instance.skipId || component.instance.nextId, PageOperation.Skip) }
-        component.instance.close = () => { this.exit() }
+        component.instance.skip = () => {
+ this.selectPage(component.instance.skipId || component.instance.nextId, PageOperation.Skip); 
+};
+        component.instance.close = () => {
+ this.exit(); 
+};
 
         // Keep track of the component so we can easily page
         this.pageComponents.push(component);
         // and detach it for now, once it's created and initialized
         // we'll reattach later
-        this.dynamicContainer.detach(0)
+        this.dynamicContainer.detach(0);
       } else {
-        console.warn('Failed to load dynamic RoF page ' + page.type)
+        console.warn('Failed to load dynamic RoF page ' + page.type);
       }
     }
   }
@@ -143,7 +151,7 @@ export class ReportOfFirePage implements OnInit, AfterContentInit {
    * Page selection for navigation of the RoF forms
    * @param index The page index. Zero-based
    */
-  selectPage (pageId: string, operation: PageOperation, editMode?: boolean) {
+  selectPage(pageId: string, operation: PageOperation, editMode?: boolean) {
     if (!pageId) {
       return;
     }
@@ -153,14 +161,14 @@ export class ReportOfFirePage implements OnInit, AfterContentInit {
     if (this.dynamicContainer.length > 0) {
       // But, before we detach it, grab the components RoF instance and update to the parent instance
       // just in case of missed changes
-      this.updateReportOfFire(this.currentPage.instance.reportOfFire, this.currentPage.instance.updateAttribute)
-      this.dynamicContainer.detach(0)
+      this.updateReportOfFire(this.currentPage.instance.reportOfFire, this.currentPage.instance.updateAttribute);
+      this.dynamicContainer.detach(0);
     }
 
     // find out what the next page will be
     const nextPage = this.pageComponents.find(c => c.instance.id === pageId);
     if (!nextPage) {
-      console.error('Failed to route to page ' + pageId + ' operation: ' + operation )
+      console.error('Failed to route to page ' + pageId + ' operation: ' + operation );
       return;
     }
 
@@ -173,7 +181,7 @@ export class ReportOfFirePage implements OnInit, AfterContentInit {
     }
 
     // get the new page index, for progress bar tracking and whatnot
-    this.currentPage = nextPage
+    this.currentPage = nextPage;
     // update the component to use the latest parent reportOfFire object, just to be sure
     // all updates are matching on all forms
     this.currentPage.instance.reportOfFire = this.reportOfFire;
@@ -184,7 +192,7 @@ export class ReportOfFirePage implements OnInit, AfterContentInit {
     if (pageId == 'location-page') {
       const locationPageComponent = this.currentPage.instance as RoFLocationPage;
       if (locationPageComponent.mapConfig) {
-        locationPageComponent.loadMapConfig()
+        locationPageComponent.loadMapConfig();
       }
     }
 
@@ -193,21 +201,21 @@ export class ReportOfFirePage implements OnInit, AfterContentInit {
 
       switch (pageId) {
         case 'contact-page':
-          const contactPageComponent = this.currentPage.instance as RoFContactPage
-          contactPageComponent.editMode()
+          const contactPageComponent = this.currentPage.instance as RoFContactPage;
+          contactPageComponent.editMode();
         case 'location-page':
           const locationPageComponent = this.currentPage.instance as RoFLocationPage;
-          locationPageComponent.editMode()
+          locationPageComponent.editMode();
         case 'photo-page':
           const photoPageComponent = this.currentPage.instance as RoFPhotoPage;
-          photoPageComponent.editMode()
+          photoPageComponent.editMode();
         case 'smoke-color-page':
         case 'fire-size-page':
         case 'response-details-page':
         case 'what-is-burning-page':
         case 'infrastructure-details-page':
           const complexQuestionPageComponent = this.currentPage.instance as RoFComplexQuestionPage;
-          complexQuestionPageComponent.editMode()
+          complexQuestionPageComponent.editMode();
 
         case 'callback-page':
         case 'visible-flame-page':
@@ -215,18 +223,18 @@ export class ReportOfFirePage implements OnInit, AfterContentInit {
         case 'response-page':
         case 'infrastructure-page':
           const simpleQustionPageComponent= this.currentPage.instance as RoFSimpleQuestionPage;
-          simpleQustionPageComponent.editMode()
+          simpleQustionPageComponent.editMode();
 
         case 'comments-page' :
           const commentPageComponent= this.currentPage.instance as RoFCommentsPage;
-          commentPageComponent.editMode()
+          commentPageComponent.editMode();
         case 'review-page':
           const reviewPageComponent = this.currentPage.instance as RoFReviewPage;
           if (reviewPageComponent.map) {
-            reviewPageComponent.loadMap()
+            reviewPageComponent.loadMap();
           }
         default:
-          return null
+          return null;
       }
     }
 
@@ -243,15 +251,15 @@ export class ReportOfFirePage implements OnInit, AfterContentInit {
           const rofTitlePageComponent = this.currentPage.instance as RoFTitlePage;
           this.commonUtilityService.checkOnline().then((result) => {
             if(!result) {
-              this.currentPage.instance.nextId = 'disclaimer-page'
+              this.currentPage.instance.nextId = 'disclaimer-page';
             }
-          })
+          });
         case 'callback-page':
           const roFSimpleQuestionPageComponent = this.currentPage.instance as RoFSimpleQuestionPage;
-          roFSimpleQuestionPageComponent.checkOnlineStatus()
+          roFSimpleQuestionPageComponent.checkOnlineStatus();
         case 'contact-page':
           const roFContactPageComponent = this.currentPage.instance as RoFContactPage;
-          roFContactPageComponent.checkOnlineStatus()
+          roFContactPageComponent.checkOnlineStatus();
 
       }
     }
@@ -270,7 +278,7 @@ export class ReportOfFirePage implements OnInit, AfterContentInit {
    * @param attribute the attribute that was updated. Can be a string or an array
    * @returns nothing
    */
-  updateReportOfFire (reportOfFire: ReportOfFire, attribute: string | Array<string>) {
+  updateReportOfFire(reportOfFire: ReportOfFire, attribute: string | Array<string>) {
     // If we don't have an attribute that we're targeting for an update, we should just ignore the whole thing
     if (!attribute) {
       return;
@@ -289,14 +297,14 @@ export class ReportOfFirePage implements OnInit, AfterContentInit {
    * Exit ROF form and return to the /map route
    * This may change for mobile vs desktop
    */
-  exit () {
+  exit() {
     if (this.isEditMode && this.currentPage.instance.id !== 'review-page') {
       this.edit('review-page');
       this.isEditMode = false;
       this.cdr.detectChanges();
     } else if (this.currentPage.instance.id === 'final-page') {
       //this.router.navigateByUrl('/map')
-      this.locationService.back()
+      this.locationService.back();
      } else {
         let dialogRef;
         if (window.innerWidth >= 850) {
@@ -322,7 +330,7 @@ export class ReportOfFirePage implements OnInit, AfterContentInit {
         dialogRef.afterClosed().subscribe(result => {
           if (result['exit']) {
             //this.router.navigateByUrl('/dashboard')
-            this.locationService.back()
+            this.locationService.back();
           }
         });
     }
@@ -332,13 +340,13 @@ export class ReportOfFirePage implements OnInit, AfterContentInit {
    * RoF Container skip handler. This will execute the currently
    * displayed components "skip"
    */
-  skip () {
+  skip() {
     if (this.currentPage.instance.id === 'distance-page' ) {
       this.commonUtilityService.checkOnline().then((result) => {
         if(!result) {
           this.selectPage('photo-page',null,false);
         }
-      })
+      });
     }
     if (this.currentPage.instance.id === 'callback-page' || this.currentPage.instance.id === 'contact-page') {
       this.reportOfFire.headingDetectionActive = true;
@@ -347,14 +355,13 @@ export class ReportOfFirePage implements OnInit, AfterContentInit {
       } else {
         this.currentPage.instance.skip();
       }
-    }
-    else if (this.currentPage.instance.nextId || this.currentPage.instance.skipId) {
+    } else if (this.currentPage.instance.nextId || this.currentPage.instance.skipId) {
       this.currentPage.instance.skip();
     }
   }
 
   edit(pageId) {
-    this.selectPage(pageId,null,true)
+    this.selectPage(pageId,null,true);
     this.showProgress = false;
   }
 

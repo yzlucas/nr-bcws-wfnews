@@ -11,20 +11,20 @@ import { isMobileView, snowPlowHelper } from '../../utils';
 })
 export class WildfirewResourcesComponent implements OnInit, AfterViewInit{
   public url;
-  public snowPlowHelper = snowPlowHelper
+  public snowPlowHelper = snowPlowHelper;
 
-  isMobileView = isMobileView
+  isMobileView = isMobileView;
 
   constructor(protected appConfigService: AppConfigService,
     protected router: Router) {
 }
 ngOnInit(): void {
-  this.url = this.appConfigService.getConfig().application.baseUrl.toString() + this.router.url.slice(1)
-  this.snowPlowHelper(this.url)
+  this.url = this.appConfigService.getConfig().application.baseUrl.toString() + this.router.url.slice(1);
+  this.snowPlowHelper(this.url);
 }
 
-ngAfterViewInit () {
-  (window as any).snowplow('refreshLinkClickTracking')
+ngAfterViewInit() {
+  (window as any).snowplow('refreshLinkClickTracking');
 }
 
   // This can be moved into a config, for easier changes later
@@ -118,5 +118,5 @@ ngAfterViewInit () {
         }
       ]
     }
-  ]
+  ];
 }

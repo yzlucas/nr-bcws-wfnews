@@ -8,8 +8,8 @@ import {
     OnChanges,
     Output,
     SimpleChanges
-} from "@angular/core";
-import { arrayEquals } from "../utils";
+} from '@angular/core';
+import { arrayEquals } from '../utils';
 
 @Directive({
     selector: '[appWFSingleSelect]'
@@ -19,8 +19,8 @@ export class SingleSelectDirective implements AfterViewInit, OnChanges {
     @Output() updated: EventEmitter<any> = new EventEmitter();
     @Input() options: any[];
     @Input() selected: any;
-    @Input() position: string = "bottom";
-    @Input() filter: boolean = true;
+    @Input() position = 'bottom';
+    @Input() filter = true;
     selectHtmlElement: HTMLSelectElement;
     multiselect;
     
@@ -32,8 +32,8 @@ export class SingleSelectDirective implements AfterViewInit, OnChanges {
 
     ngAfterViewInit() {
         this.selectHtmlElement = this.element.nativeElement;
-        let self = this;
-        this.selectHtmlElement.addEventListener("change", function () {
+        const self = this;
+        this.selectHtmlElement.addEventListener('change', function() {
             self.onClick();
         });
 
@@ -63,7 +63,7 @@ export class SingleSelectDirective implements AfterViewInit, OnChanges {
     }
 
     onClick() {
-        let selected = "";
+        let selected = '';
         if (this.selectHtmlElement.selectedOptions && this.selectHtmlElement.selectedOptions.length) {
             selected = this.selectHtmlElement.selectedOptions.item(0).value;
         }

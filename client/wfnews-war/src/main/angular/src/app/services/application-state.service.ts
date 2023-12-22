@@ -2,7 +2,7 @@ import { Injectable, Injector } from '@angular/core';
 import { TokenService } from '@wf1/core-ui';
 import { WfDevice } from '@wf1/wfcc-application-ui';
 import { ROLES_UI } from '../shared/scopes/scopes';
-import { Router } from "@angular/router";
+import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
 @Injectable({
@@ -24,7 +24,7 @@ export class ApplicationStateService {
             },
         ],
         includedSources: []
-    }
+    };
 
     constructor(private injector: Injector,
         private router: Router,
@@ -79,26 +79,26 @@ export class ApplicationStateService {
     }
 
     public isAdminPageAccessable(): boolean {
-        return this.doesUserHaveScopes([ROLES_UI.ADMIN]) || this.doesUserHaveScopes([ROLES_UI.IM_ADMIN])
+        return this.doesUserHaveScopes([ROLES_UI.ADMIN]) || this.doesUserHaveScopes([ROLES_UI.IM_ADMIN]);
     }
 
     public getWeatherHistoryOptions(): WeatherHistoryOptions {
-        return this.weatherHistoryOptions
+        return this.weatherHistoryOptions;
     }
 
     public setWeatherHistoryOptions(opt: WeatherHistoryOptions) {
-        return this.weatherHistoryOptions = opt
+        return this.weatherHistoryOptions = opt;
     }
 
 }
 
 export interface WeatherHistoryOptions {
-    historyLength: number // hours
+    historyLength: number; // hours
     chartDataSources: {
-        property: string
-        title: string
-    }[],
+        property: string;
+        title: string;
+    }[];
     includedSources: {
-        property: string
-    }[]
+        property: string;
+    }[];
 }

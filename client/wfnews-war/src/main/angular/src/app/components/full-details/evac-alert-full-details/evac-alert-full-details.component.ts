@@ -3,7 +3,7 @@ import { AGOLService, AgolOptions } from '@app/services/AGOL-service';
 import { PublishedIncidentService, SimpleIncident } from '@app/services/published-incident-service';
 import { ResourcesRoutes, convertToDateTime, openLink } from '@app/utils';
 import L from 'leaflet';
-import { setDisplayColor } from "../../../utils"
+import { setDisplayColor } from '../../../utils';
 import { LocationData } from '@app/components/wildfires-list-header/filter-by-location/filter-by-location-dialog.component';
 import { AppConfigService } from '@wf1/core-ui';
 import { Router } from '@angular/router';
@@ -24,9 +24,9 @@ export class EvacData {
   styleUrls: ['./evac-alert-full-details.component.scss']
 })
 export class EvacAlertFullDetailsComponent implements OnInit {
-  @Input() id: string
+  @Input() id: string;
   public evacData: EvacData;
-  public incident: SimpleIncident | null
+  public incident: SimpleIncident | null;
   public map: any;
 
   convertToDateTime = convertToDateTime;
@@ -36,13 +36,13 @@ export class EvacAlertFullDetailsComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    await this.populateEvacByID({ returnGeometry: true, returnCentroid: true, returnExtent: false })
-    this.initMap()
+    await this.populateEvacByID({ returnGeometry: true, returnCentroid: true, returnExtent: false });
+    this.initMap();
   }
 
   async initMap() {
     // Create map and append data to the map component
-    const location = [Number(this.evacData.centroidLatitude), Number(this.evacData.centroidLongitude)]
+    const location = [Number(this.evacData.centroidLatitude), Number(this.evacData.centroidLongitude)];
 
     this.map = L.map('restrictions-map', {
       attributionControl: false,
@@ -52,12 +52,12 @@ export class EvacAlertFullDetailsComponent implements OnInit {
       boxZoom: false,
       trackResize: false,
       scrollWheelZoom: false
-    }).setView(location, 9)
+    }).setView(location, 9);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(this.map)
+    }).addTo(this.map);
 
-    const databcUrl = this.appConfigService.getConfig()['mapServices']['openmapsBaseUrl'].toString()
+    const databcUrl = this.appConfigService.getConfig()['mapServices']['openmapsBaseUrl'].toString();
     L.tileLayer.wms(databcUrl, {
       layers: 'WHSE_HUMAN_CULTURAL_ECONOMIC.EMRG_ORDER_AND_ALERT_AREAS_SP',
       styles: '6885',
@@ -74,7 +74,7 @@ export class EvacAlertFullDetailsComponent implements OnInit {
     }).addTo(this.map);
 
     const fireOfNoteIcon = L.icon({
-      iconUrl: "/assets/images/local_fire_department.png",
+      iconUrl: '/assets/images/local_fire_department.png',
       iconSize: [35, 35],
       shadowAnchor: [4, 62],
       popupAnchor: [1, -34],
@@ -84,43 +84,43 @@ export class EvacAlertFullDetailsComponent implements OnInit {
       if (this.incident.fireOfNoteInd) {
         L.marker(location, { icon: fireOfNoteIcon }).addTo(this.map);
       } else {
-        const colorToDisplay = setDisplayColor(this.incident.stageOfControlCode)
-        L.circleMarker(location, { radius: 5, fillOpacity: 1, color: 'black', fillColor: colorToDisplay }).addTo(this.map)
+        const colorToDisplay = setDisplayColor(this.incident.stageOfControlCode);
+        L.circleMarker(location, { radius: 5, fillOpacity: 1, color: 'black', fillColor: colorToDisplay }).addTo(this.map);
       }
     }
 
     // now fetch the rest of the incidents in the area and display on map
     try {
-      const locationData = new LocationData()
+      const locationData = new LocationData();
       locationData.latitude = Number(this.evacData.centroidLatitude);
       locationData.longitude = Number(this.evacData.centroidLongitude);
       locationData.radius = 10;
       const stageOfControlCodes = ['OUT_CNTRL', 'HOLDING', 'UNDR_CNTRL'];
-      const incidents = await this.publishedIncidentService.fetchPublishedIncidentsList(0, 9999, locationData, null, null, stageOfControlCodes).toPromise()
+      const incidents = await this.publishedIncidentService.fetchPublishedIncidentsList(0, 9999, locationData, null, null, stageOfControlCodes).toPromise();
       if (incidents?.collection && incidents?.collection?.length > 0) {
         for (const item of incidents.collection) {
-          const location = [Number(item.latitude), Number(item.longitude)]
+          const location = [Number(item.latitude), Number(item.longitude)];
           if (item.fireOfNoteInd) {
             L.marker(location, { icon: fireOfNoteIcon }).addTo(this.map);
           } else {
-            const colorToDisplay = setDisplayColor(item.stageOfControlCode)
-            L.circleMarker(location, { radius: 5, fillOpacity: 1, color: 'black', fillColor: colorToDisplay }).addTo(this.map)
+            const colorToDisplay = setDisplayColor(item.stageOfControlCode);
+            L.circleMarker(location, { radius: 5, fillOpacity: 1, color: 'black', fillColor: colorToDisplay }).addTo(this.map);
           }
         }
       }
     } catch (err) {
-      console.error('Could not retrieve surrounding incidents for evacuation alert')
+      console.error('Could not retrieve surrounding incidents for evacuation alert');
     }
-    this.cdr.detectChanges()
+    this.cdr.detectChanges();
   }
 
   async populateEvacByID(options: AgolOptions = null) {
-    this.evacData = null
-    const response = await this.agolService.getEvacOrdersByID(this.id, options).toPromise()
+    this.evacData = null;
+    const response = await this.agolService.getEvacOrdersByID(this.id, options).toPromise();
     if (response?.features[0]?.attributes) {
-      const evac = response.features[0]
+      const evac = response.features[0];
 
-      this.evacData = new EvacData
+      this.evacData = new EvacData();
 
       this.evacData.name = evac.attributes.EVENT_NAME;
       this.evacData.issuingAgency = evac.attributes.ISSUING_AGENCY;
@@ -129,17 +129,17 @@ export class EvacAlertFullDetailsComponent implements OnInit {
       this.evacData.centroidLatitude = evac.centroid.y;
       this.evacData.centroidLongitude = evac.centroid.x;
 
-      await this.populateIncident(evac.geometry.rings)
+      await this.populateIncident(evac.geometry.rings);
     } else {
-      console.error('Could not populate evacuation order by ID: ' + this.id)
+      console.error('Could not populate evacuation order by ID: ' + this.id);
     }
   }
 
   async populateIncident(polygon: [][]) {
     try {
-      this.incident = await this.publishedIncidentService.populateIncidentByPoint(polygon)
+      this.incident = await this.publishedIncidentService.populateIncidentByPoint(polygon);
     } catch (error) {
-      console.error('Caught error while populating associated incident for evacuation: ' + error)
+      console.error('Caught error while populating associated incident for evacuation: ' + error);
     }
   }
 
@@ -153,20 +153,22 @@ export class EvacAlertFullDetailsComponent implements OnInit {
 
   navToIncident(incident: SimpleIncident) {
     this.router.navigate([ResourcesRoutes.PUBLIC_INCIDENT],
-      { queryParams: { fireYear: incident.fireYear, incidentNumber: incident.incidentNumberLabel, source: [ResourcesRoutes.FULL_DETAILS], sourceId: this.id, sourceType: "evac-alert" } })
+      { queryParams: { fireYear: incident.fireYear, incidentNumber: incident.incidentNumberLabel, source: [ResourcesRoutes.FULL_DETAILS], sourceId: this.id, sourceType: 'evac-alert' } });
   }
 
   navToBulletinUrl() {
-    if (this.evacData && this.evacData.bulletinUrl) window.open(this.evacData.bulletinUrl)
+    if (this.evacData && this.evacData.bulletinUrl) {
+window.open(this.evacData.bulletinUrl);
+}
   }
 
   onWatchlist(incident): boolean {
-    return this.watchlistService.getWatchlist().includes(incident.fireYear + ':' + incident.incidentNumberLabel)
+    return this.watchlistService.getWatchlist().includes(incident.fireYear + ':' + incident.incidentNumberLabel);
   }
 
   addToWatchlist(incident) {
     if (!this.onWatchlist(incident)) {
-      this.watchlistService.saveToWatchlist(incident.fireYear, incident.incidentNumberLabel)
+      this.watchlistService.saveToWatchlist(incident.fireYear, incident.incidentNumberLabel);
     }
   }
 

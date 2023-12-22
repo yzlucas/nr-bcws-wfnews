@@ -1,8 +1,13 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CapacitorService } from '@app/services/capacitor-service';
+<<<<<<< Updated upstream
 import { HTTP } from "@ionic-native/http/ngx";
 import { AppConfigService } from "@wf1/core-ui";
+=======
+import { CapacitorHttp } from '@capacitor/core';
+import { AppConfigService } from '@wf1/core-ui';
+>>>>>>> Stashed changes
 
 
 export interface NotificationSettingRsrc {
@@ -66,37 +71,38 @@ export class NotificationService {
 
     public updateUserNotificationPreferences(notificationSettings, savedNotification): Promise<any> {
         return this.capacitorService.deviceProperties.then(p => {
-            console.log("device properties:'", p)
-            const url = `${this.appConfigService.getConfig().rest['notification-api']}/notificationSettings/${p.deviceId}`
-            let headers = new HttpHeaders({
-                'apikey': this.appConfigService.getConfig().application['wfnewsApiKey'],
-            })
+            console.log('device properties:\'', p);
+            const url = `${this.appConfigService.getConfig().rest['notification-api']}/notificationSettings/${p.deviceId}`;
+            const headers = new HttpHeaders({
+                apikey: this.appConfigService.getConfig().application['wfnewsApiKey'],
+            });
             const token = this.capacitorService.getNotificationToken();
-            const notificationSettingRsrc = convertToNotificationSettingRsrc(notificationSettings)
-            notificationSettingRsrc.subscriberGuid = p.deviceId
-            notificationSettingRsrc.notificationToken = token
-            notificationSettingRsrc.deviceType = p.isAndroidPlatform ? 'android' : 'ios'
+            const notificationSettingRsrc = convertToNotificationSettingRsrc(notificationSettings);
+            notificationSettingRsrc.subscriberGuid = p.deviceId;
+            notificationSettingRsrc.notificationToken = token;
+            notificationSettingRsrc.deviceType = p.isAndroidPlatform ? 'android' : 'ios';
             if (savedNotification.length) {
                 savedNotification.forEach(notification => {
-                    notificationSettingRsrc.notifications.push(notification)
+                    notificationSettingRsrc.notifications.push(notification);
                 });
             }
-            return this.httpClient.put<NotificationSettingRsrc>(url, notificationSettingRsrc, { headers }).toPromise()
-        })
+            return this.httpClient.put<NotificationSettingRsrc>(url, notificationSettingRsrc, { headers }).toPromise();
+        });
     }
 
     public getUserNotificationPreferences(): Promise<any> {
         return this.capacitorService.deviceProperties.then(p => {
-            const url = `${this.appConfigService.getConfig().rest['notification-api']}/notificationSettings/${p.deviceId}`
-            let headers = new HttpHeaders({
-                'apikey': this.appConfigService.getConfig().application['wfnewsApiKey'],
-            })
-            return this.httpClient.get(url, { headers }).toPromise()
-        })
+            const url = `${this.appConfigService.getConfig().rest['notification-api']}/notificationSettings/${p.deviceId}`;
+            const headers = new HttpHeaders({
+                apikey: this.appConfigService.getConfig().application['wfnewsApiKey'],
+            });
+            return this.httpClient.get(url, { headers }).toPromise();
+        });
     }
 
     public getFireCentreByLocation(bbox: BoundingBox[]): Promise<any> {
         const formattedString = bbox.map(pair => `${pair.longitude} ${pair.latitude}`).join(',');
+<<<<<<< Updated upstream
         let url = (this.appConfigService.getConfig() as any).mapServices['openmapsBaseUrl'] as string
         url += "?service=WFS&version=1.1.0&request=GetFeature&srsName=EPSG:4326&typename=pub:WHSE_LEGAL_ADMIN_BOUNDARIES.DRP_MOF_FIRE_CENTRES_SP&outputformat=application/json&cql_filter=INTERSECTS(GEOMETRY,SRID=4326;POLYGON(("
         url += formattedString + ')))'
@@ -112,10 +118,29 @@ export class NotificationService {
 
             return this.httpClient.get( url, { params: null, headers: headers } ).toPromise()
         } )
+=======
+        let url = (this.appConfigService.getConfig() as any).mapServices['openmapsBaseUrl'] as string;
+        url += '?service=WFS&version=1.1.0&request=GetFeature&srsName=EPSG:4326&typename=pub:WHSE_LEGAL_ADMIN_BOUNDARIES.DRP_MOF_FIRE_CENTRES_SP&outputformat=application/json&cql_filter=INTERSECTS(GEOMETRY,SRID=4326;POLYGON((';
+        url += formattedString + ')))';
+        return this.capacitorService.isMobile.then(isMobile => {
+            if (isMobile) {
+                const options = {
+                    url,
+                    params: null
+                };
+                const resp =  CapacitorHttp.get(options);
+                    return resp;
+            } else {
+                const resp = this.httpClient.get( url ).toPromise();
+                return resp;
+            }
+        });
+>>>>>>> Stashed changes
     }
 
     public getDangerRatingByLocation(bbox: BoundingBox[]): Promise<any> {
         const formattedString = bbox.map(pair => `${pair.longitude} ${pair.latitude}`).join(',');
+<<<<<<< Updated upstream
         let url = (this.appConfigService.getConfig() as any).mapServices['openmapsBaseUrl'] as string
         url += "?service=WFS&version=1.1.0&request=GetFeature&srsName=EPSG:4326&typename=pub:WHSE_LAND_AND_NATURAL_RESOURCE.PROT_DANGER_RATING_SP&outputformat=application/json&cql_filter=INTERSECTS(SHAPE,SRID=4326;POLYGON(("
         url += formattedString + ')))'
@@ -131,19 +156,37 @@ export class NotificationService {
 
             return this.httpClient.get( url, { params: null, headers: headers } ).toPromise()
         } )
+=======
+        let url = (this.appConfigService.getConfig() as any).mapServices['openmapsBaseUrl'] as string;
+        url += '?service=WFS&version=1.1.0&request=GetFeature&srsName=EPSG:4326&typename=pub:WHSE_LAND_AND_NATURAL_RESOURCE.PROT_DANGER_RATING_SP&outputformat=application/json&cql_filter=INTERSECTS(SHAPE,SRID=4326;POLYGON((';
+        url += formattedString + ')))';
+        return this.capacitorService.isMobile.then(isMobile => {
+            if (isMobile) {
+                const options = {
+                    url,
+                    params: null
+                };
+                const resp =  CapacitorHttp.get(options);
+                    return resp;
+            } else {
+                const resp = this.httpClient.get( url ).toPromise();
+                return resp;
+            }
+        });
+>>>>>>> Stashed changes
 
     }
 }
 
 export function convertToNotificationSettingRsrc(np: any): NotificationSettingRsrc {
-    let notificationTopics = [];
+    const notificationTopics = [];
     if (np?.pushNotificationsFireBans) {
-        notificationTopics.push("British_Columbia_Bans_and_Prohibition_Areas");
-        notificationTopics.push("British_Columbia_Area_Restrictions");
+        notificationTopics.push('British_Columbia_Bans_and_Prohibition_Areas');
+        notificationTopics.push('British_Columbia_Area_Restrictions');
     }
     if (np?.pushNotificationsWildfires) {
-        notificationTopics.push("BCWS_ActiveFires_PublicView");
-        notificationTopics.push("Evacuation_Orders_and_Alerts");
+        notificationTopics.push('BCWS_ActiveFires_PublicView');
+        notificationTopics.push('Evacuation_Orders_and_Alerts');
     }
     return {
         '@type': 'http://notifications.wfone.nrs.gov.bc.ca/v1/notificationSettings',

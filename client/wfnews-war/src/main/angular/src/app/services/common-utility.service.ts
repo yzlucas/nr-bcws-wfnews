@@ -1,15 +1,15 @@
-import { NumberFormatStyle } from "@angular/common";
-import { HttpClient } from "@angular/common/http";
-import { Injectable, Injector } from "@angular/core";
-import { MatSnackBar } from "@angular/material/snack-bar";
-import { App } from "@capacitor/app";
+import { NumberFormatStyle } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, Injector } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { App } from '@capacitor/app';
 import { Geolocation } from '@capacitor/geolocation';
 import { Storage } from '@ionic/storage-angular';
-import { AppConfigService } from "@wf1/core-ui";
-import { Observable } from "rxjs";
+import { AppConfigService } from '@wf1/core-ui';
+import { Observable } from 'rxjs';
 import { ReportOfFireService } from './report-of-fire-service';
 
-const MAX_CACHE_AGE = 30 * 1000
+const MAX_CACHE_AGE = 30 * 1000;
 
 export interface Coordinates {
     readonly accuracy: number;
@@ -35,8 +35,8 @@ export class CommonUtilityService {
     private location;
     private rofService;
 
-    constructor (
-        protected snackbarService : MatSnackBar,
+    constructor(
+        protected snackbarService: MatSnackBar,
         private http: HttpClient,
         private appConfigService: AppConfigService,
         private storage: Storage,
@@ -46,15 +46,15 @@ export class CommonUtilityService {
         }
 
      getCurrentLocationPromise(): Promise<Position> {
-        const self = this
-        const now = Date.now()
+        const self = this;
+        const now = Date.now();
         if (this.locationTime && (now - this.locationTime) < MAX_CACHE_AGE){
-            return this.location
+            return this.location;
         }
 
-        this.locationTime = now
+        this.locationTime = now;
         this.location = Geolocation.getCurrentPosition();
-        return this.location
+        return this.location;
     }
 
     getCurrentLocation(callback?: (p: Position) => void) {
@@ -70,8 +70,7 @@ export class CommonUtilityService {
                     duration: 5,
                 });
             });
-        }
-        else {
+        } else {
             console.warn('Unable to access geolocation');
             this.snackbarService.open('Unable to access location services.', '', {
                 duration: 5,
@@ -85,7 +84,7 @@ export class CommonUtilityService {
         }, error => {
             this.snackbarService.open('Unable to retrieve the current location','Cancel', {
                 duration: 5000
-            })
+            });
         });
     }
 
@@ -99,7 +98,9 @@ export class CommonUtilityService {
             result.address = address.trim();
             trimmedAddress = result.address;
             valueLength = value.length;
-            if (trimmedAddress != null) valueMatch = trimmedAddress.substring(0, valueLength);
+            if (trimmedAddress != null) {
+valueMatch = trimmedAddress.substring(0, valueLength);
+}
 
             if (address != null && valueLength != null && valueMatch != null &&
               (value.toUpperCase() === address.toUpperCase() || value.toUpperCase() === valueMatch.toUpperCase())) {
@@ -107,7 +108,7 @@ export class CommonUtilityService {
                 if (index !== -1) {
                   results.splice(index, 1);
                 }
-                let resultToBeUnshifted = result;
+                const resultToBeUnshifted = result;
 
                 results.unshift(resultToBeUnshifted);
             }
@@ -119,22 +120,22 @@ export class CommonUtilityService {
     }
 
     getFullAddress(location) {
-        let result = "";
+        let result = '';
 
         if(location.civicNumber) {
-            result += location.civicNumber
+            result += location.civicNumber;
         }
 
         if(location.streetName) {
-            result += " " + location.streetName
+            result += ' ' + location.streetName;
         }
 
         if(location.streetQualifier) {
-            result += " " + location.streetQualifier
+            result += ' ' + location.streetQualifier;
         }
 
         if(location.streetType) {
-            result += " " + location.streetType
+            result += ' ' + location.streetType;
         }
 
         return result;
@@ -161,7 +162,7 @@ export class CommonUtilityService {
 
     pingSerivce(): Observable<any> {
         const url = this.appConfigService.getConfig().rest['wfnews'];
-        return this.http.get(url)
+        return this.http.get(url);
     }
 
     calculateBearing(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -176,8 +177,8 @@ export class CommonUtilityService {
 
     formatDDM(decimal: number){
         decimal = Math.abs(decimal);
-        let d = Math.abs(Math.trunc(decimal));
-        return d + "° " + (60 * (decimal - d)).toFixed(3) + "'";
+        const d = Math.abs(Math.trunc(decimal));
+        return d + '° ' + (60 * (decimal - d)).toFixed(3) + '\'';
       }
     
       async checkOnlineStatus(): Promise<boolean> {
@@ -233,8 +234,8 @@ export class CommonUtilityService {
 
       invalidTimestamp(timestamp: string): boolean {
         // check if submitted timestamp is more than 24 hours ago
-        const now = new Date().getTime()
-        const submittedTimestamp = Number(timestamp)
+        const now = new Date().getTime();
+        const submittedTimestamp = Number(timestamp);
         const oneDay = 24 * 60 * 60 * 1000;
         return (now - submittedTimestamp) > oneDay;
       }

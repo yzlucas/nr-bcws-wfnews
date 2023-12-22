@@ -12,20 +12,20 @@ export class DialogData {
     styleUrls: ['./contact-us-dialog.component.scss']
 })
 export class ContactUsDialogComponent {
-  public title = ''
+  public title = '';
   public file: File;
 
-    constructor (
+    constructor(
       public dialogRef: MatDialogRef<ContactUsDialogComponent>,
       @Inject(MAT_DIALOG_DATA) public data
       ) {}
 
-      callFireCentre(phoneNumber:string) {
-        const parsedPhoneNumber = parseInt(phoneNumber.replace(/-/g, ""));
+      callFireCentre(phoneNumber: string) {
+        const parsedPhoneNumber = parseInt(phoneNumber.replace(/-/g, ''));
         window.open(`tel:${parsedPhoneNumber}`, '_system');
       }
 
-      emailFireCentre(recipientEmail:string) {
+      emailFireCentre(recipientEmail: string) {
         const mailtoUrl = `mailto:${recipientEmail}`;
         window.location.href = mailtoUrl;
       }

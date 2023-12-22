@@ -15,7 +15,7 @@ import { AGOLService } from '@app/services/AGOL-service';
 })
 
 export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
-  resizeHeight: string = '10vh'; // Initial height of the panel
+  resizeHeight = '10vh'; // Initial height of the panel
   @Input() incidentRefs: any[];
   currentIncidentRefs: any[];
   storedIncidentRefs: any [];
@@ -46,12 +46,12 @@ export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
     'active-wildfires-holding',
     'active-wildfires-under-control',
     'bcws-activefires-publicview-inactive',
-    "fire-perimeters",
+    'fire-perimeters',
   ];
   convertToDateYear = convertToDateYear;
-  convertToDateTime = convertToDateTime
-  private marker: any
-  private markerAnimation
+  convertToDateTime = convertToDateTime;
+  private marker: any;
+  private markerAnimation;
   removeIdentity = false;
 
 
@@ -68,7 +68,7 @@ export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.markerAnimation) {
-      clearInterval(this.markerAnimation)
+      clearInterval(this.markerAnimation);
     }
   }
 
@@ -92,16 +92,16 @@ export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
 
   handleLayersSelection(returnFromPreiviewPanel: boolean = false, openPreviewPanel: boolean = false){
     if (this.marker) {
-      this.marker.remove()
-      this.marker = null
+      this.marker.remove();
+      this.marker = null;
     }
 
     if (this.markerAnimation) {
-      clearInterval(this.markerAnimation)
+      clearInterval(this.markerAnimation);
     }
     if (returnFromPreiviewPanel && this.storedIncidentRefs) {
       // clicked back from preiview panel
-      this.currentIncidentRefs = this.storedIncidentRefs
+      this.currentIncidentRefs = this.storedIncidentRefs;
     }
 
     // re-check for the identified incidents, in case the
@@ -117,7 +117,7 @@ export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
             this.currentIncidentRefs = identifiedIncidents;
           }
         } catch (err) {
-          console.error(err)
+          console.error(err);
         }
       }
     }
@@ -131,8 +131,7 @@ export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
       if (this.identifyItem.layerId === 'fire-perimeters') {
         incidentNumber = this.identifyItem.properties.FIRE_NUMBER;
         fireYear = this.identifyItem.properties.FIRE_YEAR;
-      }
-      else if (this.identifyItem.properties.incident_number_label && this.identifyItem.properties.fire_year) {
+      } else if (this.identifyItem.properties.incident_number_label && this.identifyItem.properties.fire_year) {
         incidentNumber = this.identifyItem.properties.incident_number_label;
         fireYear = this.identifyItem.properties.fire_year;
       }
@@ -140,20 +139,20 @@ export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
         // identify an incident
         this.publishedIncidentService.fetchPublishedIncident(incidentNumber, fireYear).toPromise().then(async result => {
           this.identifyIncident = result;
-          this.zoomIn(getActiveMap().$viewer.map._zoom)
+          this.zoomIn(getActiveMap().$viewer.map._zoom);
 
           if (this.identifyIncident){
-            this.addMarker(this.identifyIncident)
+            this.addMarker(this.identifyIncident);
           };
 
           this.cdr.markForCheck();
-        })
+        });
       } else {
         //identify anything other than incident
         if (this.identifyItem.layerId.includes('bans-and-prohibitions') || this.identifyItem.layerId.includes('evacuation-orders-and-alerts') || this.identifyItem.layerId.includes('area-restrictions') || this.identifyItem.layerId.includes('weather-stations')){
           this.zoomIn(getActiveMap().$viewer.map._zoom, true);
         } else{
-          this.zoomIn(getActiveMap().$viewer.map._zoom)
+          this.zoomIn(getActiveMap().$viewer.map._zoom);
         }
       }
       const SMK = window['SMK'];
@@ -187,14 +186,14 @@ export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  addMarker(incident:any) {
+  addMarker(incident: any) {
     if (this.marker) {
-      this.marker.remove()
-      this.marker = null
+      this.marker.remove();
+      this.marker = null;
     }
 
     if (this.markerAnimation) {
-      clearInterval(this.markerAnimation)
+      clearInterval(this.markerAnimation);
     }
 
     const pointerIcon = L.divIcon({
@@ -204,30 +203,29 @@ export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
       shadowSize: [0, 0],
       className: 'animated-icon'
     });
-    this.marker = L.marker([Number(incident.latitude), Number(incident.longitude)],{icon: pointerIcon})
+    this.marker = L.marker([Number(incident.latitude), Number(incident.longitude)],{icon: pointerIcon});
     this.marker.on('add',function(){
-        const icon: any = document.querySelector('.animated-icon')
+        const icon: any = document.querySelector('.animated-icon');
         icon.style.backgroundColor = setDisplayColor(incident.stageOfControlCode);
 
         this.markerAnimation = setInterval(() => {
-          icon.style.width = icon.style.width === "10px" ? "20px" : "10px"
-          icon.style.height = icon.style.height === "10px" ? "20px" : "10px"
-          icon.style.marginLeft = icon.style.width === "20px" ? '-10px' : '-5px'
-          icon.style.marginTop = icon.style.width === "20px" ? '-10px' : '-5px'
-          icon.style.boxShadow = icon.style.width === "20px" ? '4px 4px 4px rgba(0, 0, 0, 0.65)' : '0px 0px 0px transparent'
-        }, 1000)
+          icon.style.width = icon.style.width === '10px' ? '20px' : '10px';
+          icon.style.height = icon.style.height === '10px' ? '20px' : '10px';
+          icon.style.marginLeft = icon.style.width === '20px' ? '-10px' : '-5px';
+          icon.style.marginTop = icon.style.width === '20px' ? '-10px' : '-5px';
+          icon.style.boxShadow = icon.style.width === '20px' ? '4px 4px 4px rgba(0, 0, 0, 0.65)' : '0px 0px 0px transparent';
+        }, 1000);
       }
-    )
+    );
 
-    let viewer = getActiveMap().$viewer;
-    this.marker.addTo(viewer.map)
+    const viewer = getActiveMap().$viewer;
+    this.marker.addTo(viewer.map);
   }
 
   displayWildfireName(wildfire) {
     if (wildfire.layerId === 'fire-perimeters') {
-      return wildfire.properties.FIRE_NUMBER + ' Wildfire'
-    }
-    else {
+      return wildfire.properties.FIRE_NUMBER + ' Wildfire';
+    } else {
       if (wildfire.properties.incident_name) {
         return wildfire.properties.incident_name + ' (' + wildfire.properties.incident_number_label + ')';
       } else {
@@ -241,12 +239,12 @@ export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
     this.allowBackToIncidentsPanel = false;
     this.identifyIncident = {};
     if (this.marker) {
-      this.marker.remove()
-      this.marker = null
+      this.marker.remove();
+      this.marker = null;
     }
 
     if (this.markerAnimation) {
-      clearInterval(this.markerAnimation)
+      clearInterval(this.markerAnimation);
     }
     const SMK = window['SMK'];
     const map = SMK?.MAP?.[1];
@@ -262,13 +260,13 @@ export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
   convertFirePerimeterFireStatus(status) {
     switch (status) {
       case 'Out of Control':
-        return 'active-wildfires-out-of-control'
+        return 'active-wildfires-out-of-control';
       case 'Being Held':
-        return 'active-wildfires-holding'
+        return 'active-wildfires-holding';
       case 'Under Control':
-        return 'active-wildfires-under-control'
+        return 'active-wildfires-under-control';
       case 'Out':
-        return 'bcws-activefires-publicview-inactive'
+        return 'bcws-activefires-publicview-inactive';
       default:
         break;
     }
@@ -282,7 +280,7 @@ export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
       case 'active-wildfires-under-control':
       case 'bcws-activefires-publicview-inactive':
       case 'active-wildfires-holding':
-        return 'Wildfire'
+        return 'Wildfire';
     }
   }
 
@@ -292,42 +290,60 @@ export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
       case 'active-wildfires-under-control':
       case 'bcws-activefires-publicview-inactive':
       case 'active-wildfires-holding':
-        return 'report'
+        return 'report';
     }
   }
 
   getStageOfControlLabel(code: string) {
     if (code) {
-      if (code.toUpperCase().trim() === 'OUT') return 'Out'
-      else if (code.toUpperCase().trim() === 'OUT_CNTRL') return 'Out of Control'
-      else if (code.toUpperCase().trim() === 'HOLDING') return 'Being Held'
-      else if (code.toUpperCase().trim() === 'UNDR_CNTRL') return 'Under Control'
-      else return 'Unknown'
+      if (code.toUpperCase().trim() === 'OUT') {
+return 'Out';
+} else if (code.toUpperCase().trim() === 'OUT_CNTRL') {
+return 'Out of Control';
+} else if (code.toUpperCase().trim() === 'HOLDING') {
+return 'Being Held';
+} else if (code.toUpperCase().trim() === 'UNDR_CNTRL') {
+return 'Under Control';
+} else {
+return 'Unknown';
+}
     }
   }
 
   getStageOfControlIcon(code: string) {
     if (code) {
-      if (code.toUpperCase().trim() === 'OUT') return 'bcws-activefires-publicview-inactive'
-      else if (code.toUpperCase().trim() === 'OUT_CNTRL') return 'active-wildfires-out-of-control'
-      else if (code.toUpperCase().trim() === 'HOLDING') return 'active-wildfires-holding'
-      else if (code.toUpperCase().trim() === 'UNDR_CNTRL') return 'active-wildfires-under-control'
-      else return 'Unknown'
+      if (code.toUpperCase().trim() === 'OUT') {
+return 'bcws-activefires-publicview-inactive';
+} else if (code.toUpperCase().trim() === 'OUT_CNTRL') {
+return 'active-wildfires-out-of-control';
+} else if (code.toUpperCase().trim() === 'HOLDING') {
+return 'active-wildfires-holding';
+} else if (code.toUpperCase().trim() === 'UNDR_CNTRL') {
+return 'active-wildfires-under-control';
+} else {
+return 'Unknown';
+}
     }
   }
 
   getDescription(code: string) {
     if (code) {
-      if (code.toUpperCase().trim() === 'OUT') return "This wildfire is extinguished. Suppression efforts are complete."
-      else if (code.toUpperCase().trim() === 'OUT_CNTRL') return "This wildfire is continuing to spread and is not responding to suppression efforts."
-      else if (code.toUpperCase().trim() === 'HOLDING') return "This wildfire is not likely to spread beyond predetermined boundaries under current conditions."
-      else if (code.toUpperCase().trim() === 'UNDR_CNTRL') return "This wildfire will not spread any further due to suppression efforts."
-      else return 'Unknown'
+      if (code.toUpperCase().trim() === 'OUT') {
+return 'This wildfire is extinguished. Suppression efforts are complete.';
+} else if (code.toUpperCase().trim() === 'OUT_CNTRL') {
+return 'This wildfire is continuing to spread and is not responding to suppression efforts.';
+} else if (code.toUpperCase().trim() === 'HOLDING') {
+return 'This wildfire is not likely to spread beyond predetermined boundaries under current conditions.';
+} else if (code.toUpperCase().trim() === 'UNDR_CNTRL') {
+return 'This wildfire will not spread any further due to suppression efforts.';
+} else {
+return 'Unknown';
+}
     }
   }
 
   zoomIn(level?: number, polygon?: boolean) {
-    this.previousZoom = getActiveMap().$viewer.map._zoom
+    this.previousZoom = getActiveMap().$viewer.map._zoom;
     let long;
     let lat;
     if (this.identifyIncident?.longitude && this.identifyIncident?.latitude) {
@@ -343,12 +359,12 @@ export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
     if (long && lat) {
       this.mapConfigService.getMapConfig().then(() => {
         const viewer = getActiveMap().$viewer;
-        viewer.panToFeature(window['turf'].point([long, lat]), level ? level : 12)
-        const layerId = this.identifyItem?.layerId
+        viewer.panToFeature(window['turf'].point([long, lat]), level ? level : 12);
+        const layerId = this.identifyItem?.layerId;
         if (polygon && (layerId.includes('bans-and-prohibitions') || layerId.includes('evacuation-orders-and-alerts') || layerId.includes('area-restrictions'))){
           const location = [Number(this.identifyItem._identifyPoint.latitude), Number(this.identifyItem._identifyPoint.longitude)];
           if (layerId.includes('bans-and-prohibitions')){
-            viewer.panToFeature(window['turf'].point([long, lat]), 5)
+            viewer.panToFeature(window['turf'].point([long, lat]), 5);
 
             this.agolService.getBansAndProhibitionsById(this.identifyItem.properties.PROT_BAP_SYSID,{ returnGeometry: false, returnCentroid: false,returnExtent: true }).toPromise().then(
               (response) => {
@@ -356,33 +372,31 @@ export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
                   viewer.map.fitBounds(new L.LatLngBounds([response.extent.ymin, response.extent.xmin], [response.extent.ymax, response.extent.xmax]));
                 }
               }
-            )
-          }
-          else if (layerId.includes('evacuation-orders-and-alerts')){
+            );
+          } else if (layerId.includes('evacuation-orders-and-alerts')){
             this.agolService.getEvacOrdersByEventNumber(this.identifyItem.properties.EVENT_NUMBER,{ returnGeometry: false, returnCentroid: false,returnExtent: true }).toPromise().then(
               (response) => {
                 if (response?.extent) {
                   viewer.map.fitBounds(new L.LatLngBounds([response.extent.ymin, response.extent.xmin], [response.extent.ymax, response.extent.xmax]));
                 }
               }
-            )
-          }
-          else if (layerId.includes('area-restrictions')){
+            );
+          } else if (layerId.includes('area-restrictions')){
             this.agolService.getAreaRestrictionsByID(this.identifyItem.properties.PROT_RA_SYSID,{ returnGeometry: false, returnCentroid: false,returnExtent: true }).toPromise().then(
               (response) => {
                 viewer.map.fitBounds(new L.LatLngBounds([response.extent.ymin, response.extent.xmin], [response.extent.ymax, response.extent.xmax]));
               }
-            )
+            );
           }
             viewer.map.fitBounds( new L.LatLngBounds([54.08803632921587,-129.0428584607425],[60.09553581317895,-119.02438001754507]));
         }
-      })
+      });
     }
   }
 
   openPreviewPanel(item) {
     this.allowBackToIncidentsPanel = true;
-    this.storedIncidentRefs = this.currentIncidentRefs
+    this.storedIncidentRefs = this.currentIncidentRefs;
         // capture the identify panel list;
     this.identifyItem = item;
     this.currentIncidentRefs = [item];
@@ -391,52 +405,53 @@ export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   backToIdentifyPanel() {
-    this.zoomIn(this.previousZoom)
+    this.zoomIn(this.previousZoom);
     this.allowBackToIncidentsPanel = false;
-    this.handleLayersSelection(true)
+    this.handleLayersSelection(true);
   }
 
   enterFullDetail() {
-    const item = this.identifyItem
+    const item = this.identifyItem;
 
     if (item && item.layerId && item.properties) {
       // swtich?
-      const location = new LocationData()
-      location.latitude = Number(this.identifyItem._identifyPoint.latitude)
-      location.longitude = Number(this.identifyItem._identifyPoint.longitude)
+      const location = new LocationData();
+      location.latitude = Number(this.identifyItem._identifyPoint.latitude);
+      location.longitude = Number(this.identifyItem._identifyPoint.longitude);
 
       if (this.identifyItem.layerId === 'area-restrictions' && item.properties.PROT_RA_SYSID){
         this.router.navigate([ResourcesRoutes.FULL_DETAILS], { queryParams: { type: 'area-restriction', id: item.properties.PROT_RA_SYSID, source: [ResourcesRoutes.ACTIVEWILDFIREMAP]} });
       } else if (this.identifyItem.layerId.startsWith('bans-and-prohibitions') && item.properties.PROT_BAP_SYSID){
         this.router.navigate([ResourcesRoutes.FULL_DETAILS], { queryParams: { type: 'bans-prohibitions', id: item.properties.PROT_BAP_SYSID, source: [ResourcesRoutes.ACTIVEWILDFIREMAP]} });
       } else if (this.identifyItem.layerId === 'danger-rating'){
-        this.router.navigate([ResourcesRoutes.FULL_DETAILS], { queryParams: { type: 'danger-rating', id: item.properties.DANGER_RATING_DESC, location: JSON.stringify(location), source: [ResourcesRoutes.ACTIVEWILDFIREMAP]} })
+        this.router.navigate([ResourcesRoutes.FULL_DETAILS], { queryParams: { type: 'danger-rating', id: item.properties.DANGER_RATING_DESC, location: JSON.stringify(location), source: [ResourcesRoutes.ACTIVEWILDFIREMAP]} });
       } else if (this.identifyItem.layerId === 'evacuation-orders-and-alerts-wms'){
         let type = null;
-        if (item.properties.ORDER_ALERT_STATUS === 'Alert') type = "evac-alert";
-        else if (item.properties.ORDER_ALERT_STATUS  === 'Order') type = "evac-order";
-        this.router.navigate([ResourcesRoutes.FULL_DETAILS], { queryParams: { type: type, id: item.properties.EMRG_OAA_SYSID, source: [ResourcesRoutes.ACTIVEWILDFIREMAP] } });
-      }
-      else if (item.layerId === 'active-wildfires-fire-of-note' || item.layerId === 'active-wildfires-out-of-control'
+        if (item.properties.ORDER_ALERT_STATUS === 'Alert') {
+type = 'evac-alert';
+} else if (item.properties.ORDER_ALERT_STATUS  === 'Order') {
+type = 'evac-order';
+}
+        this.router.navigate([ResourcesRoutes.FULL_DETAILS], { queryParams: { type, id: item.properties.EMRG_OAA_SYSID, source: [ResourcesRoutes.ACTIVEWILDFIREMAP] } });
+      } else if (item.layerId === 'active-wildfires-fire-of-note' || item.layerId === 'active-wildfires-out-of-control'
       || item.layerId === 'active-wildfires-holding' || item.layerId === 'active-wildfires-under-control' && (item.properties.fire_year && item.properties.incident_number_label)) {
       this.router.navigate([ResourcesRoutes.PUBLIC_INCIDENT],
-        { queryParams: { fireYear: item.properties.fire_year, incidentNumber: item.properties.incident_number_label, source: [ResourcesRoutes.ACTIVEWILDFIREMAP] } })
+        { queryParams: { fireYear: item.properties.fire_year, incidentNumber: item.properties.incident_number_label, source: [ResourcesRoutes.ACTIVEWILDFIREMAP] } });
       }
     }
   }
 
   convertTimeStamp(time) {
     const options: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(time).toLocaleTimeString("en-US", options)
+    return new Date(time).toLocaleTimeString('en-US', options);
   }
 
   displayEvacTitle(item) {
     let prefix = null;
     if (item.properties.ORDER_ALERT_STATUS === 'Alert') {
-      prefix = 'Evacuation Alert for '
-    }
-    else if (item.properties.ORDER_ALERT_STATUS === 'Order') {
-      prefix = 'Evacuation Order for '
+      prefix = 'Evacuation Alert for ';
+    } else if (item.properties.ORDER_ALERT_STATUS === 'Order') {
+      prefix = 'Evacuation Order for ';
     }
     return prefix + item.properties.EVENT_NAME;
   }
@@ -444,15 +459,15 @@ export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
   displayDangerRatingDes(danger) {
     switch (danger) {
       case 'Extreme':
-        return "Extremely dry forest fuels and the fire risk is very serious. New fires will start easily, spread rapidly, and challenge fire suppression efforts."
+        return 'Extremely dry forest fuels and the fire risk is very serious. New fires will start easily, spread rapidly, and challenge fire suppression efforts.';
       case 'High':
-        return "Forest fuels are very dry and the fire risk is serious.  Extreme caution must be used in any forest activities."
+        return 'Forest fuels are very dry and the fire risk is serious.  Extreme caution must be used in any forest activities.';
       case 'Moderate':
-        return "Forest fuels are drying and there is an increased risk of surface fires starting. Carry out any forest activities with caution."
+        return 'Forest fuels are drying and there is an increased risk of surface fires starting. Carry out any forest activities with caution.';
       case 'Low':
-        return "Fires may start easily and spread quickly but there will be minimal involvement of deeper fuel layers or larger fuels."
+        return 'Fires may start easily and spread quickly but there will be minimal involvement of deeper fuel layers or larger fuels.';
       case 'Very Low':
-        return "Dry forest fuels are at a very low risk of catching fire."
+        return 'Dry forest fuels are at a very low risk of catching fire.';
     }
   }
 
@@ -467,7 +482,7 @@ export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
         this.identifyItem.layerId === 'abms-regional-districts' ||
         this.identifyItem.layerId === 'clab-indian-reserves' ||
         this.identifyItem.layerId === 'abms-municipalities')) {
-      return true
+      return true;
     }
   }
 
@@ -480,7 +495,7 @@ export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
       case 'SEASONAL':
         return 'Seasonal Closure for ' + item['LOCATION'];
       default:
-        return 'Unknown'
+        return 'Unknown';
     }
   }
 
@@ -512,21 +527,21 @@ export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
 
   displayLocalAuthorityType(layerId: string) {
     if (layerId === 'abms-regional-districts') {
-      return 'Regional District'
+      return 'Regional District';
     }
     if (layerId === 'clab-indian-reserves') {
-      return 'Indian Reserve'
+      return 'Indian Reserve';
     }
     if (layerId === 'abms-municipalities') {
-      return 'Municipality'
+      return 'Municipality';
     }
   }
 
-  decode (text: string): string {
+  decode(text: string): string {
     return decodeURIComponent(escape(text));
   }
 
-  convertStationHour (name: string) {
+  convertStationHour(name: string) {
     return name.substring(0, 4) + '-' +name.substring(4, 6) + '-' + name.substring(6, 8) + ' ' + name.substring(8, 10) + ':00';
   }
 
@@ -535,7 +550,7 @@ export class DraggablePanelComponent implements OnInit, OnChanges, OnDestroy {
     return `${precip.toFixed(1)}mm`;
   }
 
-  formatDate(timestamp : string): string {
+  formatDate(timestamp: string): string {
     const date = new Date(timestamp.slice(0, 10));
     const options: Intl.DateTimeFormatOptions = {
       year: 'numeric',

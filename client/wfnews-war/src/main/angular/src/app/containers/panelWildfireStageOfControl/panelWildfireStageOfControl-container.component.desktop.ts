@@ -1,10 +1,10 @@
-import { Component, Input } from "@angular/core";
-import {Location, LocationStrategy, PathLocationStrategy} from "@angular/common";
-import { PanelWildfireStageOfControlContainer } from "./panelWildfireStageOfControl-container.component";
+import { Component, Input } from '@angular/core';
+import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
+import { PanelWildfireStageOfControlContainer } from './panelWildfireStageOfControl-container.component';
 
 
 @Component({
-    selector: "desktop-legend-panel",
+    selector: 'desktop-legend-panel',
     template: `
         <panel-wildfire-stage-of-control
             [collection]="collection$ | async"
@@ -16,5 +16,5 @@ import { PanelWildfireStageOfControlContainer } from "./panelWildfireStageOfCont
     providers: [Location, {provide: LocationStrategy, useClass: PathLocationStrategy}]
 })
 export class PanelWildfireStageOfControlContainerDesktop extends PanelWildfireStageOfControlContainer{
-  @Input() selectedPanel: string
+  @Input() selectedPanel: string;
 }

@@ -1,13 +1,13 @@
-import { Component, ChangeDetectionStrategy, Input, OnInit, ChangeDetectorRef } from "@angular/core";
+import { Component, ChangeDetectionStrategy, Input, OnInit, ChangeDetectorRef } from '@angular/core';
 import lgZoom from 'lightgallery/plugins/zoom';
 import lgFullscreen from 'lightgallery/plugins/fullscreen';
 import lgThumbnail from 'lightgallery/plugins/thumbnail';
 import { BeforeSlideDetail, InitDetail } from 'lightgallery/lg-events';
-import { PublishedIncidentService } from "../../../services/published-incident-service";
-import { AppConfigService } from "@wf1/core-ui";
-import { convertToYoutubeId } from "../../../utils";
-import { LightGallery } from "lightgallery/lightgallery";
-import { ActivatedRoute, ParamMap } from "@angular/router";
+import { PublishedIncidentService } from '../../../services/published-incident-service';
+import { AppConfigService } from '@wf1/core-ui';
+import { convertToYoutubeId } from '../../../utils';
+import { LightGallery } from 'lightgallery/lightgallery';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 
 @Component({
   selector: 'incident-gallery-panel',
@@ -19,19 +19,19 @@ export class IncidentGalleryPanel implements OnInit {
   @Input() public incident;
   @Input() public showImageWarning;
   
-  public convertToYoutubeId = convertToYoutubeId
+  public convertToYoutubeId = convertToYoutubeId;
   public constructor(private publishedIncidentService: PublishedIncidentService, private appConfigService: AppConfigService, private cdr: ChangeDetectorRef,
                     private router: ActivatedRoute) { }
 
   currentMediaType: string;
-  mediaTypeOptions: string[] = ["All","Images","Videos"];
+  mediaTypeOptions: string[] = ['All','Images','Videos'];
   imagesAndVideosStub: any[];
   allImagesAndVideosStub: any[];
   
-  private lightGallery!: LightGallery
-  private refreshGallery = false
-  public showVideos = true
-  public showImages = true
+  private lightGallery!: LightGallery;
+  private refreshGallery = false;
+  public showVideos = true;
+  public showImages = true;
   isPreview: boolean;
 
   settings = {
@@ -46,44 +46,44 @@ export class IncidentGalleryPanel implements OnInit {
 
   ngAfterViewChecked(): void {
     if (this.refreshGallery && this.lightGallery) {
-        this.lightGallery.refresh()
-        this.refreshGallery = false
+        this.lightGallery.refresh();
+        this.refreshGallery = false;
     }
   }
 
   onInit = (detail: InitDetail): void => {
-    this.lightGallery = detail.instance
-  }
+    this.lightGallery = detail.instance;
+  };
 
   onBeforeSlide = (detail: BeforeSlideDetail): void => {
     // unused
   };
 
   onMediaTypeFilterChanged(event) {
-    if(event === "Images") {
-      this.showImages = true
-      this.showVideos = false
-    } else if(event === "Videos") {
-      this.showImages = false
-      this.showVideos = true
+    if(event === 'Images') {
+      this.showImages = true;
+      this.showVideos = false;
+    } else if(event === 'Videos') {
+      this.showImages = false;
+      this.showVideos = true;
     } else {
-      this.showImages = true
-      this.showVideos = true
+      this.showImages = true;
+      this.showVideos = true;
     }
   }
 
-  get videos () {
-    return this.allImagesAndVideosStub.filter(item => item.type === "video")
+  get videos() {
+    return this.allImagesAndVideosStub.filter(item => item.type === 'video');
   }
 
-  get images () {
-    return this.allImagesAndVideosStub.filter(item => item.type === "image")
+  get images() {
+    return this.allImagesAndVideosStub.filter(item => item.type === 'image');
   }
 
   ngOnInit() {
     this.loadPage();
-    this.currentMediaType = "All";
-    this.onMediaTypeFilterChanged("All");
+    this.currentMediaType = 'All';
+    this.onMediaTypeFilterChanged('All');
 
     this.router.queryParams.subscribe((params: ParamMap) => {
       if(params && params['preview']) {
@@ -92,19 +92,19 @@ export class IncidentGalleryPanel implements OnInit {
     });
   }
 
-  handleImageFallback (item: any, index: number) {
+  handleImageFallback(item: any, index: number) {
     if (!item.loaded) {
-      const imgComponent = document.getElementById(index + '-img-thumb')
+      const imgComponent = document.getElementById(index + '-img-thumb');
       if (imgComponent) {
-        (imgComponent as any).src = item.href
+        (imgComponent as any).src = item.href;
       }
       item.loaded = true;
     }
   }
 
   loadPage() {
-    this.imagesAndVideosStub = []
-    this.allImagesAndVideosStub = []
+    this.imagesAndVideosStub = [];
+    this.allImagesAndVideosStub = [];
     // fetch the Videos
     this.publishedIncidentService.fetchExternalUri(this.incident.incidentNumberLabel).toPromise().then(results => {
       if (results && results.collection && results.collection.length > 0) {
@@ -116,9 +116,9 @@ export class IncidentGalleryPanel implements OnInit {
               fileName: '',
               type: 'video',
               href: uri.externalUri
-            })
+            });
           }
-          this.cdr.detectChanges()
+          this.cdr.detectChanges();
         }
       }
 
@@ -138,18 +138,18 @@ export class IncidentGalleryPanel implements OnInit {
                 href: `${this.appConfigService.getConfig().rest['wfnews']}/publicPublishedIncidentAttachment/${this.incident.incidentNumberLabel}/attachments/${attachment.attachmentGuid}/bytes`,
                 thumbnail: `${this.appConfigService.getConfig().rest['wfnews']}/publicPublishedIncidentAttachment/${this.incident.incidentNumberLabel}/attachments/${attachment.attachmentGuid}/bytes?thumbnail=true`,
                 loaded: false
-              })
+              });
             }
           }
         }
-        this.cdr.detectChanges()
+        this.cdr.detectChanges();
         if (this.lightGallery) {
-          this.lightGallery.refresh()
+          this.lightGallery.refresh();
         }
         setTimeout(() => {
-          this.refreshGallery = true
-        }, 5000)
-      })
-    })
+          this.refreshGallery = true;
+        }, 5000);
+      });
+    });
   }
 }

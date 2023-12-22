@@ -73,7 +73,7 @@ export function LayerDisplayConfig(mapServices: MapServices) {
             showItem: false
         },
         {
-            id: "hourly-currentforecast-firesmoke",
+            id: 'hourly-currentforecast-firesmoke',
             isVisible: false
         },
         {
@@ -95,15 +95,15 @@ export function LayerDisplayConfig(mapServices: MapServices) {
             isVisible: false
         },
         {
-            id: "radar-1km-rrai--radarurpprecipr14-linear",
+            id: 'radar-1km-rrai--radarurpprecipr14-linear',
             isVisible: false
         },
         {
-            id: "precipitation",
+            id: 'precipitation',
             isVisible: false
         },
         {
-            id: "current-conditions--default",
+            id: 'current-conditions--default',
             isVisible: false
         },
         {
@@ -111,9 +111,9 @@ export function LayerDisplayConfig(mapServices: MapServices) {
           isVisible: true
         },
         {
-          id: "fire-centre-group",
-          type: "group",
-          title: "BC Wildfire Centres",
+          id: 'fire-centre-group',
+          type: 'group',
+          title: 'BC Wildfire Centres',
           isVisible: true,
           items: [
             {
@@ -129,9 +129,9 @@ export function LayerDisplayConfig(mapServices: MapServices) {
           ]
         },
         {
-          id: "fire-zone-group",
-          type: "group",
-          title: "BC Wildfire Zones",
+          id: 'fire-zone-group',
+          type: 'group',
+          title: 'BC Wildfire Zones',
           isVisible: true,
           items: [
             {
@@ -156,27 +156,27 @@ export function LayerDisplayConfig(mapServices: MapServices) {
         //  isVisible: false
         //},
         {
-            id: "weather-stations",
+            id: 'weather-stations',
             isVisible: false,
             showItem: true  // false to hide in layer list
         },
         {
-            id: "clab-indian-reserves",
+            id: 'clab-indian-reserves',
             isVisible: false,
             class: 'smk-inline-legend'
         },
         {
-            id: "fnt-treaty-land",
+            id: 'fnt-treaty-land',
             isVisible: false,
             class: 'smk-inline-legend'
         },
         {
-            id: "abms-municipalities",
+            id: 'abms-municipalities',
             isVisible: false,
             class: 'smk-inline-legend'
         },
         {
-            id: "abms-regional-districts",
+            id: 'abms-regional-districts',
             isVisible: false,
             class: 'smk-inline-legend'
         }

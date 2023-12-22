@@ -25,14 +25,14 @@ export class SavedLocationWeatherDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params: ParamMap) => {
-      this.params = params
-    })
+      this.params = params;
+    });
 
     if (this.params && this.params['latitude'] && this.params['longitude'] && this.params['name']){
-      this.latitude = this.params['latitude']
-      this.longitude = this.params['longitude']
-      this.name = this.params['name']
-      this.fetchWeather(this.latitude, this.longitude)
+      this.latitude = this.params['latitude'];
+      this.longitude = this.params['longitude'];
+      this.name = this.params['name'];
+      this.fetchWeather(this.latitude, this.longitude);
     }
   }
 
@@ -41,8 +41,12 @@ export class SavedLocationWeatherDetailsComponent implements OnInit {
       this.pointIdService.fetchNearestWeatherStation(Number(latitude), Number(longitude)).then(response => {
         if (response) {
           this.station = response;
-          if (response.daily) this.daily = response.daily[0];
-          if (response.hourly) this.hourly = response.hourly[0];
+          if (response.daily) {
+this.daily = response.daily[0];
+}
+          if (response.hourly) {
+this.hourly = response.hourly[0];
+}
         }
       }).catch(err => console.error('Failed to fetch weather data: ' + err));
     }

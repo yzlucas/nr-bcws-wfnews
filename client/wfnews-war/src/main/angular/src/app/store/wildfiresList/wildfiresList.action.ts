@@ -1,21 +1,21 @@
-import { Action } from "@ngrx/store";
-import { LabeledAction } from "..";
-import { ErrorState, PagingInfoRequest } from "../application/application.state";
+import { Action } from '@ngrx/store';
+import { LabeledAction } from '..';
+import { ErrorState, PagingInfoRequest } from '../application/application.state';
 
-export const SEARCH_WILDFIRES = "SEARCH_WILDFIRES";
-export const SEARCH_WILDFIRES_SUCCESS = "SEARCH_WILDFIRES_SUCCESS";
-export const SEARCH_WILDFIRES_ERROR = "SEARCH_WILDFIRES_ERROR";
+export const SEARCH_WILDFIRES = 'SEARCH_WILDFIRES';
+export const SEARCH_WILDFIRES_SUCCESS = 'SEARCH_WILDFIRES_SUCCESS';
+export const SEARCH_WILDFIRES_ERROR = 'SEARCH_WILDFIRES_ERROR';
 export interface SearchWildfiresAction extends LabeledAction {
     componentId: string;
     callback: Function;
     payload: {
-        pageInfoRequest: PagingInfoRequest,
+        pageInfoRequest: PagingInfoRequest;
         filters: {
             [param: string]: any[];
-        }
+        };
         lat: number;
         long: number;
-        radius: number
+        radius: number;
     };
 }
 
@@ -47,24 +47,24 @@ export function searchWildfires(
     long: number,
     radius: number,
     callback: Function | null = null): SearchWildfiresAction {
-        let filters = {}
-        filters["fireCentreCode"] = selectedFireCentre ? selectedFireCentre : undefined
-        filters["fireOfNote"] = fireOfNoteInd ? fireOfNoteInd : undefined
-        filters["stageOfControlList"] = stageOfControlList ? stageOfControlList : []
-        filters["newFires"] = newFires ? newFires : false
-        filters["bbox"] = bbox ? bbox : undefined
+        const filters = {};
+        filters['fireCentreCode'] = selectedFireCentre ? selectedFireCentre : undefined;
+        filters['fireOfNote'] = fireOfNoteInd ? fireOfNoteInd : undefined;
+        filters['stageOfControlList'] = stageOfControlList ? stageOfControlList : [];
+        filters['newFires'] = newFires ? newFires : false;
+        filters['bbox'] = bbox ? bbox : undefined;
 
         return {
             type: SEARCH_WILDFIRES,
-            componentId: componentId,
-            displayLabel: displayLabel,
+            componentId,
+            displayLabel,
             callback: callback ? callback : () => {},
             payload: {
                 pageInfoRequest,
-                filters: filters,
-                lat: lat,
-                long: long,
-                radius: radius
+                filters,
+                lat,
+                long,
+                radius
             }
         };
 }
@@ -72,7 +72,7 @@ export function searchWildfires(
 export function searchWildfiresSuccess(componentId: string, value: any): SearchWildfiresSuccessAction{
     return {
         type: SEARCH_WILDFIRES_SUCCESS,
-        componentId: componentId,
+        componentId,
         payload: {
             value
         }
@@ -82,7 +82,7 @@ export function searchWildfiresSuccess(componentId: string, value: any): SearchW
 export function searchWildfiresError(componentId: string, error: ErrorState): SearchWildfiresErrorAction {
     return {
         type: SEARCH_WILDFIRES_ERROR,
-        componentId: componentId,
+        componentId,
         payload: {
             error
         }

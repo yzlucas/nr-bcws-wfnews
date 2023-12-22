@@ -1,5 +1,5 @@
-import { Component } from "@angular/core";
-import { WildFiresListComponent } from "./wildfires-list.component";
+import { Component } from '@angular/core';
+import { WildFiresListComponent } from './wildfires-list.component';
 
 @Component({
     selector: 'wf-list-desktop',
@@ -10,5 +10,5 @@ import { WildFiresListComponent } from "./wildfires-list.component";
   })
 
 export class WildFiresListComponentDesktop extends WildFiresListComponent {
-    columnsToDisplay = ["fireName", "stageOfControl", "fireCentreName", "location", "lastUpdated", "viewMap"];
+    columnsToDisplay = ['fireName', 'stageOfControl', 'fireCentreName', 'location', 'lastUpdated', 'viewMap'];
 }

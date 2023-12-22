@@ -29,7 +29,7 @@ export const ICON = {
   EXT_LINK: 'external-link',
   FACEBOOK_SQUARE: 'fb-square',
   FACEBOOK: 'facebook',
-  FILTER_CANCEL: "filter-cancel",
+  FILTER_CANCEL: 'filter-cancel',
   FIRE: 'fire',
   INCIDENT: 'incident',
   MAP_SIGNS: 'map-signs',
@@ -85,8 +85,8 @@ export const ICON = {
 })
 export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
   public url;
-  public snowPlowHelper = snowPlowHelper
-  public isMobileView = mobileView
+  public snowPlowHelper = snowPlowHelper;
+  public isMobileView = mobileView;
   public TOOLTIP_DELAY = 500;
 
 
@@ -108,7 +108,7 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
 
   applicationState: WfApplicationState = {
     menu: 'hidden'
-  }
+  };
 
   appMenu: WfMenuItems;
   footerMenu: WfMenuItems;
@@ -118,7 +118,7 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
   lastSyncDate;
   lastSyncValue = undefined;
   tokenSubscription: Subscription;
-  activeMenuItem: string = '';
+  activeMenuItem = '';
   showMobileNavigationBar = false;
 
   constructor(
@@ -132,7 +132,7 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
     protected tokenService: TokenService,
     protected cdr: ChangeDetectorRef,
     protected dialog: MatDialog,
-    protected wfMapService:WFMapService,
+    protected wfMapService: WFMapService,
     protected capacitorService: CapacitorService,
     protected commonUtilityService: CommonUtilityService,
     protected zone: NgZone
@@ -140,7 +140,7 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
   ) {
   }
 
-  private updateMapSize = function () {
+  private updateMapSize = function() {
     this.storeViewportSize();
   };
 
@@ -152,9 +152,9 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
           console.log('Orientation locked to Portrait');
         }).catch(err => {
           console.error('Failed to lock device orientation: ', err);
-        })
+        });
       } else {
-        console.error('Failed to lock device orientation')
+        console.error('Failed to lock device orientation');
       }
     }
 
@@ -173,8 +173,8 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
       });
     }
     this.tokenSubscription = this.tokenService.credentialsEmitter.subscribe((creds) => {
-      let first = creds.given_name || creds.givenName;
-      let last = creds.family_name || creds.familyName;
+      const first = creds.given_name || creds.givenName;
+      const last = creds.family_name || creds.familyName;
 
       this.applicationConfig.userName = `${first} ${last}`;
     });
@@ -185,7 +185,7 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
 
     window['SPLASH_SCREEN'].remove();
     if (localStorage.getItem('dontShowDisclaimer') !== 'true'){
-      let dialogRef = this.dialog.open(DisclaimerDialogComponent, {
+      const dialogRef = this.dialog.open(DisclaimerDialogComponent, {
         autoFocus: false,
         width: '600px',
       });
@@ -198,7 +198,7 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
       });
     }
 
-    const mainApp = document.getElementById('main-app')
+    const mainApp = document.getElementById('main-app');
     if (mainApp) {
       setTimeout(() => {
         mainApp.classList.remove('menu-collapsed');
@@ -206,7 +206,7 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
         if (document.getElementsByTagName('wf-menu')[0]) {
           (document.getElementsByTagName('wf-menu')[0] as HTMLElement).removeAttribute('style');
         }
-      }, 200)
+      }, 200);
     }
 
     this.checkScreenWidth();
@@ -222,7 +222,7 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
         //      this.router.navigate([ResourcesRoutes.LANDING])
         //  })
         //}, 1000);
-      })
+      });
 
       this.capacitorService.locationNotifications.subscribe((ev: LocationNotification) => {
         this.router.navigate([ResourcesRoutes.ACTIVEWILDFIREMAP], {
@@ -233,36 +233,36 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
             time: Date.now()
           }
         });
-      })
+      });
     }
   }
 
-  isIncidentsPage () {
-    return window.location.pathname === '/incidents' || window.location.pathname === '/reportOfFire'
+  isIncidentsPage() {
+    return window.location.pathname === '/incidents' || window.location.pathname === '/reportOfFire';
   }
 
-  redirectToPublicMobile () {
-    return ((window.innerWidth < 768 && window.innerHeight < 1024) || (window.innerWidth < 1024 && window.innerHeight < 768))
+  redirectToPublicMobile() {
+    return ((window.innerWidth < 768 && window.innerHeight < 1024) || (window.innerWidth < 1024 && window.innerHeight < 768));
   }
 
-  getAppStoreLink () {
-    if ((navigator.userAgent.toLowerCase().indexOf("iphone") > -1) || (navigator.userAgent.toLowerCase().indexOf("ipad") > -1)) {
+  getAppStoreLink() {
+    if ((navigator.userAgent.toLowerCase().indexOf('iphone') > -1) || (navigator.userAgent.toLowerCase().indexOf('ipad') > -1)) {
       return this.appConfigService.getConfig().externalAppConfig['appStoreUrl'].toString();
     } else {
       return this.appConfigService.getConfig().externalAppConfig['googlePlayUrl'].toString();
     }
   }
 
-  getAppStoreName () {
-    if ((navigator.userAgent.toLowerCase().indexOf("iphone") > -1) || (navigator.userAgent.toLowerCase().indexOf("ipad") > -1)) {
-      return 'App Store'
+  getAppStoreName() {
+    if ((navigator.userAgent.toLowerCase().indexOf('iphone') > -1) || (navigator.userAgent.toLowerCase().indexOf('ipad') > -1)) {
+      return 'App Store';
     } else {
-      return 'Google Play'
+      return 'Google Play';
     }
   }
 
-  download () {
-    window.open(this.getAppStoreLink(), '_blank')
+  download() {
+    window.open(this.getAppStoreLink(), '_blank');
   }
 
   initAppMenu() {
@@ -300,13 +300,13 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
     }, 1000);
 
     setTimeout(() => {
-        const headerImg = document.getElementsByClassName('bc-logo')
+        const headerImg = document.getElementsByClassName('bc-logo');
         if (headerImg && headerImg[0]) {
-          const node = document.createElement("span")
-          node.style.color = '#fcba19'
-          node.style.marginLeft = '20px'
-          node.append(this.applicationConfig.environment)
-          headerImg[0].appendChild(node)
+          const node = document.createElement('span');
+          node.style.color = '#fcba19';
+          node.style.marginLeft = '20px';
+          node.append(this.applicationConfig.environment);
+          headerImg[0].appendChild(node);
       }
     }, 1000);
   }
@@ -345,13 +345,13 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
       // on resize, ensure the right main panel css is applied
       // Basically, we want mobile all the time on public and
       // desktop all the time on admin
-      const classList = document.getElementById('main-app').classList
+      const classList = document.getElementById('main-app').classList;
       if (this.isAdminPage() && classList.contains('device-mobile')) {
-        classList.remove('device-mobile')
-        classList.add('device-desktop')
+        classList.remove('device-mobile');
+        classList.add('device-desktop');
       } else if(!this.isAdminPage() && this.applicationConfig.environment.toLowerCase() === '' && classList.contains('device-desktop')) {
-        classList.remove('device-desktop')
-        classList.add('device-mobile')
+        classList.remove('device-desktop');
+        classList.add('device-mobile');
       }
     }, 250);
   }
@@ -367,7 +367,7 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
       this.lastSuccessPollSub.unsubscribe();
     }
     if (this.tokenSubscription) {
-      this.tokenSubscription.unsubscribe()
+      this.tokenSubscription.unsubscribe();
     }
   }
 
@@ -437,7 +437,7 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
 
     this.matIconRegistry.addSvgIcon(
       ICON.FILTER_CANCEL,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/filter-cancel.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/filter-cancel.svg')
     );
 
     this.matIconRegistry.addSvgIcon(
@@ -457,56 +457,56 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
 
     this.matIconRegistry.addSvgIcon(
       ICON.DOT,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/dot.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/dot.svg')
     );
 
     this.matIconRegistry.addSvgIcon(
       ICON.CONTACT_US,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/contact-us.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/contact-us.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.CAMPING,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/camping.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/camping.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.LARGER,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/larger.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/larger.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.PHONE,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/phone.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/phone.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.ARROW_FORWARD_ENABLED,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/arrow-forward-enabled.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/arrow-forward-enabled.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.ARROW_FORWARD_DISABLED,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/arrow-forward-disabled.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/arrow-forward-disabled.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.CAMERA,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/camera.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/camera.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.IMAGE,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/image.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/image.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.CAMERA_GREY,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/camera-grey.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/camera-grey.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.IMAGE_GREY,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/image-grey.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/image-grey.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.EDIT,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/edit.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/edit.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.SEND,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/send.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/send.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.LOCATION_OFF,
@@ -530,108 +530,108 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
     );
     this.matIconRegistry.addSvgIcon(
       ICON.ARROW,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/arrow.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/arrow.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.CANCEL,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/cancel.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/cancel.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.AREA_RESTRICTION,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/area-restriction.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/area-restriction.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.BAN,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/ban.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/ban.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.FIRE_DANGER_VERY_LOW,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/fire-danger-very-low.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/fire-danger-very-low.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.FIRE_DANGER_LOW,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/fire-danger-low.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/fire-danger-low.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.FIRE_DANGER_MODERATE,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/fire-danger-moderate.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/fire-danger-moderate.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.FIRE_DANGER_HIGH,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/fire-danger-high.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/fire-danger-high.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.FIRE_DANGER_EXTREME,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/fire-danger-extreme.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/fire-danger-extreme.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.ROAD_EVENT,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/road-event.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/road-event.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.CLOSED_RECREATION_SITE,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/closed-recreation-site.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/closed-recreation-site.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.REGIONAL_DISTRICTS,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/regional-districts.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/regional-districts.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.BROWN_SQUARE,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/brown-square.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/brown-square.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.INDIAN_RESERVE,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/indian-reserve.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/indian-reserve.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.BACK_ICON_PANEL,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/back-icon-panel.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/back-icon-panel.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.FIRE_NOTE,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/fire-note.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/fire-note.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.LOCATION_DISABLED,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/location-disabled.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/location-disabled.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.LOCATION_ENABLED,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/location-enabled.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/location-enabled.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.CALENDAR,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/calendar.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/calendar.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.ZOOM_IN,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/zoom-in.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/zoom-in.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.ARROW_LEFT,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/arrow-left.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/arrow-left.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.CARBON_CALENDAR,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/carbon_calendar.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/carbon_calendar.svg')
       );
     this.matIconRegistry.addSvgIcon(
       ICON.AGENCY,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/carbon_finance.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/carbon_finance.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.CARBON_GAUGE,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/carbon_gauge.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/carbon_gauge.svg')
     );
     this.matIconRegistry.addSvgIcon(
       ICON.CARBON_LAYER,
-      this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/svg-icons/carbon_layers.svg")
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/images/svg-icons/carbon_layers.svg')
     );
   }
 
   isAdminPage() {
-    if (this.router.url === '/admin' || this.router.url.includes("/incident?") || this.router.url.includes("?preview=true") || this.router.url === '/error-page') {
+    if (this.router.url === '/admin' || this.router.url.includes('/incident?') || this.router.url.includes('?preview=true') || this.router.url === '/error-page') {
       return true;
     } else {
       return false;
@@ -639,8 +639,8 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
   }
 
   navigateToBcSupport() {
-    let url = this.appConfigService.getConfig().externalAppConfig['bcWildFireSupportPage'].toString();
-    window.open(url, "_blank");
+    const url = this.appConfigService.getConfig().externalAppConfig['bcWildFireSupportPage'].toString();
+    window.open(url, '_blank');
   }
 
   logOutCurrentUser() {
@@ -673,18 +673,16 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
   }
 
   checkScreenWidth(): void {
-    this.showMobileNavigationBar = window.innerWidth < 768
+    this.showMobileNavigationBar = window.innerWidth < 768;
   }
 
   openLink(link: string) {
     if (link === 'Disclaimer') {
-      window.open('https://www2.gov.bc.ca/gov/content/home/disclaimer', "_blank");
-    }
-    else if (link === 'Privacy') {
-      window.open('https://www2.gov.bc.ca/gov/content/home/privacy', "_blank");
-    }
-    else if (link === 'Copyright') {
-      window.open('https://www2.gov.bc.ca/gov/content/home/copyright', "_blank");
+      window.open('https://www2.gov.bc.ca/gov/content/home/disclaimer', '_blank');
+    } else if (link === 'Privacy') {
+      window.open('https://www2.gov.bc.ca/gov/content/home/privacy', '_blank');
+    } else if (link === 'Copyright') {
+      window.open('https://www2.gov.bc.ca/gov/content/home/copyright', '_blank');
     }
   }
 

@@ -1,12 +1,12 @@
-import { Component, Inject } from "@angular/core";
-import { MatSnackBarRef, MAT_SNACK_BAR_DATA } from "@angular/material/snack-bar";
-import { Router } from "@angular/router";
-import { ResourcesRoutes } from "@app/utils";
+import { Component, Inject } from '@angular/core';
+import { MatSnackBarRef, MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { ResourcesRoutes } from '@app/utils';
 
-export type NotificationConfig = {
-    title: string
-    body: string
-}
+export interface NotificationConfig {
+    title: string;
+    body: string;
+};
 
 @Component( {
     selector: 'wfone-notification-snackbar',
@@ -37,17 +37,17 @@ export class NotificationSnackbarComponent {
     ) { }
 
     get title() {
-        return this.data.notification.title
+        return this.data.notification.title;
     }
 
     get body() {
-        return this.data.notification.body
+        return this.data.notification.body;
     }
 
     selectNotification() {
-        const notification = this.data.notification
-        let c = JSON.parse(notification.data['coords']),
-        r = JSON.parse(notification.data['radius'])
+        const notification = this.data.notification;
+        const c = JSON.parse(notification.data['coords']);
+        const r = JSON.parse(notification.data['radius']);
         this.router.navigate([ResourcesRoutes.ACTIVEWILDFIREMAP], {
             queryParams: {
                 latitude: c[0],

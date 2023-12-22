@@ -6,7 +6,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   templateUrl: './location-services-dialog.component.html'
 })
 export class LocationServicesDialogComponent   {
-    locationServicesAlert: String
+    locationServicesAlert: String;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { message: String }) {

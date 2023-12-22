@@ -7,7 +7,7 @@ import { checkLayerVisible } from '@app/utils';
   styleUrls: ['./local-authorities-legend.component.scss']
 })
 export class LocalAuthoritiesLegendComponent {
-  public checkLayerVisible = checkLayerVisible
+  public checkLayerVisible = checkLayerVisible;
 
   constructor() {}
 }

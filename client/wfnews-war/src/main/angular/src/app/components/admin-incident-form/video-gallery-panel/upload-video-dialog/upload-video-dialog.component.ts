@@ -12,17 +12,17 @@ export class DialogData {
     styleUrls: ['./upload-video-dialog.component.scss']
 })
 export class UploadVideoDialogComponent {
-  public title = ''
+  public title = '';
   public url = '';
 
-    constructor (
+    constructor(
       public dialogRef: MatDialogRef<UploadVideoDialogComponent>
     ) {}
 
-    returnResult () {
+    returnResult() {
       return {
         title: this.title,
         url: this.url
-      }
+      };
     }
 }

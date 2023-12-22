@@ -29,7 +29,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {PaginationInstance} from 'ngx-pagination';
 import { RootState } from '../../store';
 import { ErrorState, LoadState } from '../../store/application/application.state';
-import { CONSTANTS } from "../../../app/utils/index";
+import { CONSTANTS } from '../../../app/utils/index';
 import { CommonUtilityService } from '../../services/common-utility.service';
 import { WatchlistService } from '../../services/watchlist-service';
 
@@ -223,7 +223,7 @@ export class BaseComponent implements OnInit, OnChanges, AfterViewInit {
     hasAddedUnsavedItemNotBlank(fgMain: UntypedFormGroup, arrayProperty: string) {
         const controls = fgMain?.controls[arrayProperty]['controls'];
         const ret = controls.some(ac => {
-                const fg: UntypedFormGroup = <UntypedFormGroup>ac;
+                const fg: UntypedFormGroup = ac as UntypedFormGroup;
                 if (!fg.get('id').value && controls.length > 1) { //not a default empty entry
                     return true;
                 } else if (!fg.get('id').value && controls.length == 1) { //check if empty entry

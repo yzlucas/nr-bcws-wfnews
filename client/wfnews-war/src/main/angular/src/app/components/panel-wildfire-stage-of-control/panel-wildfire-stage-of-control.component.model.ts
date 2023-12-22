@@ -1,5 +1,5 @@
-import {DomSanitizer} from "@angular/platform-browser";
-import { BaseComponentModel } from "../base/base.component.model";
+import {DomSanitizer} from '@angular/platform-browser';
+import { BaseComponentModel } from '../base/base.component.model';
 
 export class PanelWildfireStageOfControlComponentModel extends BaseComponentModel {
 
@@ -9,7 +9,7 @@ export class PanelWildfireStageOfControlComponentModel extends BaseComponentMode
     }
 
     public clone(): PanelWildfireStageOfControlComponentModel {
-        let clonedModel: PanelWildfireStageOfControlComponentModel = new PanelWildfireStageOfControlComponentModel(this.sanitizer);
+        const clonedModel: PanelWildfireStageOfControlComponentModel = new PanelWildfireStageOfControlComponentModel(this.sanitizer);
         return clonedModel;
     }
 }

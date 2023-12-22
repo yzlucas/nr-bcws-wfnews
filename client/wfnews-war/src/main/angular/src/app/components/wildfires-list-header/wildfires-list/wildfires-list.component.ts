@@ -35,14 +35,14 @@ export class WildFiresListComponent extends CollectionComponent implements OnCha
   public currentDateTimeString;
   filteredOptions: any[];
   placeData: PlaceData;
-  searchByLocationControl=new UntypedFormControl
-  selectedLat:number;
-  selectedLong:number;
+  searchByLocationControl=new UntypedFormControl();
+  selectedLat: number;
+  selectedLong: number;
   url;
-  displayLabel = "Simple Wildfires Search"
-  public sortOptions = [{ description: 'Fire Centre', code: 'fireCentreName'}, { description: 'Name', code: 'incidentName'}, { description: 'Stage of Control', code: 'stageOfControlCode'}, { description: 'Last Updated', code: 'lastUpdatedTimestamp'}]
-  public selectedSortValue = ''
-  selectedFireCentreCode = "";
+  displayLabel = 'Simple Wildfires Search';
+  public sortOptions = [{ description: 'Fire Centre', code: 'fireCentreName'}, { description: 'Name', code: 'incidentName'}, { description: 'Stage of Control', code: 'stageOfControlCode'}, { description: 'Last Updated', code: 'lastUpdatedTimestamp'}];
+  public selectedSortValue = '';
+  selectedFireCentreCode = '';
   wildfiresOfNoteInd = true;
   outOfControlFires = true;
   beingHeldFires = true;
@@ -60,28 +60,27 @@ export class WildFiresListComponent extends CollectionComponent implements OnCha
     80,
     90,
     100,
-  ]
+  ];
   fireCentreOptions = FireCentres;
   locationName: string;
   sortedAddressList: string[];
 
-  public locationData: LocationData
+  public locationData: LocationData;
 
   private isExtraSmall: Observable<BreakpointState> = this.breakpointObserver.observe(Breakpoints.XSmall);
 
   convertFromTimestamp = convertFromTimestamp;
-  convertToStageOfControlDescription = convertToStageOfControlDescription
-  convertToFireCentreDescription = convertToFireCentreDescription
-  snowPlowHelper = snowPlowHelper
+  convertToStageOfControlDescription = convertToStageOfControlDescription;
+  convertToFireCentreDescription = convertToFireCentreDescription;
+  snowPlowHelper = snowPlowHelper;
   convertFireNumber = convertFireNumber;
 
 
-  constructor ( router: Router, route: ActivatedRoute, sanitizer: DomSanitizer, store: Store<RootState>, fb: UntypedFormBuilder, dialog: MatDialog, applicationStateService: ApplicationStateService, tokenService: TokenService, snackbarService: MatSnackBar, overlay: Overlay, cdr: ChangeDetectorRef, appConfigService: AppConfigService, http: HttpClient, watchlistService: WatchlistService, commonUtilityService: CommonUtilityService, private breakpointObserver: BreakpointObserver)
-  {
+  constructor( router: Router, route: ActivatedRoute, sanitizer: DomSanitizer, store: Store<RootState>, fb: UntypedFormBuilder, dialog: MatDialog, applicationStateService: ApplicationStateService, tokenService: TokenService, snackbarService: MatSnackBar, overlay: Overlay, cdr: ChangeDetectorRef, appConfigService: AppConfigService, http: HttpClient, watchlistService: WatchlistService, commonUtilityService: CommonUtilityService, private breakpointObserver: BreakpointObserver) {
     super(router, route, sanitizer, store, fb, dialog, applicationStateService, tokenService, snackbarService, overlay, cdr, appConfigService, http, watchlistService,commonUtilityService);
     this.placeData = new PlaceData();
-    let self = this;
-    this.searchByLocationControl.valueChanges.pipe(debounceTime(200)).subscribe((val:string)=>{
+    const self = this;
+    this.searchByLocationControl.valueChanges.pipe(debounceTime(200)).subscribe((val: string)=>{
       this.locationName = val;
 
       if(!val) {
@@ -94,7 +93,7 @@ export class WildFiresListComponent extends CollectionComponent implements OnCha
 
       if (val.length > 2) {
         this.filteredOptions = [];
-        this.placeData.searchAddresses(val).then(function (results) {
+        this.placeData.searchAddresses(val).then(function(results) {
           if (results) {
             results.forEach((result) => {
               self.sortedAddressList = self.commonUtilityService.sortAddressList(results, val);
@@ -105,8 +104,8 @@ export class WildFiresListComponent extends CollectionComponent implements OnCha
       }
     });
 
-    this.url = this.appConfigService.getConfig().application.baseUrl.toString() + this.router.url.slice(1)
-    this.snowPlowHelper(this.url)
+    this.url = this.appConfigService.getConfig().application.baseUrl.toString() + this.router.url.slice(1);
+    this.snowPlowHelper(this.url);
   }
 
   initModels() {
@@ -115,7 +114,7 @@ export class WildFiresListComponent extends CollectionComponent implements OnCha
   }
 
   loadPage() {
-    this.url = this.appConfigService.getConfig().application.baseUrl.toString() + this.router.url.slice(1)
+    this.url = this.appConfigService.getConfig().application.baseUrl.toString() + this.router.url.slice(1);
     this.placeData = new PlaceData();
     this.componentId = SEARCH_WILDFIRES_COMPONENT_ID;
     this.updateView();
@@ -131,32 +130,32 @@ export class WildFiresListComponent extends CollectionComponent implements OnCha
 
   doSearch() {
     if (!this.wildfiresOfNoteInd && !this.outOfControlFires && !this.beingHeldFires && !this.underControlFires && !this.outWildfiresInd) {
-      this.collectionData = []
+      this.collectionData = [];
       this.collection = null;
-      this.summaryString = 'No records to display.'
+      this.summaryString = 'No records to display.';
       setTimeout(() => {
         this.cdr.detectChanges();
       });
     } else {
       // set stages of control to return
-      const stageOfControlList = []
+      const stageOfControlList = [];
       if (this.outWildfiresInd) {
-        stageOfControlList.push('OUT')
+        stageOfControlList.push('OUT');
       }
       if(this.outOfControlFires) {
-        stageOfControlList.push('OUT_CNTRL')
+        stageOfControlList.push('OUT_CNTRL');
       }
       if(this.beingHeldFires) {
-        stageOfControlList.push('HOLDING')
+        stageOfControlList.push('HOLDING');
       }
       if(this.underControlFires) {
-        stageOfControlList.push('UNDR_CNTRL')
+        stageOfControlList.push('UNDR_CNTRL');
       }
 
       if (this.selectedSortValue !== '') {
-        this.currentSort = this.selectedSortValue
-        this.currentSortDirection = this.currentSortDirection === 'ASC' ? 'DESC' : 'ASC'
-        this.selectedSortValue = ''
+        this.currentSort = this.selectedSortValue;
+        this.currentSortDirection = this.currentSortDirection === 'ASC' ? 'DESC' : 'ASC';
+        this.selectedSortValue = '';
       }
 
       this.store.dispatch(searchWildfires(this.componentId, {
@@ -181,7 +180,7 @@ export class WildFiresListComponent extends CollectionComponent implements OnCha
     this.selectedFireCentreCode = null;
     this.wildfiresOfNoteInd = false;
     this.outWildfiresInd = false;
-    this.selectedRadius = 50
+    this.selectedRadius = 50;
     this.selectedLat = null;
     this.selectedLong = null;
     super.onChangeFilters();
@@ -190,7 +189,7 @@ export class WildFiresListComponent extends CollectionComponent implements OnCha
 
 
   getViewModel(): WildFiresListComponentModel {
-    return <WildFiresListComponentModel>this.viewModel;
+    return this.viewModel as WildFiresListComponentModel;
   }
 
 
@@ -199,36 +198,36 @@ export class WildFiresListComponent extends CollectionComponent implements OnCha
   }
 
   ngOnchanges(changes: SimpleChanges) {
-    super.ngOnChanges(changes)
+    super.ngOnChanges(changes);
   }
 
   convertToDate(value: string) {
     if (value) {
-      return moment(value).format('MMM Do YYYY h:mm:ss a')
+      return moment(value).format('MMM Do YYYY h:mm:ss a');
     }
   }
 
   selectIncident(incident: any) {
       const url = this.router.serializeUrl(
         this.router.createUrlTree([ResourcesRoutes.PUBLIC_INCIDENT], { queryParams: { fireYear: incident.fireYear, incidentNumber: incident.incidentNumberLabel } })
-      )
-      window.open(url, '_blank')
+      );
+      window.open(url, '_blank');
   }
 
-  onWatchlist (incident: any): boolean {
-    return this.watchlistService.getWatchlist().includes(incident.fireYear + ':' + incident.incidentNumberLabel)
+  onWatchlist(incident: any): boolean {
+    return this.watchlistService.getWatchlist().includes(incident.fireYear + ':' + incident.incidentNumberLabel);
   }
 
   addToWatchlist(incident: any) {
     if (this.onWatchlist(incident)) {
-      this.removeFromWatchlist(incident)
+      this.removeFromWatchlist(incident);
     } else {
-      this.watchlistService.saveToWatchlist(incident.fireYear, incident.incidentNumberLabel)
+      this.watchlistService.saveToWatchlist(incident.fireYear, incident.incidentNumberLabel);
     }
   }
 
-  removeFromWatchlist (incident: any) {
-    this.watchlistService.removeFromWatchlist(incident.fireYear, incident.incidentNumberLabel)
+  removeFromWatchlist(incident: any) {
+    this.watchlistService.removeFromWatchlist(incident.fireYear, incident.incidentNumberLabel);
   }
 
   viewMap(incident: any) {
@@ -239,18 +238,18 @@ export class WildFiresListComponent extends CollectionComponent implements OnCha
 
   stageOfControlChanges(event: any) {
     this.onChangeFilters();
-    this.doSearch()
+    this.doSearch();
   }
 
   isLocationName() {
-    return this.locationName && this.locationName !== ''
+    return this.locationName && this.locationName !== '';
   }
 
   isSearchText() {
-    return this.searchText && this.searchText !== ''
+    return this.searchText && this.searchText !== '';
   }
 
-  openLocationFilter () {
+  openLocationFilter() {
     const dialogRef = this.dialog.open(FilterByLocationDialogComponent, {
       width: '380px',
       height: '453px',
@@ -271,30 +270,30 @@ export class WildFiresListComponent extends CollectionComponent implements OnCha
       smallDialogSubscription.unsubscribe();
 
       if ((result as boolean) === false) {
-        this.clearLocation()
+        this.clearLocation();
       } else {
-        this.selectedLat = (result as LocationData).latitude
-        this.selectedLong = (result as LocationData).longitude
-        this.selectedRadius = (result as LocationData).radius
+        this.selectedLat = (result as LocationData).latitude;
+        this.selectedLong = (result as LocationData).longitude;
+        this.selectedRadius = (result as LocationData).radius;
 
-        this.locationData = result as LocationData
+        this.locationData = result as LocationData;
       }
 
-      this.doSearch()
+      this.doSearch();
     });
   }
 
-  clearLocation () {
-    this.locationData = null
-    this.selectedLat = null
-    this.selectedLong = null
-    this.selectedRadius = null
+  clearLocation() {
+    this.locationData = null;
+    this.selectedLat = null;
+    this.selectedLong = null;
+    this.selectedRadius = null;
   }
 
-  clearLocationFilter () {
-    this.locationData = undefined
-    this.searchTextUpdated()
-    this.clearLocation()
-    this.doSearch()
+  clearLocationFilter() {
+    this.locationData = undefined;
+    this.searchTextUpdated();
+    this.clearLocation();
+    this.doSearch();
   }
 }

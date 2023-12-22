@@ -8,14 +8,14 @@ import { IncidentMapsPanel } from '../incident-maps-panel/incident-maps-panel.co
 })
 export class IncidentMapsPanelMobileComponent extends IncidentMapsPanel{
 
-  limit: number = 10;
+  limit = 10;
 
   convertDate(dateString) {
     if (dateString) {
       const date = new Date(dateString);
-      const options: Intl.DateTimeFormatOptions = { month: "short", day: "numeric", year: "numeric" };
-      const formattedDate: string = date.toLocaleDateString("en-US", options);
-      return formattedDate
+      const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric', year: 'numeric' };
+      const formattedDate: string = date.toLocaleDateString('en-US', options);
+      return formattedDate;
     }
   }
 

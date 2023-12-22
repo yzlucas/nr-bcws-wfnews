@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import * as L from 'leaflet'
+import * as L from 'leaflet';
 
 
 @Component({
@@ -14,7 +14,7 @@ export class notificationMapComponent implements OnInit, AfterViewInit {
   notificationLocationMarker: any;
   xNotificationLocationMarker: any;
 
-  radiusValue: number = 25;
+  radiusValue = 25;
   radiusCircle: any;
 
   constructor(private dialogRef: MatDialogRef<notificationMapComponent>, protected cdr: ChangeDetectorRef, @Inject(MAT_DIALOG_DATA) public data) { }
@@ -24,7 +24,7 @@ export class notificationMapComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.loadMap()
+    this.loadMap();
   }
 
   loadMap() {
@@ -86,13 +86,11 @@ export class notificationMapComponent implements OnInit, AfterViewInit {
         this.notificationLocationMarker.setLatLng(mapCenter);
         this.xNotificationLocationMarker.setLatLng(mapCenter);
       });
-    }
-
-    else if (this.data.title === 'Notification Radius') {
+    } else if (this.data.title === 'Notification Radius') {
       // set radius on map
       const markerOptions = {
         icon: L.icon({
-          iconUrl: "/assets/images/svg-icons/blue-white-location-icon.svg",
+          iconUrl: '/assets/images/svg-icons/blue-white-location-icon.svg',
           iconSize: [32, 32],
           iconAnchor: [16, 32],
           popupAnchor: [0, -32],
@@ -114,7 +112,7 @@ export class notificationMapComponent implements OnInit, AfterViewInit {
         fillOpacity: 0.2,  // Fill opacity of the circle
       };
       this.radiusCircle = L.circle(center, {
-        radius: radius,
+        radius,
         ...circleOptions,
       }).addTo(this.map);
     }
@@ -162,7 +160,7 @@ export class notificationMapComponent implements OnInit, AfterViewInit {
       this.map.setView(this.notificationLocationMarker.getLatLng(), zoomLevel);
 
       this.radiusCircle = L.circle(this.notificationLocationMarker.getLatLng(), {
-        radius: radius,
+        radius,
         ...circleOptions,
       }).addTo(this.map);
       this.cdr.detectChanges();

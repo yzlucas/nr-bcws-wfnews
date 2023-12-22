@@ -6,7 +6,7 @@ import { FCM } from '@capacitor-community/fcm';
 import { Store } from '@ngrx/store';
 import { BehaviorSubject, fromEvent } from 'rxjs';
 import { EventEmitterService } from './event-emitter.service';
-import { environment } from "../../environments/environment";
+import { environment } from '../../environments/environment';
 import { RootState } from '../store';
 import { ApplicationStateService } from './application-state.service';
 import { App, AppState } from '@capacitor/app';
@@ -20,25 +20,25 @@ import { NotificationConfig, NotificationSnackbarComponent } from '../components
 import { ResourcesRoutes } from '@app/utils';
 
 export interface CompassHeading {
-    magneticHeading?: number //The heading in degrees from 0-359.99 at a single moment in time. (Number)
-    trueHeading?: number //The heading relative to the geographic North Pole in degrees 0-359.99 at a single moment in time. A negative value indicates that the true heading can't be determined. (Number)
-    headingAccuracy?: number //The deviation in degrees between the reported heading and the true heading. (Number)
-    timestamp?: string //The time at which this heading was determined. (DOMTimeStamp)
-    error?: string
+    magneticHeading?: number; //The heading in degrees from 0-359.99 at a single moment in time. (Number)
+    trueHeading?: number; //The heading relative to the geographic North Pole in degrees 0-359.99 at a single moment in time. A negative value indicates that the true heading can't be determined. (Number)
+    headingAccuracy?: number; //The deviation in degrees between the reported heading and the true heading. (Number)
+    timestamp?: string; //The time at which this heading was determined. (DOMTimeStamp)
+    error?: string;
 }
 
 export interface LocationNotification {
-    latitude: number,
-    longitude: number
-    radius: number
-    featureId: string
-    featureType: string
-    fireYear?: number
+    latitude: number;
+    longitude: number;
+    radius: number;
+    featureId: string;
+    featureType: string;
+    fireYear?: number;
 }
 
 export interface ReportOfFireNotification {
-    title: string
-    body: string
+    title: string;
+    body: string;
 }
 
 export interface DeviceProperties {
@@ -51,8 +51,8 @@ export interface DeviceProperties {
 }
 
 
-const UPDATE_AFTER_INACTIVE_MILLIS = 1000 * 60 // 1 minute
-const REFRESH_INTERVAL_ACTIVE_MILLIS = 5 * 1000 * 60 // 5 minutes
+const UPDATE_AFTER_INACTIVE_MILLIS = 1000 * 60; // 1 minute
+const REFRESH_INTERVAL_ACTIVE_MILLIS = 5 * 1000 * 60; // 5 minutes
 
 @Injectable({
     providedIn: 'root',
@@ -70,16 +70,16 @@ export class CapacitorService {
     pnNav = null;
     notificationToken = null;
     updateMainMapLayers = new EventEmitter();
-    currentHeadingPromise: Promise<CompassHeading>
-    locationNotifications = new EventEmitter<LocationNotification>()
-    rofNotifications = new EventEmitter<ReportOfFireNotification>()
+    currentHeadingPromise: Promise<CompassHeading>;
+    locationNotifications = new EventEmitter<LocationNotification>();
+    rofNotifications = new EventEmitter<ReportOfFireNotification>();
     inactiveStart: number;
-    refreshTimer
-    locationNotificationsDelay = 5000
-    rofNotificationsDelay = 5000
-    notificationSnackbarPromise = Promise.resolve()
-    registeredForNotifications = false
-    private devicePropertiesPromise: Promise<DeviceProperties>
+    refreshTimer;
+    locationNotificationsDelay = 5000;
+    rofNotificationsDelay = 5000;
+    notificationSnackbarPromise = Promise.resolve();
+    registeredForNotifications = false;
+    private devicePropertiesPromise: Promise<DeviceProperties>;
 
 
     constructor(
@@ -106,7 +106,7 @@ export class CapacitorService {
 
         this.initialized = this.checkDevice()
             .then(() => {
-                this.init()
+                this.init();
 
                 // use for testing notification at startup
                 // this.emitLocationNotification( {
@@ -115,53 +115,58 @@ export class CapacitorService {
                 //     messageID: 'V65055',
                 //     topicKey: 'BCWS_ActiveFires_PublicView',
                 // } )
-            })
+            });
     }
 
     init() {
-        let startRefreshTimer = () => {
-            stopRefreshTimer()
+        const startRefreshTimer = () => {
+            stopRefreshTimer();
 
             this.refreshTimer = setTimeout( () => {
                 this.updateMainMapLayers.emit();
-                startRefreshTimer()
-            }, REFRESH_INTERVAL_ACTIVE_MILLIS )
-        }
+                startRefreshTimer();
+            }, REFRESH_INTERVAL_ACTIVE_MILLIS );
+        };
 
-        let stopRefreshTimer = () => {
-            if ( !this.refreshTimer ) return
+        const stopRefreshTimer = () => {
+            if ( !this.refreshTimer ) {
+return;
+}
 
-            clearTimeout( this.refreshTimer )
-            this.refreshTimer = null
-        }
+            clearTimeout( this.refreshTimer );
+            this.refreshTimer = null;
+        };
 
-        startRefreshTimer()
+        startRefreshTimer();
 
         App.addListener('appStateChange', (state) => {
             if ( state.isActive ) {
-                startRefreshTimer()
+                startRefreshTimer();
 
-                if ( !this.inactiveStart ) return
+                if ( !this.inactiveStart ) {
+return;
+}
 
-                let inactiveDuration = Date.now() - this.inactiveStart
-                this.inactiveStart = null
+                const inactiveDuration = Date.now() - this.inactiveStart;
+                this.inactiveStart = null;
 
                 if ( inactiveDuration > UPDATE_AFTER_INACTIVE_MILLIS ) {
                     this.updateMainMapLayers.emit();
                 }
-            }
-            else {
-                if ( !this.inactiveStart ) this.inactiveStart = Date.now()
+            } else {
+                if ( !this.inactiveStart ) {
+this.inactiveStart = Date.now();
+}
 
-                stopRefreshTimer()
+                stopRefreshTimer();
             }
         } ).catch((error) => {
             console.error(error);
           });
 
         if (this.isWebPlatform) {
-            this.notificationToken = "FakeForWeb";
-            return
+            this.notificationToken = 'FakeForWeb';
+            return;
         }
 
         this.checkInstalledApps();
@@ -176,8 +181,8 @@ export class CapacitorService {
 
         // Request permission to use push notifications
         this.registerForNotifications().then( registered => {
-            console.log('registeredForNotifications',registered)
-            this.registeredForNotifications = registered
+            console.log('registeredForNotifications',registered);
+            this.registeredForNotifications = registered;
         } ).catch((error) => {
             console.error(error);
           });
@@ -208,18 +213,18 @@ export class CapacitorService {
         // Show us the notification payload if the app is open on our device
         PushNotifications.addListener('pushNotificationReceived', (notification) => {
 
-            console.log('pushNotificationReceived', notification)
-            this.handleRofPushNotification( notification )
+            console.log('pushNotificationReceived', notification);
+            this.handleRofPushNotification( notification );
         }).catch((error) => {
             console.error(error);
           });
 
         // Method called when tapping on a notification
         PushNotifications.addListener('pushNotificationActionPerformed', (ev) => {
-            let data = ev.notification.data
-            console.log('pushNotificationActionPerformed', data)
+            const data = ev.notification.data;
+            console.log('pushNotificationActionPerformed', data);
 
-                this.emitLocationNotification( data )
+                this.emitLocationNotification( data );
         }).catch((error) => {
             console.error(error);
           });
@@ -241,46 +246,42 @@ export class CapacitorService {
 
     handleRofPushNotification( notification: PushNotificationSchema ) {
 
-        this.notificationSnackbarPromise = this.notificationSnackbarPromise.then( () => {
-            return new Promise( ( res, rej ) => {
-                let sb = this.showNotificationSnackbar(notification)
+        this.notificationSnackbarPromise = this.notificationSnackbarPromise.then( () => new Promise( ( res, rej ) => {
+                const sb = this.showNotificationSnackbar(notification);
 
                 sb.onAction().subscribe( () => {
-                    this.emitLocationNotification(notification.body )
-                } )
+                    this.emitLocationNotification(notification.body );
+                } );
 
                 sb.afterDismissed().subscribe( () => {
-                    res()
-                } )
-            } )
-        } )
+                    res();
+                } );
+            } ) );
 
-        return true
+        return true;
     }
 
     emitRofNotification( title, body ) {
         setTimeout(() => {
             try {             
 
-                this.rofNotifications.emit({ title, body })
+                this.rofNotifications.emit({ title, body });
 
-                this.rofNotificationsDelay = 0
-            }
-            catch (e) {
-                console.warn('push notification not handled:', e, title + ': ' + body)
+                this.rofNotificationsDelay = 0;
+            } catch (e) {
+                console.warn('push notification not handled:', e, title + ': ' + body);
             }
         }, this.rofNotificationsDelay );
     }
 
     handleLocationPushNotification( notification: PushNotificationSchema ) {
 
-        this.notificationSnackbarPromise = this.notificationSnackbarPromise.then( () => {
-            return new Promise( ( res, rej ) => {
-                let sb = this.showNotificationSnackbar(notification)
+        this.notificationSnackbarPromise = this.notificationSnackbarPromise.then( () => new Promise( ( res, rej ) => {
+                const sb = this.showNotificationSnackbar(notification);
 
                 sb.onAction().subscribe( () => {
-                    let c = JSON.parse(notification.data['coords']),
-                    r = JSON.parse(notification.data['radius'])
+                    const c = JSON.parse(notification.data['coords']);
+                    const r = JSON.parse(notification.data['radius']);
                     this.router.navigate([ResourcesRoutes.ACTIVEWILDFIREMAP], {
                         queryParams: {
                             latitude: c[0],
@@ -293,22 +294,21 @@ export class CapacitorService {
                             time: Date.now()
                         }
                       });
-                } )
+                } );
 
                 sb.afterDismissed().subscribe( () => {
-                    res()
-                } )
-            } )
-        } )
+                    res();
+                } );
+            } ) );
 
-        return true
+        return true;
     }
 
     emitLocationNotification( data ) {
         setTimeout(() => {
             try {
-                let c = JSON.parse(data['coords']),
-                    r = JSON.parse(data['radius'])
+                const c = JSON.parse(data['coords']);
+                    const r = JSON.parse(data['radius']);
 
                 this.locationNotifications.emit({
                     latitude: c[0],
@@ -316,44 +316,45 @@ export class CapacitorService {
                     radius: r,
                     featureId: data['messageID'],
                     featureType: data['topicKey']
-                })
+                });
 
-                this.locationNotificationsDelay = 0
-            }
-            catch (e) {
-                console.warn('push notification not handled:', e, data)
+                this.locationNotificationsDelay = 0;
+            } catch (e) {
+                console.warn('push notification not handled:', e, data);
             }
         }, this.locationNotificationsDelay );
     }
 
     showNotificationSnackbar( notification: any) {
-        let cfg: MatSnackBarConfig<any> = {
+        const cfg: MatSnackBarConfig<any> = {
             data: {notification},
             // need to change back to 10 sec. Using 60 sec for testing purpose in case QA missed it.
             duration: 60 * 1000,
             verticalPosition: 'top'
-        }
+        };
 
-        return this.snackbar.openFromComponent( NotificationSnackbarComponent, cfg )
+        return this.snackbar.openFromComponent( NotificationSnackbarComponent, cfg );
     }
 
     checkDevice() {
         // const deviceInfo = <DeviceInfo>
         return Device.getInfo()
             .then( (devInfo) => {
-                console.log(devInfo)
-                if (!devInfo) return
+                console.log(devInfo);
+                if (!devInfo) {
+return;
+}
 
                 this.isIOSPlatform = devInfo.platform == 'ios';
                 this.isAndroidPlatform = devInfo.platform == 'android';
                 this.isWebPlatform = devInfo.platform != 'ios' && devInfo.platform != 'android';
 
-                return Device.getId()
+                return Device.getId();
             } )
             .then( ( deviceId ) => {
-                console.log(deviceId)
+                console.log(deviceId);
                 this.deviceId = deviceId.identifier;
-            })
+            });
     }
 
     async getCurrentPosition(options?: PositionOptions): Promise<Position> {
@@ -385,7 +386,7 @@ export class CapacitorService {
 
     openLinkInAppBrowser(url: string) {
         Browser.open({
-            url: url,
+            url,
             toolbarColor: '#f7f7f9'
         }).catch((error) => {
             console.error(error);
@@ -424,7 +425,9 @@ export class CapacitorService {
     }
 
     public isMobilePlatform(): boolean {
-        if (this.isIOSPlatform || this.isAndroidPlatform) { return true; }
+        if (this.isIOSPlatform || this.isAndroidPlatform) {
+ return true; 
+}
         return !!environment['is_mobile_platform'];
     }
 
@@ -467,21 +470,22 @@ export class CapacitorService {
     }
 
     getCurrentHeading(): Promise<CompassHeading> {
-        let compass = navigator['compass']
-        if (!compass) return Promise.reject(Error('navigator.compass not available'))
-        else{
+        const compass = navigator['compass'];
+        if (!compass) {
+return Promise.reject(Error('navigator.compass not available'));
+} else{
             const currentHeading = new Promise((res, rej) => {
                     compass.getCurrentHeading(
                         (heading: CompassHeading) => {
-                            res(heading)
-                            this.currentHeadingPromise = null
+                            res(heading);
+                            this.currentHeadingPromise = null;
                         },
                         (error) => {
-                            rej(Error('Failed to get heading: ' + JSON.stringify(error)))
-                            this.currentHeadingPromise = null
+                            rej(Error('Failed to get heading: ' + JSON.stringify(error)));
+                            this.currentHeadingPromise = null;
                         }
-                    )
-                })
+                    );
+                });
             
             this.currentHeadingPromise = currentHeading;
 
@@ -493,44 +497,45 @@ export class CapacitorService {
         // const deviceInfo = <DeviceInfo>
         try {
             const deviceInfo = await Device.getInfo();
-            return deviceInfo
+            return deviceInfo;
           } catch (error) {
             console.error('Error getting device info:', error);
           }
     }
 
     get deviceProperties(): Promise<DeviceProperties> {
-        if ( !this.devicePropertiesPromise ) this.devicePropertiesPromise = Device.getInfo()
+        if ( !this.devicePropertiesPromise ) {
+this.devicePropertiesPromise = Device.getInfo()
             .then( devInfo => {
-                console.log(devInfo)
+                console.log(devInfo);
 
                 return Device.getId()
                     .then( deviceId => {
-                        console.log(deviceId)
+                        console.log(deviceId);
 
-                        let p = devInfo && devInfo.platform,
-                            prop: DeviceProperties = {
+                        const p = devInfo && devInfo.platform;
+                            const prop: DeviceProperties = {
                                 isIOSPlatform: p == 'ios',
                                 isAndroidPlatform: p == 'android',
                                 isWebPlatform: p != 'ios' && p != 'android',
                                 isMobilePlatform: p == 'ios' || p == 'android' || !!environment['is_mobile_platform'],
                                 deviceId: deviceId.identifier,
                                 isTwitterInstalled: false,
-                            }
+                            };
                         const scheme = prop.isIOSPlatform ? 'twitter://' : 'com.twitter.android';
                         return AppLauncher.canOpenUrl( { url: scheme } )
                             .then( canOpen => {
-                                prop.isTwitterInstalled = canOpen.value
-                                return prop
+                                prop.isTwitterInstalled = canOpen.value;
+                                return prop;
                             } )
                             .catch( e => {
-                                console.warn(e)
-                                return prop
-                            } )
-                    } )
+                                console.warn(e);
+                                return prop;
+                            } );
+                    } );
             } )
             .catch( e => {
-                console.warn(e)
+                console.warn(e);
                 return {
                     isIOSPlatform: false,
                     isAndroidPlatform: false,
@@ -538,13 +543,14 @@ export class CapacitorService {
                     isMobilePlatform: false,
                     deviceId: '',
                     isTwitterInstalled: false
-                }
-            } )
+                };
+            } );
+}
 
-        return this.devicePropertiesPromise
+        return this.devicePropertiesPromise;
     }
 
     get isMobile(): Promise<boolean> {
-        return this.deviceProperties.then( p => p.isMobilePlatform )
+        return this.deviceProperties.then( p => p.isMobilePlatform );
     }
 }

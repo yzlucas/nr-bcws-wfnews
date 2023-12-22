@@ -12,21 +12,21 @@ export class DialogData {
     styleUrls: ['./publish-dialog.component.scss']
 })
 export class PublishDialogComponent {
-  public title = ''
+  public title = '';
   public file: File;
 
-    constructor (
+    constructor(
       public dialogRef: MatDialogRef<PublishDialogComponent>
     ) {}
 
-    pdfInputChange (fileInputEvent: Event) {
-      this.title = (fileInputEvent.target as any).files[0].name
-      this.file = (fileInputEvent.target as any).files[0]
+    pdfInputChange(fileInputEvent: Event) {
+      this.title = (fileInputEvent.target as any).files[0].name;
+      this.file = (fileInputEvent.target as any).files[0];
     }
 
-    returnResult () {
+    returnResult() {
       return {
         publish: true
-      }
+      };
     }
 }

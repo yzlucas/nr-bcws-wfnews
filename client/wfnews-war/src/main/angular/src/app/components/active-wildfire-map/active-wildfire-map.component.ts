@@ -58,7 +58,7 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
   @ViewChild('LocalAuthorities') localAuthoritiesPanel: MatExpansionPanel;
   @ViewChild('RoutesImpacted') routesImpactedPanel: MatExpansionPanel;
 
-  @ViewChildren("locationOptions") locationOptions: QueryList<ElementRef>;
+  @ViewChildren('locationOptions') locationOptions: QueryList<ElementRef>;
   @ViewChild(MatAutocompleteTrigger, {read: MatAutocompleteTrigger}) inputAutoComplete: MatAutocompleteTrigger;
 
   incidentsServiceUrl: string;
@@ -73,7 +73,7 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
 
   placeData: PlaceData;
   searchByLocationControl = new UntypedFormControl();
-  public filteredOptions: SearchResult[] = []
+  public filteredOptions: SearchResult[] = [];
   SMK: any;
   leafletInstance: any;
   searchLocationsLayerGroup: any;
@@ -95,8 +95,8 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
   filteredMunicipalities: any[];
   filteredFirstNationsTreatyLand: any[];
   filteredIndianReserve: any[];
-  savedLocationlabelsToShow : any[] = [];
-  savedLocationlabels : any[] = [];
+  savedLocationlabelsToShow: any[] = [];
+  savedLocationlabels: any[] = [];
 
   isLocationEnabled: boolean;
   public userLocation;
@@ -108,10 +108,10 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
   notificationState = 0;
   wildfireYear = new Date().getFullYear().toString();
 
-  safeAreaInsetTopValue
+  safeAreaInsetTopValue;
   safeAreaInsetBottomValue: string;
 
-  public searchData: SearchResult
+  public searchData: SearchResult;
 
   showPanel: boolean;
 
@@ -122,11 +122,11 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
     'active-wildfires-under-control',
     'active-wildfires-out',
   ];
-  public isMobileView = mobileView
-  public snowPlowHelper = snowPlowHelper
+  public isMobileView = mobileView;
+  public snowPlowHelper = snowPlowHelper;
 
-  public sliderButtonHold = false
-  public clickedMyLocation = false
+  public sliderButtonHold = false;
+  public clickedMyLocation = false;
 
   private isExtraSmall: Observable<BreakpointState> = this.breakpointObserver.observe(Breakpoints.XSmall);
 
@@ -150,7 +150,7 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
     this.incidentsServiceUrl = this.appConfig.getConfig().rest['newsLocal'];
     this.placeData = new PlaceData();
     this.markers = new Array();
-    let self = this;
+    const self = this;
 
     this.searchByLocationControl.valueChanges.pipe(debounceTime(200)).subscribe((val: string) => {
       if (!val) {
@@ -162,7 +162,9 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
       if (val.length > 2 || this.clickedMyLocation) {
         this.filteredOptions = [];
         this.searchLayerGroup.clearLayers();
-        if(!this.isMobileView()) this.inputAutoComplete.openPanel();
+        if(!this.isMobileView()) {
+this.inputAutoComplete.openPanel();
+}
         // search addresses
         if (val.length > 2) {
           this.placeData.searchAddresses(val).then((results) => {
@@ -177,12 +179,12 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
                   distance: '0',
                   relevance: /^\d/.test(val.trim()) ? 1 : 4,
                   location: result.loc
-                })
+                });
               }
-              this.filteredOptions.sort((a, b) => a.relevance > b.relevance ? 1 : a.relevance < b.relevance ? -1 : 0 || a.title.localeCompare(b.title))
-              this.pushTextMatchToFront(val)
+              this.filteredOptions.sort((a, b) => a.relevance > b.relevance ? 1 : a.relevance < b.relevance ? -1 : 0 || a.title.localeCompare(b.title));
+              this.pushTextMatchToFront(val);
 
-              this.cdr.markForCheck()
+              this.cdr.markForCheck();
             }
           });
         }
@@ -200,24 +202,24 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
                   distance: '0',
                   relevance: /^\d/.test(val.trim()) ? 2 : 1,
                   location: [Number(element.longitude), Number(element.latitude)]
-                })
+                });
               }
-              this.filteredOptions.sort((a, b) => a.relevance > b.relevance ? 1 : a.relevance < b.relevance ? -1 : 0 || a.title.localeCompare(b.title))
-              this.pushTextMatchToFront(val)
+              this.filteredOptions.sort((a, b) => a.relevance > b.relevance ? 1 : a.relevance < b.relevance ? -1 : 0 || a.title.localeCompare(b.title));
+              this.pushTextMatchToFront(val);
               // what happens on mobile? Identify?
               if (isMobileView()) {
-                this.identify([this.userLocation.coords.longitude, this.userLocation.coords.latitude], 50000)
+                this.identify([this.userLocation.coords.longitude, this.userLocation.coords.latitude], 50000);
               }
-              this.cdr.markForCheck()
+              this.cdr.markForCheck();
             }
-          })
+          });
           searchFon++;
         }
 
         // search evac orders
-        let whereString = null
+        let whereString = null;
         if (val?.length > 0) {
-          whereString = `EVENT_NAME LIKE '%${val}%' OR ORDER_ALERT_STATUS LIKE '%${val}%' OR ISSUING_AGENCY LIKE '%${val}%'`
+          whereString = `EVENT_NAME LIKE '%${val}%' OR ORDER_ALERT_STATUS LIKE '%${val}%' OR ISSUING_AGENCY LIKE '%${val}%'`;
         }
         this.agolService.getEvacOrders(this.clickedMyLocation ? null : whereString, this.clickedMyLocation && this?.userLocation?.coords ? { x: this.userLocation?.coords?.longitude, y: this.userLocation?.coords?.latitude, radius: 50 } : null, { returnCentroid: true, returnGeometry: false}).toPromise().then(evacs => {
           if (evacs && evacs.features) {
@@ -233,15 +235,15 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
                         : /^\d/.test(val.trim()) === false && (element.attributes.ORDER_ALERT_STATUS as string).toLowerCase() === 'order' ? 2
                         : 3,
                 location: [element.centroid.x, element.centroid.y]
-              })
+              });
             }
-            this.filteredOptions.sort((a, b) => a.relevance > b.relevance ? 1 : a.relevance < b.relevance ? -1 : 0 || a.title.localeCompare(b.title))
-            this.pushTextMatchToFront(val)
-            this.cdr.markForCheck()
+            this.filteredOptions.sort((a, b) => a.relevance > b.relevance ? 1 : a.relevance < b.relevance ? -1 : 0 || a.title.localeCompare(b.title));
+            this.pushTextMatchToFront(val);
+            this.cdr.markForCheck();
           }
-        })
+        });
       }
-    })
+    });
 
     App.addListener('resume', () => {
       this.updateLocationEnabledVariable();
@@ -249,19 +251,19 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
   }
 
   pushTextMatchToFront(val: string) {
-    const matches: SearchResult[] = []
+    const matches: SearchResult[] = [];
     for (const result of this.filteredOptions) {
       if (result.type === 'address' && result.title.toLowerCase().includes(val.toLowerCase())) {
-        matches.push(result)
+        matches.push(result);
         const index = this.filteredOptions.indexOf(result);
         if (index) {
-          this.filteredOptions.splice(index, 1)
+          this.filteredOptions.splice(index, 1);
         }
       }
     }
 
     if (matches.length > 0) {
-      this.filteredOptions = matches.concat(this.filteredOptions)
+      this.filteredOptions = matches.concat(this.filteredOptions);
     }
   }
 
@@ -301,12 +303,12 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
               result = await this.publishedIncidentService.fetchPublishedIncident(params['featureId'], this.wildfireYear).toPromise();
                   if (result?.stageOfControlCode === 'OUT') {
                     fireIsOutOrNotFound = true;
-                    let dialogRef = this.dialog.open(WildfireNotificationDialogComponent, {
+                    const dialogRef = this.dialog.open(WildfireNotificationDialogComponent, {
                       autoFocus: false,
                       width: '80vw',
                       data: {
-                        title: "This wildfire is Out",
-                        text: "The wildfire is extinguished. To find this wildfire on the map, turn on the 'Out Wildfires' map layer."
+                        title: 'This wildfire is Out',
+                        text: 'The wildfire is extinguished. To find this wildfire on the map, turn on the \'Out Wildfires\' map layer.'
                       }
                     });
                     dialogRef.afterClosed().subscribe(action => {
@@ -316,7 +318,7 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
                             fireYear: result.fireYear,
                             incidentNumber: result.incidentNumberLabel,
                             source: [ResourcesRoutes.ACTIVEWILDFIREMAP]
-                          } })
+                          } });
                       }
                     });
                   } else{
@@ -325,18 +327,17 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
             } catch(error) {
               fireIsOutOrNotFound = true;
               console.error('Error fetching published incident:', error);
-              let dialogRef = this.dialog.open(WildfireNotificationDialogComponent, {
+              const dialogRef = this.dialog.open(WildfireNotificationDialogComponent, {
                 autoFocus: false,
                 width: '80vw',
                 data: {
-                  title: "Wildfire not found",
-                  text: "The wildfire you're looking for may have been a duplicate or entered in error, and has now been removed.",
-                  text2: "For more information, contact fireinfo@gov.bc.ca or call 1 888 336-7378 (3FOREST)"
+                  title: 'Wildfire not found',
+                  text: 'The wildfire you\'re looking for may have been a duplicate or entered in error, and has now been removed.',
+                  text2: 'For more information, contact fireinfo@gov.bc.ca or call 1 888 336-7378 (3FOREST)'
                 }
               });
             }
-          }
-          else{
+          } else{
             this.panToLocation(long, lat);
           }
           // turn on layers
@@ -349,7 +350,7 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
           }
 
           if (params['featureType'] === 'Evacuation_Orders_and_Alerts') {
-            this.onSelectLayer('evacuation-orders-and-alerts')
+            this.onSelectLayer('evacuation-orders-and-alerts');
 
           }
 
@@ -365,9 +366,8 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
                 if (result) {
                   let id = null; 
                   if (result.fireOfNoteInd) {
-                    id = 'active-wildfires-fire-of-note'
-                  }
-                  else {
+                    id = 'active-wildfires-fire-of-note';
+                  } else {
                     if (result.stageOfControlCode === 'OUT_CNTRL') {
                       id = 'active-wildfires-out-of-control';
                     } else if (result.stageOfControlCode === 'HOLDING') {
@@ -395,7 +395,7 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
                         longitude: Number(result.longitude)
                       }
                     }
-                  ]
+                  ];
                   this.cdr.detectChanges();
 
                 }
@@ -405,66 +405,73 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
 
               }
             }
-          }, 2000)
+          }, 2000);
 
-        }, 1000)
-      }});
+        }, 1000);
+      }
+});
     }
 
   panToLocation(long, lat, noZoom?) {
     this.mapConfigService.getMapConfig().then(() => {
-      getActiveMap().$viewer.panToFeature(window['turf'].point([long, lat]), noZoom? null:12)
+      getActiveMap().$viewer.panToFeature(window['turf'].point([long, lat]), noZoom? null:12);
     });
   }
 
   ngOnInit() {
-    this.url = this.appConfigService.getConfig().application.baseUrl.toString() + this.router.url.slice(1)
-    this.snowPlowHelper(this.url)
+    this.url = this.appConfigService.getConfig().application.baseUrl.toString() + this.router.url.slice(1);
+    this.snowPlowHelper(this.url);
     this.showAccordion = true;
     this.updateLocationEnabledVariable();
   }
 
   getFullAddress(location) {
-    let result = "";
+    let result = '';
 
     if (location.civicNumber) {
-      result += location.civicNumber
+      result += location.civicNumber;
     }
 
     if (location.streetName) {
-      result += " " + location.streetName
+      result += ' ' + location.streetName;
     }
 
     if (location.streetQualifier) {
-      result += " " + location.streetQualifier
+      result += ' ' + location.streetQualifier;
     }
 
     if (location.streetType) {
-      result += " " + location.streetType
+      result += ' ' + location.streetType;
     }
 
     return result;
   }
 
   get leaflet() {
-    if (!this.leafletInstance) this.leafletInstance = window['L'];
+    if (!this.leafletInstance) {
+this.leafletInstance = window['L'];
+}
     return this.leafletInstance;
   }
 
   get searchLayerGroup() {
-    if (!this.searchLocationsLayerGroup) this.searchLocationsLayerGroup = this.leaflet.layerGroup().addTo(getActiveMap(this.SMK).$viewer.map);
+    if (!this.searchLocationsLayerGroup) {
+this.searchLocationsLayerGroup = this.leaflet.layerGroup().addTo(getActiveMap(this.SMK).$viewer.map);
+}
     return this.searchLocationsLayerGroup;
   }
 
   onLocationOptionOver(event) {
-    let long = window.jQuery(event.currentTarget).data("loc-long");
-    let lat = window.jQuery(event.currentTarget).data("loc-lat");
+    const long = window.jQuery(event.currentTarget).data('loc-long');
+    const lat = window.jQuery(event.currentTarget).data('loc-lat');
 
     this.removeMarker([lat, long]);
 
-    if (!long || !lat) return;
+    if (!long || !lat) {
+return;
+}
 
-    let largerIcon = {
+    const largerIcon = {
       iconSize: [40, 38],
       shadowAnchor: [4, 62],
       popupAnchor: [1, -34],
@@ -477,9 +484,11 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
   addMarker(long: number, lat: number) {
     this.removeMarker([lat, long]);
 
-    if (!long || !lat) return;
+    if (!long || !lat) {
+return;
+}
 
-    let largerIcon = {
+    const largerIcon = {
       iconSize: [40, 38],
       shadowAnchor: [4, 62],
       popupAnchor: [1, -34],
@@ -490,12 +499,14 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
   }
 
   onLocationOptionOut(event) {
-    let long = window.jQuery(event.currentTarget).data("loc-long");
-    let lat = window.jQuery(event.currentTarget).data("loc-lat");
+    const long = window.jQuery(event.currentTarget).data('loc-long');
+    const lat = window.jQuery(event.currentTarget).data('loc-lat');
 
     this.removeMarker([lat, long]);
 
-    if (!long || !lat) return;
+    if (!long || !lat) {
+return;
+}
 
     this.highlight({ location: [long, lat] });
   }
@@ -509,20 +520,20 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
         shadowAnchor: [4, 62],
         popupAnchor: [-3, -76],
         shadowSize: [21, 21]
-      }
+      };
     }
 
     const self = this;
     const geojsonFeature = {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": place.location
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: place.location
       }
     };
 
     const starIcon = this.leaflet.icon({
-      iconUrl: "data:image/svg+xml,%3Csvg version='1.1' id='Capa_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 55.867 55.867' xml:space='preserve'%3E%3Cpath d='M55.818,21.578c-0.118-0.362-0.431-0.626-0.808-0.681L36.92,18.268L28.83,1.876c-0.168-0.342-0.516-0.558-0.896-0.558 s-0.729,0.216-0.896,0.558l-8.091,16.393l-18.09,2.629c-0.377,0.055-0.689,0.318-0.808,0.681c-0.117,0.361-0.02,0.759,0.253,1.024 l13.091,12.76l-3.091,18.018c-0.064,0.375,0.09,0.754,0.397,0.978c0.309,0.226,0.718,0.255,1.053,0.076l16.182-8.506l16.18,8.506 c0.146,0.077,0.307,0.115,0.466,0.115c0.207,0,0.413-0.064,0.588-0.191c0.308-0.224,0.462-0.603,0.397-0.978l-3.09-18.017 l13.091-12.761C55.838,22.336,55.936,21.939,55.818,21.578z' fill='%23FCBA19'/%3E%3C/svg%3E%0A",
+      iconUrl: 'data:image/svg+xml,%3Csvg version=\'1.1\' id=\'Capa_1\' xmlns=\'http://www.w3.org/2000/svg\' xmlns:xlink=\'http://www.w3.org/1999/xlink\' x=\'0px\' y=\'0px\' viewBox=\'0 0 55.867 55.867\' xml:space=\'preserve\'%3E%3Cpath d=\'M55.818,21.578c-0.118-0.362-0.431-0.626-0.808-0.681L36.92,18.268L28.83,1.876c-0.168-0.342-0.516-0.558-0.896-0.558 s-0.729,0.216-0.896,0.558l-8.091,16.393l-18.09,2.629c-0.377,0.055-0.689,0.318-0.808,0.681c-0.117,0.361-0.02,0.759,0.253,1.024 l13.091,12.76l-3.091,18.018c-0.064,0.375,0.09,0.754,0.397,0.978c0.309,0.226,0.718,0.255,1.053,0.076l16.182-8.506l16.18,8.506 c0.146,0.077,0.307,0.115,0.466,0.115c0.207,0,0.413-0.064,0.588-0.191c0.308-0.224,0.462-0.603,0.397-0.978l-3.09-18.017 l13.091-12.761C55.838,22.336,55.936,21.939,55.818,21.578z\' fill=\'%23FCBA19\'/%3E%3C/svg%3E%0A',
       iconSize: iconSettings.iconSize,
       iconAnchor: iconSettings.iconAnchor,
       shadowAnchor: iconSettings.shadowAnchor,
@@ -531,8 +542,8 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
     });
 
     this.leaflet.geoJson(geojsonFeature, {
-      pointToLayer: function (feature, latlng) {
-        let marker = self.leaflet.marker(latlng, { icon: starIcon });
+      pointToLayer(feature, latlng) {
+        const marker = self.leaflet.marker(latlng, { icon: starIcon });
         self.markers[self.serializeLatLng(latlng)] = marker;
         return marker;
       }
@@ -540,10 +551,10 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
   }
 
   serializeLatLng(latLng) {
-    let latRounded = Math.round((latLng['lat'] + Number.EPSILON) * 100) / 100;
-    let longRounded = Math.round((latLng['lng'] + Number.EPSILON) * 100) / 100;
+    const latRounded = Math.round((latLng['lat'] + Number.EPSILON) * 100) / 100;
+    const longRounded = Math.round((latLng['lng'] + Number.EPSILON) * 100) / 100;
 
-    let latLongRounded = {
+    const latLongRounded = {
       latRounded, longRounded
     };
 
@@ -567,24 +578,24 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
     this.snowPlowHelper(this.url, {
       action: 'location_search',
       text: selectedOption.address
-    })
+    });
     const self = this;
     self.searchLayerGroup.clearLayers();
-    let locationControlValue = selectedOption.title;
+    const locationControlValue = selectedOption.title;
     this.searchByLocationControl.setValue(locationControlValue.trim(), { onlySelf: true, emitEvent: false });
     this.highlight(selectedOption);
     getActiveMap(this.SMK).$viewer.panToFeature(window['turf'].point(selectedOption.location), 12);
     if (selectedOption.type !== 'address') {
       setTimeout(() => {
-        this.identify(selectedOption.location)
-      }, 1000)
+        this.identify(selectedOption.location);
+      }, 1000);
     }
   }
 
   clearSearchLocationControl() {
     this.searchByLocationControl.reset();
     this.isLocationEnabled = false;
-    this.clearMyLocation()
+    this.clearMyLocation();
   }
 
   initMap(smk: any) {
@@ -600,7 +611,7 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
     this.showPanel = true;
     this.incidentRefs = Object.keys(incidentRefs).map(key => incidentRefs[key]);
     if (this.incidentRefs[0] && this.incidentRefs[0]._identifyPoint) {
-      this.panToLocation(this.incidentRefs[0]._identifyPoint.longitude, this.incidentRefs[0]._identifyPoint.latitude,true)
+      this.panToLocation(this.incidentRefs[0]._identifyPoint.longitude, this.incidentRefs[0]._identifyPoint.latitude,true);
     }
   }
 
@@ -610,7 +621,7 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
     this.onSelectLayer(this.selectedLayer);
     this.isMapLoaded = true;
     this.notificationService.getUserNotificationPreferences().then(response =>{
-      const SMK = window['SMK']
+      const SMK = window['SMK'];
       const map = getActiveMap(SMK).$viewer.map;
 
       map.on('zoomend', () => {
@@ -620,7 +631,7 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
         if (Object.hasOwn(SMK.MAP, smkMap)){
           const savedLocationMarker = {
             icon: L.icon({
-              iconUrl: "/assets/images/svg-icons/blue-white-location-icon.svg",
+              iconUrl: '/assets/images/svg-icons/blue-white-location-icon.svg',
               iconSize: [32, 32],
               iconAnchor: [16, 32],
               popupAnchor: [0, -32],
@@ -645,8 +656,8 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
         }
       }
       }) .catch(error=>{
-        console.error(error)
-    })
+        console.error(error);
+    });
     this.cdr.detectChanges();
   }
 
@@ -655,9 +666,9 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
     const map = getActiveMap(this.SMK).$viewer.map;
     const currentZoom = map.getZoom();
     if (currentZoom < 5) {
-      this.removeAllSavedLocationLabels()
+      this.removeAllSavedLocationLabels();
     } else {
-      this.addAllSavedLocationLabels()
+      this.addAllSavedLocationLabels();
     }
   }
 
@@ -790,7 +801,7 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
     // initialize smkApi if undefined
     if (!this.smkApi) {
       let event: Event;
-      this.initMap(event)
+      this.initMap(event);
     }
 
     this.smkApi.setDisplayContextItemsVisible(...layers);
@@ -801,11 +812,11 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
     this.clickedMyLocation = true;
     this.snowPlowHelper(this.url, {
       action: 'find_my_location'
-    })
+    });
 
     this.commonUtilityService.checkLocationServiceStatus().then((enabled) => {
       if (!enabled) {
-        let dialogRef = this.dialog.open(DialogLocationComponent, {
+        const dialogRef = this.dialog.open(DialogLocationComponent, {
           autoFocus: false,
           width: '80vw',
         });
@@ -842,27 +853,27 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
   showAreaHighlight(center, radius) {
     const circle = window.turf.circle(center, radius, { steps: 40, units: 'kilometers' });
     this.smkApi.showFeature('near-me-highlight3x', circle);
-    this.smkApi.panToFeature(circle, 10)
+    this.smkApi.panToFeature(circle, 10);
   }
 
   showLocationMarker(point) {
     this.smkApi.showFeature('my-location', point, {
-      pointToLayer: function (geojson, latLong) {
+      pointToLayer(geojson, latLong) {
         return L.marker(latLong, {
           icon: L.divIcon({
             className: 'wfone-my-location',
             html: '<i class="material-icons">my_location</i>',
             iconSize: [24, 24]
           })
-        })
+        });
       }
-    })
+    });
   }
 
   clearMyLocation() {
     this.smkApi.showFeature('near-me-highlight3x');
-    this.smkApi.showFeature('my-location')
-    this.clickedMyLocation = false
+    this.smkApi.showFeature('my-location');
+    this.clickedMyLocation = false;
   }
 
   searchTextUpdated() {
@@ -880,34 +891,34 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
     return this.resizeBox.nativeElement;
   }
 
-  private lastPointerPosition = 0
+  private lastPointerPosition = 0;
   dragMove(event) {
-    this.resizeBoxElement.style.height = `${window.innerHeight - event.pointerPosition.y + 20}px`
-    this.lastPointerPosition = event.pointerPosition.y
+    this.resizeBoxElement.style.height = `${window.innerHeight - event.pointerPosition.y + 20}px`;
+    this.lastPointerPosition = event.pointerPosition.y;
     if (this.lastTranslate) {
-      this.resizeBoxElement.style.transform = this.lastTranslate
-      this.lastTranslate = undefined
-      this.resizeBoxElement.style.top = '80vh'
-      this.resizeBoxElement.style.borderRadius = '20px'
-      this.resizeBoxElement.style.borderBottomRightRadius = '0px'
-      this.resizeBoxElement.style.borderBottomLeftRadius = '0px'
+      this.resizeBoxElement.style.transform = this.lastTranslate;
+      this.lastTranslate = undefined;
+      this.resizeBoxElement.style.top = '80vh';
+      this.resizeBoxElement.style.borderRadius = '20px';
+      this.resizeBoxElement.style.borderBottomRightRadius = '0px';
+      this.resizeBoxElement.style.borderBottomLeftRadius = '0px';
     }
   }
 
-  private lastTranslate = undefined
+  private lastTranslate = undefined;
   dragDropped(event) {
     if (event.dropPoint.y < 65) {
-      this.lastTranslate = this.resizeBoxElement.style.transform
-      this.resizeBoxElement.style.transform = 'none'
-      this.resizeBoxElement.style.top = '50px'
-      this.resizeBoxElement.style.borderRadius = '0px'
+      this.lastTranslate = this.resizeBoxElement.style.transform;
+      this.resizeBoxElement.style.transform = 'none';
+      this.resizeBoxElement.style.top = '50px';
+      this.resizeBoxElement.style.borderRadius = '0px';
     } else if (event.dropPoint.y > window.innerHeight - 50) {
-      this.lastTranslate = this.resizeBoxElement.style.transform
-      this.resizeBoxElement.style.height = '50px'
-      this.resizeBoxElement.style.transform = 'none'
-      this.resizeBoxElement.style.top = window.innerHeight - 50 + 'px'
+      this.lastTranslate = this.resizeBoxElement.style.transform;
+      this.resizeBoxElement.style.height = '50px';
+      this.resizeBoxElement.style.transform = 'none';
+      this.resizeBoxElement.style.top = window.innerHeight - 50 + 'px';
     }
-    this.resizeBoxElement.style.height = `${window.innerHeight - this.lastPointerPosition + 20}px`
+    this.resizeBoxElement.style.height = `${window.innerHeight - this.lastPointerPosition + 20}px`;
   }
 
   isChecked(layer: SelectedLayer) {
@@ -937,12 +948,12 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
     }
   }
 
-  showLegend () {
+  showLegend() {
     this.isLegendOpen = !this.isLegendOpen;
     this.isAllLayersOpen = false;
   }
 
-  openSearchPage () {
+  openSearchPage() {
     const dialogRef = this.dialog.open(SearchPageComponent, {
       width: '450px',
       height: '650px',
@@ -963,51 +974,51 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
       smallDialogSubscription.unsubscribe();
       this.searchLayerGroup.clearLayers();this.searchLayerGroup.clearLayers();this.searchLayerGroup.clearLayers();
       if ((result as boolean) !== false) {
-        this.searchData = result as SearchResult
+        this.searchData = result as SearchResult;
         // we have a selected result returned. Zoom to the provided lat long
         // identify if it's a feature, show a marker for addresses
         this.mapConfigService.getMapConfig().then(() => {
-          getActiveMap().$viewer.panToFeature(window['turf'].point([this.searchData.location[0], this.searchData.location[1]]), 10)
+          getActiveMap().$viewer.panToFeature(window['turf'].point([this.searchData.location[0], this.searchData.location[1]]), 10);
 
           if (this.searchData.type !== 'address') {
             // if we have an evac order or alert, turn on that layer
             if (['order', 'alert'].includes(this.searchData.type.toLowerCase())) {
-              this.onSelectLayer('evacuation-orders-and-alerts')
+              this.onSelectLayer('evacuation-orders-and-alerts');
             }
 
-            this.identify(this.searchData.location)
+            this.identify(this.searchData.location);
           } else {
-            this.addMarker(this.searchData.location[0], this.searchData.location[1])
+            this.addMarker(this.searchData.location[0], this.searchData.location[1]);
           }
-        })
+        });
         // then add to the most recent search list
-        let recentSearches: SearchResult[] = []
+        let recentSearches: SearchResult[] = [];
         if (localStorage.getItem('recent-search') != null) {
           try {
-            recentSearches = JSON.parse(localStorage.getItem('recent-search')) as SearchResult[]
+            recentSearches = JSON.parse(localStorage.getItem('recent-search')) as SearchResult[];
           } catch (err) {
-            console.error(err)
+            console.error(err);
             // carry on with the empty array
           }
         }
 
-        recentSearches.unshift(this.searchData)
+        recentSearches.unshift(this.searchData);
         if (recentSearches.length > 4) {
-          recentSearches = recentSearches.slice(0, 4)
+          recentSearches = recentSearches.slice(0, 4);
         }
-        localStorage.setItem('recent-search', JSON.stringify(recentSearches))
+        localStorage.setItem('recent-search', JSON.stringify(recentSearches));
       } else {
-        this.searchData = null
+        this.searchData = null;
       }
     });
   }
 
-  identify (location: number[], buffer: number = 1) {
-    const turf = window['turf']
-    const point = turf.point(location)
-    const buffered = turf.buffer(point, buffer, { units:'meters' })
-    const bbox = turf.bbox(buffered)
-    const poly = turf.bboxPolygon(bbox)
+  identify(location: number[], buffer: number = 1) {
+    const turf = window['turf'];
+    const point = turf.point(location);
+    const buffered = turf.buffer(point, buffer, { units:'meters' });
+    const bbox = turf.bbox(buffered);
+    const poly = turf.bboxPolygon(bbox);
 /*
     let dialogRef = this.dialog.open(WildfireNotificationDialogComponent, {
       autoFocus: false,
@@ -1020,43 +1031,43 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
     });
 */
 
-    getActiveMap().$viewer.identifyFeatures({ map: { latitude: Number(location[1]), longitude: Number(location[0])}, screen: {x: window.innerWidth / 2, y: window.innerHeight / 2}}, poly)
+    getActiveMap().$viewer.identifyFeatures({ map: { latitude: Number(location[1]), longitude: Number(location[0])}, screen: {x: window.innerWidth / 2, y: window.innerHeight / 2}}, poly);
   }
 
-  slideLayerButtons (slide: number) {
-    const layerButtons = document.getElementById('layer-buttons')
-    const mapContainer = document.getElementById('map-container')
+  slideLayerButtons(slide: number) {
+    const layerButtons = document.getElementById('layer-buttons');
+    const mapContainer = document.getElementById('map-container');
     if (layerButtons && mapContainer && this.sliderButtonHold) {
-      layerButtons.scrollLeft += slide
+      layerButtons.scrollLeft += slide;
     }
 
     if (this.sliderButtonHold) {
-      setTimeout(() => this.slideLayerButtons(slide), 100)
+      setTimeout(() => this.slideLayerButtons(slide), 100);
     }
   }
 
-  showLeftLayerScroller (): boolean {
-    const layerButtons = document.getElementById('layer-buttons')
-    return layerButtons?.scrollLeft > 0
+  showLeftLayerScroller(): boolean {
+    const layerButtons = document.getElementById('layer-buttons');
+    return layerButtons?.scrollLeft > 0;
   }
 
-  showRightLayerScroller (): boolean {
-    const layerButtons = document.getElementById('layer-buttons')
-    const mapContainer = document.getElementById('map-container')
-    return layerButtons?.scrollLeft < (layerButtons.scrollWidth - mapContainer.scrollWidth)
+  showRightLayerScroller(): boolean {
+    const layerButtons = document.getElementById('layer-buttons');
+    const mapContainer = document.getElementById('map-container');
+    return layerButtons?.scrollLeft < (layerButtons.scrollWidth - mapContainer.scrollWidth);
   }
 
   isSafeAreaNotDetectable() {
-    const deviceInfo = navigator.userAgent
+    const deviceInfo = navigator.userAgent;
     if (this.capacitorService.isWebPlatform && /iPhone|Pixel/.test(deviceInfo) && /Chrome|Safari/.test(deviceInfo)) {
-      return true
+      return true;
     }
   }
 
   onPushNotificationClick() {
-    let n = this.testNotifications[ this.notificationState % this.testNotifications.length ]
-    this.notificationState += 1
-    this.capacitorService.handleLocationPushNotification( n )
+    const n = this.testNotifications[ this.notificationState % this.testNotifications.length ];
+    this.notificationState += 1;
+    this.capacitorService.handleLocationPushNotification( n );
   }
 
   testNotifications = [
@@ -1084,7 +1095,7 @@ export class ActiveWildfireMapComponent implements OnInit, AfterViewInit {
         featureType: 'BCWS_ActiveFires_PublicView',
         fireYear: 2022
     } ),
-  ]
+  ];
 }
 
 function makeLocation( loc ): PushNotification {
@@ -1104,5 +1115,5 @@ function makeLocation( loc ): PushNotification {
       }
       // click_action?: string;
       // link?: string;
-  }
+  };
 }

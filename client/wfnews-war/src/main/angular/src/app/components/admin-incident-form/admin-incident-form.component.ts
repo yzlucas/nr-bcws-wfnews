@@ -147,7 +147,7 @@ export class AdminIncidentForm implements OnInit, OnChanges {
   }
 
   setIsFormDirty(isDirty: boolean) {
-    this.changesSavedEvent.emit(!isDirty)
+    this.changesSavedEvent.emit(!isDirty);
   }
 
   getPublishedDate() {

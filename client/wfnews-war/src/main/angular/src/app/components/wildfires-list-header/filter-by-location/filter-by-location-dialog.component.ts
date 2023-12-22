@@ -6,11 +6,11 @@ import { PlaceData } from '@app/services/wfnews-map.service/place-data';
 import { debounceTime } from 'rxjs/operators';
 
 export class LocationData {
-  public latitude: number
-  public longitude: number
-  public radius: number = 50
-  public searchText: string
-  public useUserLocation = false
+  public latitude: number;
+  public longitude: number;
+  public radius = 50;
+  public searchText: string;
+  public useUserLocation = false;
 }
 
 @Component({
@@ -19,19 +19,19 @@ export class LocationData {
     styleUrls: ['./filter-by-location-dialog.component.scss']
 })
 export class FilterByLocationDialogComponent {
-  public searchText
-  public filteredOptions = []
-  public searchByLocationControl = new UntypedFormControl
-  public locationData = new LocationData
+  public searchText;
+  public filteredOptions = [];
+  public searchByLocationControl = new UntypedFormControl();
+  public locationData = new LocationData();
 
-  private placeData: PlaceData
-  private sortedAddressList: string[] = []
+  private placeData: PlaceData;
+  private sortedAddressList: string[] = [];
 
   constructor(private dialogRef: MatDialogRef<FilterByLocationDialogComponent>, private commonUtilityService: CommonUtilityService, @Inject(MAT_DIALOG_DATA) public data: LocationData) {
-    this.locationData = data || new LocationData
+    this.locationData = data || new LocationData();
     this.placeData = new PlaceData();
-    let self = this;
-    this.searchByLocationControl.valueChanges.pipe(debounceTime(200)).subscribe((val:string)=>{
+    const self = this;
+    this.searchByLocationControl.valueChanges.pipe(debounceTime(200)).subscribe((val: string)=>{
 
       if(!val) {
           this.filteredOptions = [];
@@ -43,7 +43,7 @@ export class FilterByLocationDialogComponent {
 
       if (val.length > 2) {
         this.filteredOptions = [];
-        this.placeData.searchAddresses(val).then(function (results) {
+        this.placeData.searchAddresses(val).then(function(results) {
           if (results) {
             results.forEach(() => {
               self.sortedAddressList = self.commonUtilityService.sortAddressList(results, val);
@@ -59,29 +59,29 @@ export class FilterByLocationDialogComponent {
     const locationControlValue = selectedOption.address ? selectedOption.address : selectedOption.localityName;
     this.searchByLocationControl.setValue(locationControlValue.trim(), { onlySelf: true, emitEvent: false });
 
-    this.locationData.latitude = selectedOption.loc[1]
-    this.locationData.longitude = selectedOption.loc[0]
-    this.locationData.searchText = this.searchText
+    this.locationData.latitude = selectedOption.loc[1];
+    this.locationData.longitude = selectedOption.loc[0];
+    this.locationData.searchText = this.searchText;
   }
 
-  setRadius (radius: number) {
-    this.locationData.radius = radius
+  setRadius(radius: number) {
+    this.locationData.radius = radius;
   }
 
-  async useUserLocation () {
-    this.locationData.useUserLocation = !this.locationData.useUserLocation
+  async useUserLocation() {
+    this.locationData.useUserLocation = !this.locationData.useUserLocation;
 
     if (this.locationData.useUserLocation) {
-      this.searchText = undefined
+      this.searchText = undefined;
 
-      const location = await this.commonUtilityService.getCurrentLocationPromise()
-      this.locationData.latitude = location.coords.latitude
-      this.locationData.longitude = location.coords.longitude
-      this.searchText = this.locationData.latitude.toString() + ', ' + this.locationData.longitude.toString()
+      const location = await this.commonUtilityService.getCurrentLocationPromise();
+      this.locationData.latitude = location.coords.latitude;
+      this.locationData.longitude = location.coords.longitude;
+      this.searchText = this.locationData.latitude.toString() + ', ' + this.locationData.longitude.toString();
     } else {
-      this.searchText = null
+      this.searchText = null;
     }
 
-    this.locationData.searchText = this.searchText
+    this.locationData.searchText = this.searchText;
   }
 }

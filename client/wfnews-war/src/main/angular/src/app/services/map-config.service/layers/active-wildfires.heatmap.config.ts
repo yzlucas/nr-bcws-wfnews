@@ -9,8 +9,8 @@ export function ActiveWildfiresHeatmapLayerConfig(ls: layerSettings) {
           isQueryable: false,
           useClustering: false,
           useHeatmap: true,
-          dataUrl: ls.wfnewsUrl + "/publicPublishedIncident/features?stageOfControl=OUT_CNTRL",
-          titleAttribute: "incident_name",
+          dataUrl: ls.wfnewsUrl + '/publicPublishedIncident/features?stageOfControl=OUT_CNTRL',
+          titleAttribute: 'incident_name',
           attributes: []
         }
     ];

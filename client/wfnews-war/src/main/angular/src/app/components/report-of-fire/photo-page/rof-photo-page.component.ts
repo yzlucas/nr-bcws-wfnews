@@ -1,10 +1,10 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, ElementRef } from "@angular/core";
-import { RoFPage } from "../rofPage";
-import { ReportOfFire } from "../reportOfFireModel";
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { RoFPage } from '../rofPage';
+import { ReportOfFire } from '../reportOfFireModel';
 import { Camera, CameraResultType, CameraSource, GalleryPhoto, Photo, CameraPluginPermissions } from '@capacitor/camera';
-import { CommonUtilityService } from "@app/services/common-utility.service";
-import { ReportOfFirePage } from "@app/components/report-of-fire/report-of-fire.component";
-import { Capacitor } from "@capacitor/core";
+import { CommonUtilityService } from '@app/services/common-utility.service';
+import { ReportOfFirePage } from '@app/components/report-of-fire/report-of-fire.component';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'rof-photo-page',
@@ -13,12 +13,12 @@ import { Capacitor } from "@capacitor/core";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RoFPhotoPage extends RoFPage {
-  public disableNext: boolean = true;
+  public disableNext = true;
   captureUrl: any;
   isCaptured: boolean;
   images: (Photo | GalleryPhoto)[] = [];
-  isFullScreen: boolean = false;
-  isEditMode: boolean = false;
+  isFullScreen = false;
+  isEditMode = false;
   public constructor(
     private changeDetector: ChangeDetectorRef,
     private el: ElementRef,
@@ -26,7 +26,7 @@ export class RoFPhotoPage extends RoFPage {
     private reportOfFirePage: ReportOfFirePage,
     private cdr: ChangeDetectorRef
   ) {
-    super()
+    super();
   }
 
   initialize(data: any, index: number, reportOfFire: ReportOfFire) {
@@ -47,7 +47,7 @@ export class RoFPhotoPage extends RoFPage {
       this.images.push(image);
       this.changeDetector.detectChanges();
     } catch (error) {
-      console.error('Error taking photos', error)
+      console.error('Error taking photos', error);
     }
   }
 
@@ -58,11 +58,11 @@ export class RoFPhotoPage extends RoFPage {
         const photos = await Camera.pickImages({
           quality: 100,
           limit: 3 - this.images.length
-        })
+        });
         photos.photos.map((image) => {
           this.images.push(image);
           this.changeDetector.detectChanges();
-        })
+        });
         return;
       }
 
@@ -73,10 +73,10 @@ export class RoFPhotoPage extends RoFPage {
         const photos = await Camera.pickImages({
           quality: 100,
           limit: 3 - this.images.length
-        })
+        });
         photos.photos.map((image) => {
           this.images.push(image);
-        })
+        });
       } else if (currentPermissions?.photos == 'limited') {
         // They have a limited amount of images selected to share and only those will provide exif
         const imagesLeft = 3 - this.images.length;
@@ -87,7 +87,7 @@ export class RoFPhotoPage extends RoFPage {
           const photos = await Camera.pickLimitedLibraryPhotos();
           photos.photos.slice(0, imagesLeft).map((image) => {
             this.images.push(image);
-          })
+          });
         }
       }
 
@@ -96,15 +96,15 @@ export class RoFPhotoPage extends RoFPage {
       // to explain the steps and redirect to settings like we do for location.
       try {
         const permissionStatus = await Camera.requestPermissions();
-        console.log('camera permissions', permissionStatus)
+        console.log('camera permissions', permissionStatus);
       } catch (error) {
-        alert(error)
-        console.error('permission error', error)
+        alert(error);
+        console.error('permission error', error);
       }
       this.cdr.detectChanges();
     } catch (error) {
-      alert(error)
-      console.error('Error adding from camera roll', error)
+      alert(error);
+      console.error('Error adding from camera roll', error);
     }
 
   }
@@ -149,12 +149,12 @@ export class RoFPhotoPage extends RoFPage {
 
   editMode() {
     this.isEditMode = true;
-    this.cdr.detectChanges()
+    this.cdr.detectChanges();
 
   }
 
   backToReview() {
-    this.reportOfFirePage.edit('review-page')
+    this.reportOfFirePage.edit('review-page');
   }
 
   previousPage() {
@@ -165,6 +165,6 @@ export class RoFPhotoPage extends RoFPage {
       } else {
         this.previous();
       }
-    })
+    });
   }
 }

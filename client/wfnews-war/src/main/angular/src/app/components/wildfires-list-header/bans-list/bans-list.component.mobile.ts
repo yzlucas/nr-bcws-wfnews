@@ -1,6 +1,6 @@
-import { Component } from "@angular/core";
-import { BansListComponent } from "./bans-list.component";
-import { ResourcesRoutes } from "@app/utils";
+import { Component } from '@angular/core';
+import { BansListComponent } from './bans-list.component';
+import { ResourcesRoutes } from '@app/utils';
 
 @Component({
     selector: 'wf-bans-list-mobile',

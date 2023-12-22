@@ -1,6 +1,6 @@
-import { Component } from "@angular/core";
-import { ResourcesRoutes } from "@app/utils";
-import { AreaRestrictionListComponent } from "./area-restriction-list.component";
+import { Component } from '@angular/core';
+import { ResourcesRoutes } from '@app/utils';
+import { AreaRestrictionListComponent } from './area-restriction-list.component';
 
 @Component({
   selector: 'wf-area-restriction-list-mobile',

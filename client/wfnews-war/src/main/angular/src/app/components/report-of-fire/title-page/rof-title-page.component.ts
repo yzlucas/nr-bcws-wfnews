@@ -1,10 +1,10 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, OnDestroy } from "@angular/core";
-import { RoFPage } from "../rofPage";
-import { ReportOfFire } from "../reportOfFireModel";
-import { MatDialog } from "@angular/material/dialog";
-import { DialogLocationComponent } from "@app/components/report-of-fire/dialog-location/dialog-location.component";
-import { CommonUtilityService } from "@app/services/common-utility.service";
-import { ReportOfFirePage } from "@app/components/report-of-fire/report-of-fire.component";
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
+import { RoFPage } from '../rofPage';
+import { ReportOfFire } from '../reportOfFireModel';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogLocationComponent } from '@app/components/report-of-fire/dialog-location/dialog-location.component';
+import { CommonUtilityService } from '@app/services/common-utility.service';
+import { ReportOfFirePage } from '@app/components/report-of-fire/report-of-fire.component';
 import { App } from '@capacitor/app';
 import { BackgroundTask } from '@capawesome/capacitor-background-task';
 
@@ -15,12 +15,12 @@ import { BackgroundTask } from '@capawesome/capacitor-background-task';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RoFTitlePage extends RoFPage implements OnInit, OnDestroy {
-  public imageUrl: string
-  public closeButton: boolean
+  public imageUrl: string;
+  public closeButton: boolean;
   public messages: any;
   public offLineMessages: any;
-  offLine: boolean = false;
-  private intervalRef
+  offLine = false;
+  private intervalRef;
 
   public constructor(
     protected dialog: MatDialog,
@@ -28,7 +28,7 @@ export class RoFTitlePage extends RoFPage implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private reportOfFirePage: ReportOfFirePage
     ) {
-    super()
+    super();
   }
 
   ngOnInit(): void {
@@ -42,7 +42,7 @@ export class RoFTitlePage extends RoFPage implements OnInit, OnDestroy {
 
   }
 
-  initialize (data: any, index: number, reportOfFire: ReportOfFire) {
+  initialize(data: any, index: number, reportOfFire: ReportOfFire) {
     super.initialize(data, index, reportOfFire);
     this.imageUrl = data.imageUrl;
     this.closeButton = data.closeButton;
@@ -53,23 +53,25 @@ export class RoFTitlePage extends RoFPage implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.intervalRef) {
-      clearInterval(this.intervalRef)
+      clearInterval(this.intervalRef);
     }
   }
 
-  async backgroundListener (){
+  async backgroundListener(){
     App.addListener('appStateChange', async ({ isActive }) => {
-      if (isActive) return;
+      if (isActive) {
+return;
+}
       // The app state has been changed to inactive.
       // Start the background task by calling `beforeExit`.
       const taskId = await BackgroundTask.beforeExit(async () => {
-        const self = this
+        const self = this;
         if (this.intervalRef) {
-          clearInterval(this.intervalRef)
-          this.intervalRef = null
+          clearInterval(this.intervalRef);
+          this.intervalRef = null;
         }
 
-        this.intervalRef = setInterval(function () {
+        this.intervalRef = setInterval(function() {
           // Invoke function every minute while app is in background
             self.checkStoredRoF();
         }, 60000);
@@ -78,7 +80,7 @@ export class RoFTitlePage extends RoFPage implements OnInit, OnDestroy {
     });
   }
 
-  openCallPage () {
+  openCallPage() {
     this.reportOfFirePage.selectPage('call-page',null,false);
   }
 
@@ -89,26 +91,28 @@ export class RoFTitlePage extends RoFPage implements OnInit, OnDestroy {
     // check if the app is in the background and online and if so, check for saved offline RoF to be submitted
     await (this.commonUtilityService.checkOnlineStatus().then(result => {
       if (result){
-          this.commonUtilityService.syncDataWithServer()
+          this.commonUtilityService.syncDataWithServer();
       }
     }));
   }
 
 
- triggerLocationServiceCheck (){
+ triggerLocationServiceCheck(){
   // re-check if user's device has gone offline since view was initialised and route to offline if so
   this.commonUtilityService.checkOnline().then((result) => {
-      if(!result) this.nextId = 'disclaimer-page'
-   })
+      if(!result) {
+this.nextId = 'disclaimer-page';
+}
+   });
 
     this.commonUtilityService.checkLocationServiceStatus().then((enabled) => {
       if (!enabled) {
-        let dialogRef = this.dialog.open(DialogLocationComponent, {
+        const dialogRef = this.dialog.open(DialogLocationComponent, {
           autoFocus: false,
           width: '80vw',
         });
       }else {
-        this.next()
+        this.next();
       }
     });
   }
@@ -117,11 +121,11 @@ export class RoFTitlePage extends RoFPage implements OnInit, OnDestroy {
     this.commonUtilityService.pingSerivce().subscribe(
       () => {
         this.offLine = false;
-        this.cdr.detectChanges()
+        this.cdr.detectChanges();
       },
       () => {
         this.offLine = true;
-        this.cdr.detectChanges()
+        this.cdr.detectChanges();
       }
     );
   }

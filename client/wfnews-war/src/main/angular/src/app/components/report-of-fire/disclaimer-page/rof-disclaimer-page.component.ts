@@ -11,10 +11,10 @@ import { CapacitorService } from '@app/services/capacitor-service';
   styleUrls: ['./rof-disclaimer-page.component.scss']
 })
 export class RoFDisclaimerPage extends RoFPage {
-  public imageUrl: string
+  public imageUrl: string;
   public message: string;
   public currentBrowser: string;
-  public hideButtons : boolean;
+  public hideButtons: boolean;
 
   public constructor(
     private commonUtilityService: CommonUtilityService,
@@ -23,7 +23,7 @@ export class RoFDisclaimerPage extends RoFPage {
     super();
   }
 
-  initialize (data: any, index: number, reportOfFire: ReportOfFire) {
+  initialize(data: any, index: number, reportOfFire: ReportOfFire) {
     super.initialize(data, index, reportOfFire);
     this.imageUrl = data.imageUrl;
     this.message = data.message.split('\n');
@@ -31,10 +31,10 @@ export class RoFDisclaimerPage extends RoFPage {
     if (this.capacitor.isWebPlatform) {
       this.commonUtilityService.checkOnline().then((result) => {
         if(!result) {
-          this.message = 'Offline reporting is only available in the BC Wildfire Service app which you can find on the Apple App Store or Google Play Store.'
+          this.message = 'Offline reporting is only available in the BC Wildfire Service app which you can find on the Apple App Store or Google Play Store.';
           this.hideButtons = true;
         }
-      })
+      });
     }
   }
 }

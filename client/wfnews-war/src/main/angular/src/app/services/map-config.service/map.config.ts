@@ -62,28 +62,28 @@ export const mapConfig = (
                     style: {
                         stroke:             false,
                         fill:               true,
-                        fillColor:          "#548ADB",
+                        fillColor:          '#548ADB',
                         fillOpacity:        0.3,
                     },
                 },
                 'search-border-1': {
                     style: {
                         strokeWidth:        1,
-                        strokeColor:        "#548ADB",
+                        strokeColor:        '#548ADB',
                         strokeOpacity:      1,
-                        strokeCap:          "butt",
+                        strokeCap:          'butt',
                     },
                 },
                 'search-border-2': {
                     style: {
                         strokeWidth:        1,
-                        strokeColor:        "#548ADB",
+                        strokeColor:        '#548ADB',
                         strokeOpacity:      1,
-                        strokeCap:          "butt",
+                        strokeCap:          'butt',
                     }
                 },
-                'location': {
-                    title: "Identify Location",
+                location: {
+                    title: 'Identify Location',
                     style: {
                         markerUrl: null,
                     },
@@ -93,7 +93,7 @@ export const mapConfig = (
                 'edit-search-area': {
                     style: {
                         strokeWidth:        3,
-                        strokeColor:        "red",
+                        strokeColor:        'red',
                         strokeOpacity:      1
                     }
                 }
@@ -145,7 +145,7 @@ export const mapConfig = (
             type: 'measure',
             enabled: 'desktop',
             unit: 'kilometers',
-            position: "actionbar",
+            position: 'actionbar',
             order: 5
         },
         {

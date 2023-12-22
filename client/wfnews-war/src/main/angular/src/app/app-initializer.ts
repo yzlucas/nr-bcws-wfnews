@@ -3,11 +3,9 @@ import { Injector } from '@angular/core';
 import { AppConfigService} from '@wf1/core-ui';
 
 export function codeTableAndUserPrefFnInit(appConfig: AppConfigService, http: HttpClient, injector: Injector): () => Promise<any> {
-    return () => {
-        return appConfig.loadAppConfig().catch((e) => {
+    return () => appConfig.loadAppConfig().catch((e) => {
           console.warn('Failed initializing app', e);
         });
-    };
 }
 
 export function getEndpointUrl(baseUrl: string, endpoint: string): string {

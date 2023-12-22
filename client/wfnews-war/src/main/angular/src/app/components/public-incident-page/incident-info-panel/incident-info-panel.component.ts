@@ -1,14 +1,14 @@
-import { Component, ChangeDetectionStrategy, Input, AfterViewInit, ChangeDetectorRef } from "@angular/core";
-import { AreaRestrictionsOption, EvacOrderOption } from "../../../conversion/models";
-import { toCanvas } from 'qrcode'
-import { convertToFireCentreDescription, findFireCentreByName, convertToYoutubeId, isMobileView } from '../../../utils'
-import { PublishedIncidentService } from "../../../services/published-incident-service";
-import { AppConfigService } from "@wf1/core-ui";
-import { MatSnackBar } from "@angular/material/snack-bar";
-import { ActivatedRoute, ParamMap, Router } from "@angular/router";
-import { Observable } from "rxjs";
-import { HttpClient } from "@angular/common/http";
-import { getResponseTypeDescription } from "../../../utils";
+import { Component, ChangeDetectionStrategy, Input, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { AreaRestrictionsOption, EvacOrderOption } from '../../../conversion/models';
+import { toCanvas } from 'qrcode';
+import { convertToFireCentreDescription, findFireCentreByName, convertToYoutubeId, isMobileView } from '../../../utils';
+import { PublishedIncidentService } from '../../../services/published-incident-service';
+import { AppConfigService } from '@wf1/core-ui';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { getResponseTypeDescription } from '../../../utils';
 
 @Component({
   selector: 'incident-info-panel',
@@ -17,16 +17,16 @@ import { getResponseTypeDescription } from "../../../utils";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IncidentInfoPanel implements AfterViewInit {
-  @Input() public incident: any
-  @Input() public evacOrders: EvacOrderOption[] = []
-  @Input() public areaRestrictions : AreaRestrictionsOption[] = []
+  @Input() public incident: any;
+  @Input() public evacOrders: EvacOrderOption[] = [];
+  @Input() public areaRestrictions: AreaRestrictionsOption[] = [];
 
   showWarning: boolean;
 
-  public convertToFireCentreDescription = convertToFireCentreDescription
-  public findFireCentreByName = findFireCentreByName
-  public convertToYoutubeId = convertToYoutubeId
-  public isMobileView = isMobileView
+  public convertToFireCentreDescription = convertToFireCentreDescription;
+  public findFireCentreByName = findFireCentreByName;
+  public convertToYoutubeId = convertToYoutubeId;
+  public isMobileView = isMobileView;
   getResponseTypeDescription = getResponseTypeDescription;
 
   public constructor(private publishedIncidentService: PublishedIncidentService, private snackbarService: MatSnackBar, private appConfigService: AppConfigService,
@@ -34,96 +34,125 @@ export class IncidentInfoPanel implements AfterViewInit {
                      private router: ActivatedRoute,
                      private http: HttpClient,
                      protected route: Router) {}
-  public primaryMedia = null
+  public primaryMedia = null;
 
-  handleImageFallback (href: string) {
-    const imgComponent = document.getElementById('primary-image-container')
+  handleImageFallback(href: string) {
+    const imgComponent = document.getElementById('primary-image-container');
     if (imgComponent) {
-      (imgComponent as any).src = href
+      (imgComponent as any).src = href;
     }
   }
 
   ngAfterViewInit(): void {
     if (!this.incident.contactEmailAddress || !this. incident.contactPhoneNumber) {
       this.getFireCentreContacts().subscribe(data => {
-        const fc = findFireCentreByName(convertToFireCentreDescription(this.incident.fireCentreName || this.incident.fireCentre || this.incident.fireCentreCode))
-        if (!this.incident.contactEmailAddress) this.incident.contactEmailAddress = data[+fc.code].url
-        if (!this.incident.contactPhoneNumber) this.incident.contactPhoneNumber = data[+fc.code].phone
-        this.cdr.detectChanges()
+        const fc = findFireCentreByName(convertToFireCentreDescription(this.incident.fireCentreName || this.incident.fireCentre || this.incident.fireCentreCode));
+        if (!this.incident.contactEmailAddress) {
+this.incident.contactEmailAddress = data[+fc.code].url;
+}
+        if (!this.incident.contactPhoneNumber) {
+this.incident.contactPhoneNumber = data[+fc.code].phone;
+}
+        this.cdr.detectChanges();
       });
     }
 
-    const canvas = document.getElementById('qr-code')
+    const canvas = document.getElementById('qr-code');
     if (canvas) {
-      toCanvas(canvas, window.location.href, function (error) {
-        if (error) console.error(error)
-      })
+      toCanvas(canvas, window.location.href, function(error) {
+        if (error) {
+console.error(error);
+}
+      });
     }
 
     this.router.queryParams.subscribe((params: ParamMap) => {
-      this.showWarning = params['preview']
+      this.showWarning = params['preview'];
     });
 
-    this.fetchPrimaryImage()
+    this.fetchPrimaryImage();
   }
 
-  public getStageOfControlLabel (code: string) {
-    if (code.toUpperCase().trim() === 'OUT') return 'Out'
-    else if (code.toUpperCase().trim() === 'OUT_CNTRL') return 'Out of Control'
-    else if (code.toUpperCase().trim() === 'HOLDING') return 'Being Held'
-    else if (code.toUpperCase().trim() === 'UNDR_CNTRL') return 'Under Control'
-    else return 'Unknown'
+  public getStageOfControlLabel(code: string) {
+    if (code.toUpperCase().trim() === 'OUT') {
+return 'Out';
+} else if (code.toUpperCase().trim() === 'OUT_CNTRL') {
+return 'Out of Control';
+} else if (code.toUpperCase().trim() === 'HOLDING') {
+return 'Being Held';
+} else if (code.toUpperCase().trim() === 'UNDR_CNTRL') {
+return 'Under Control';
+} else {
+return 'Unknown';
+}
   }
 
-  public getStageOfControlDescription (code: string) {
-    if (code.toUpperCase().trim() === 'OUT') return 'A wildfire that is extinguished. Suppression efforts are complete.'
-    else if (code.toUpperCase().trim() === 'OUT_CNTRL') return 'A wildfire that is continuing to spread and is not responding to suppression efforts.'
-    else if (code.toUpperCase().trim() === 'HOLDING') return 'A wildfire that is not likely to spread beyond predetermined boundaries under current conditions.'
-    else if (code.toUpperCase().trim() === 'UNDR_CNTRL') return 'A wildfire that will not spread any further due to suppression efforts.'
-    else return 'Unknown stage of control'
+  public getStageOfControlDescription(code: string) {
+    if (code.toUpperCase().trim() === 'OUT') {
+return 'A wildfire that is extinguished. Suppression efforts are complete.';
+} else if (code.toUpperCase().trim() === 'OUT_CNTRL') {
+return 'A wildfire that is continuing to spread and is not responding to suppression efforts.';
+} else if (code.toUpperCase().trim() === 'HOLDING') {
+return 'A wildfire that is not likely to spread beyond predetermined boundaries under current conditions.';
+} else if (code.toUpperCase().trim() === 'UNDR_CNTRL') {
+return 'A wildfire that will not spread any further due to suppression efforts.';
+} else {
+return 'Unknown stage of control';
+}
   }
 
-  public getCauseLabel (code: number) {
-    if (code === 1) return 'Human'
-    else if (code === 2) return 'Lightning'
-    else if (code === 3) return 'Under Investigation'
-    else return 'Unknown'
+  public getCauseLabel(code: number) {
+    if (code === 1) {
+return 'Human';
+} else if (code === 2) {
+return 'Lightning';
+} else if (code === 3) {
+return 'Under Investigation';
+} else {
+return 'Unknown';
+}
   }
 
-  public getCauseDescription (code: number) {
-    if (code === 1) return 'A wildfire started by humans or human activity.'
-    else if (code === 2) return 'This fire was caused by a dry lightning strike which means it occurred without rain nearby. The cause of a wildfire is determined by professional investigations in accordance with international standards. Wildfire investigations can be complex and may take weeks or even months to complete.'
-    else return 'A wildfire of undetermined cause, including a wildfire that is currently under investigation, as well as one where the investigation has been completed.'
+  public getCauseDescription(code: number) {
+    if (code === 1) {
+return 'A wildfire started by humans or human activity.';
+} else if (code === 2) {
+return 'This fire was caused by a dry lightning strike which means it occurred without rain nearby. The cause of a wildfire is determined by professional investigations in accordance with international standards. Wildfire investigations can be complex and may take weeks or even months to complete.';
+} else {
+return 'A wildfire of undetermined cause, including a wildfire that is currently under investigation, as well as one where the investigation has been completed.';
+}
   }
 
   public printPage() {
-    const printContents = document.getElementsByClassName('page-container')[0].innerHTML
+    const printContents = document.getElementsByClassName('page-container')[0].innerHTML;
 
-    const appRoot = document.body.removeChild(document.getElementById("app-root"));
+    const appRoot = document.body.removeChild(document.getElementById('app-root'));
 
-    document.body.innerHTML = printContents
+    document.body.innerHTML = printContents;
 
-    const canvas = document.getElementById('qr-code')
-    toCanvas(canvas, window.location.href, function (error) {
-      if (error) console.error(error)
-      window.print()
-      document.body.innerHTML = "";
+    const canvas = document.getElementById('qr-code');
+    toCanvas(canvas, window.location.href, function(error) {
+      if (error) {
+console.error(error);
+}
+      window.print();
+      document.body.innerHTML = '';
       document.body.appendChild(appRoot);
-    })
+    });
   }
 
-  public copyToClipboard () {
+  public copyToClipboard() {
     navigator.clipboard.writeText(window.location.href);
     this.snackbarService.open('URL Copied to Clipboard!', 'OK', { duration: 100000, panelClass: 'snackbar-success-v2' });
   }
 
-  public fetchPrimaryImage () {
+  public fetchPrimaryImage() {
     // By default, check if we have a Video as a primary image first
     // if we dont have a video, check images
     // otherwise, dont show the media box.
     // fetch videos
     this.publishedIncidentService.fetchExternalUri(this.incident.incidentNumberLabel).toPromise().then(results => {
-      let setMedia = false
+      let setMedia = false;
       if (results && results.collection && results.collection.length > 0) {
         for (const uri of results.collection) {
           if (uri.primaryInd && !uri.externalUriCategoryTag.includes('EVAC-ORDER')) {
@@ -133,10 +162,10 @@ export class IncidentInfoPanel implements AfterViewInit {
               fileName: '',
               type: 'video',
               href: uri.externalUri
-            }
+            };
             setMedia = true;
-            this.cdr.detectChanges()
-            break
+            this.cdr.detectChanges();
+            break;
           }
         }
       }
@@ -156,20 +185,20 @@ export class IncidentInfoPanel implements AfterViewInit {
                   type: 'image',
                   href: `${this.appConfigService.getConfig().rest['wfnews']}/publicPublishedIncidentAttachment/${this.incident.incidentNumberLabel}/attachments/${attachment.attachmentGuid}/bytes`,
                   thumbnail: `${this.appConfigService.getConfig().rest['wfnews']}/publicPublishedIncidentAttachment/${this.incident.incidentNumberLabel}/attachments/${attachment.attachmentGuid}/bytes?thumbnail=true`
-                }
+                };
                 break;
               }
             }
           }
-          this.cdr.detectChanges()
-        })
+          this.cdr.detectChanges();
+        });
       }
     }).catch(err => {
-      console.error(err)
-    })
+      console.error(err);
+    });
   }
 
-  public getFireCentreContacts (): Observable<any> {
-    return this.http.get('../../../../assets/data/fire-center-contacts-agol.json')
+  public getFireCentreContacts(): Observable<any> {
+    return this.http.get('../../../../assets/data/fire-center-contacts-agol.json');
   }
 }

@@ -21,7 +21,7 @@ export class DisclaimerDialogComponent {
     }
 
     cancel() {
-        this.dialogRef.close({dontShowAgain: this.dontShowAgain})
+        this.dialogRef.close({dontShowAgain: this.dontShowAgain});
     }
 
 }

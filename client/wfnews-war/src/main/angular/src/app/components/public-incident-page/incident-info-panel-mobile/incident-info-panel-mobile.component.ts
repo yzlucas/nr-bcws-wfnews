@@ -13,15 +13,19 @@ export class IncidentInfoPanelMobileComponent extends IncidentInfoPanel implemen
   convertToDateYear = convertToDateYear;
 
   ngOnInit(): void {
-    this.populateOrdersAndAlerts()
+    this.populateOrdersAndAlerts();
   }
 
   populateOrdersAndAlerts() {
     if (this.evacOrders) {
       for (const evac of this.evacOrders) {
-        if (evac.orderAlertStatus === 'Order') this.mobileEvacOrders.push(evac)
-        else if (evac.orderAlertStatus === 'Alert') this.mobileEvacAlerts.push(evac)
-        else console.error('Could not determine orderAlertStatus for mobile evacuations')
+        if (evac.orderAlertStatus === 'Order') {
+this.mobileEvacOrders.push(evac);
+} else if (evac.orderAlertStatus === 'Alert') {
+this.mobileEvacAlerts.push(evac);
+} else {
+console.error('Could not determine orderAlertStatus for mobile evacuations');
+}
       }
     }
 
@@ -38,12 +42,15 @@ export class IncidentInfoPanelMobileComponent extends IncidentInfoPanel implemen
   navigateToEvac(evac) {
     if (evac && this.incident) {
       let type = null;
-      if (evac.orderAlertStatus === 'Alert') type = "evac-alert";
-      else if (evac.orderAlertStatus === 'Order') type = "evac-order";
+      if (evac.orderAlertStatus === 'Alert') {
+type = 'evac-alert';
+} else if (evac.orderAlertStatus === 'Order') {
+type = 'evac-order';
+}
       this.route.navigate([ResourcesRoutes.FULL_DETAILS],
         {
           queryParams: {
-            type: type, id: evac.emrgOAAsysID, source: [ResourcesRoutes.PUBLIC_INCIDENT],
+            type, id: evac.emrgOAAsysID, source: [ResourcesRoutes.PUBLIC_INCIDENT],
             sourceYear: this.incident.fireYear, sourceNumber: this.incident.incidentNumberLabel ? this.incident.incidentNumberLabel : this.incident.incidentNumber
           }
         });
@@ -51,19 +58,22 @@ export class IncidentInfoPanelMobileComponent extends IncidentInfoPanel implemen
   }
 
   navigateToAreaRestriction(area) {
-    if (area && area.protRsSysID && this.incident)
-      this.route.navigate([ResourcesRoutes.FULL_DETAILS],
+    if (area && area.protRsSysID && this.incident) {
+this.route.navigate([ResourcesRoutes.FULL_DETAILS],
         {
           queryParams: {
             type: 'area-restriction', id: area.protRsSysID, source: [ResourcesRoutes.PUBLIC_INCIDENT],
             sourceYear: this.incident.fireYear, sourceNumber: this.incident.incidentNumberLabel ? this.incident.incidentNumberLabel : this.incident.incidentNumber
           }
         });
+}
   }
 
   scrollToSection(sectionId) {
     const section = document.getElementById(sectionId);
-    if (section) section.scrollIntoView({ behavior: 'smooth' });
+    if (section) {
+section.scrollIntoView({ behavior: 'smooth' });
+}
   }
 
 }

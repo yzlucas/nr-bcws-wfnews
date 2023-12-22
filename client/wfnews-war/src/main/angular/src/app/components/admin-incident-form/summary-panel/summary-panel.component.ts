@@ -9,5 +9,5 @@ import { convertToStageOfControlDescription } from '../../../utils';
 export class SummaryPanel {
   @Input() public incident;
 
-  public convertToStageOfControlDescription = convertToStageOfControlDescription
+  public convertToStageOfControlDescription = convertToStageOfControlDescription;
 }

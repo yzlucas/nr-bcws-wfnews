@@ -9,8 +9,7 @@ import { CapacitorService } from '@app/services/capacitor-service';
   styleUrls: ['./dialog-exit.component.scss']
 })
 export class DialogExitComponent {
-  constructor(private dialogRef: MatDialogRef<DialogExitComponent>, private capacitorService: CapacitorService, @Inject(MAT_DIALOG_DATA) public data)
-  { }
+  constructor(private dialogRef: MatDialogRef<DialogExitComponent>, private capacitorService: CapacitorService, @Inject(MAT_DIALOG_DATA) public data) { }
 
   closeDialog() {
     this.dialogRef.close({exit: false});

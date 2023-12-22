@@ -13,9 +13,9 @@ import { AppConfigService } from '@wf1/core-ui';
 })
 export class WildfiresListHeaderComponent implements OnInit {
 
-  public selectedTab = 0
+  public selectedTab = 0;
 
-  public isMobileView = isMobileView
+  public isMobileView = isMobileView;
 
   constructor(
     protected appConfigService: AppConfigService,
@@ -28,18 +28,18 @@ export class WildfiresListHeaderComponent implements OnInit {
   ) {
   }
 
-  selectTab (tab: number) {
-    this.selectedTab = tab
+  selectTab(tab: number) {
+    this.selectedTab = tab;
     // swap to the desired tab
-    this.cdr.detectChanges()
+    this.cdr.detectChanges();
   }
 
   ngOnInit() {
     this.activatedRoute.queryParams.subscribe(params => {
       if (params && params['tab']) {
-        const tab = params['tab']
-        this.selectTab(Number(tab))
+        const tab = params['tab'];
+        this.selectTab(Number(tab));
       }
-    })
+    });
   }
 }

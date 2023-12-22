@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { CanDeactivate } from '@angular/router'
-import { Observable, of } from 'rxjs'
+import { CanDeactivate } from '@angular/router';
+import { Observable, of } from 'rxjs';
 
 export interface CheckUnsavedChanges {
-  changesSaved: () => boolean | Observable<boolean>
-  confirmDialog: () => boolean | Observable<boolean>
+  changesSaved: () => boolean | Observable<boolean>;
+  confirmDialog: () => boolean | Observable<boolean>;
 }
 
 @Injectable()

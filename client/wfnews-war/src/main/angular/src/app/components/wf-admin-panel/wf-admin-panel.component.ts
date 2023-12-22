@@ -12,8 +12,8 @@ export class WfAdminPanelComponent extends CollectionComponent implements OnChan
   public currentYearString;
   public currentDateTimeString;
 
-  displayLabel = "Simple Incidents Search"
-  selectedFireCentreCode = "";
+  displayLabel = 'Simple Incidents Search';
+  selectedFireCentreCode = '';
   fireOfNotePublishedInd = true;
   fireCentreOptions = FireCentres;
 
@@ -24,7 +24,7 @@ export class WfAdminPanelComponent extends CollectionComponent implements OnChan
 
   loadPage() {
     this.componentId = SEARCH_INCIDENTS_COMPONENT_ID;
-    this.getCurrentYearString()
+    this.getCurrentYearString();
     this.updateView();
     this.initSortingAndPaging(initIncidentsPaging);
     this.config = this.getPagingConfig();
@@ -33,7 +33,7 @@ export class WfAdminPanelComponent extends CollectionComponent implements OnChan
   }
 
   doSearch() {
-    this.getCurrentYearString()
+    this.getCurrentYearString();
     this.store.dispatch(searchIncidents(this.componentId, {
       pageNumber: this.config.currentPage,
       pageRowCount: this.config.itemsPerPage,
@@ -59,7 +59,7 @@ export class WfAdminPanelComponent extends CollectionComponent implements OnChan
 
 
   getViewModel(): WfAdminPanelComponentModel {
-    return <WfAdminPanelComponentModel>this.viewModel;
+    return this.viewModel as WfAdminPanelComponentModel;
   }
 
 
@@ -68,29 +68,29 @@ export class WfAdminPanelComponent extends CollectionComponent implements OnChan
   }
 
   ngOnchanges(changes: SimpleChanges) {
-    super.ngOnChanges(changes)
+    super.ngOnChanges(changes);
   }
 
   getCurrentYearString() {
-    let currentYear = new Date().getFullYear()
+    let currentYear = new Date().getFullYear();
     if (new Date().getMonth() < 3) {
-      currentYear -= 1
+      currentYear -= 1;
     }
-    this.currentYearString = currentYear.toString() + "/" + (currentYear + 1).toString();
+    this.currentYearString = currentYear.toString() + '/' + (currentYear + 1).toString();
     const todaysDate: Date = new Date();
     const options: Intl.DateTimeFormatOptions = {
-      day: "numeric", month: "long", year: "numeric",
-      hour: "numeric", minute: "2-digit"
+      day: 'numeric', month: 'long', year: 'numeric',
+      hour: 'numeric', minute: '2-digit'
     };
-    const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const todayString = weekdays[todaysDate.getDay()];
-    const liveDateTime: string = (todayString + " " + todaysDate.toLocaleDateString("en-US", options)).replace(" at ", " - ");
-    this.currentDateTimeString = liveDateTime
+    const liveDateTime: string = (todayString + ' ' + todaysDate.toLocaleDateString('en-US', options)).replace(' at ', ' - ');
+    this.currentDateTimeString = liveDateTime;
   }
 
   convertToDate(value: string) {
     if (value) {
-      return moment(value).format('YYYY-MM-DD HH:mm:ss')
+      return moment(value).format('YYYY-MM-DD HH:mm:ss');
     }
   }
 
@@ -101,7 +101,7 @@ export class WfAdminPanelComponent extends CollectionComponent implements OnChan
   }
 
   fireTypeChange(event: any) {
-    this.fireOfNotePublishedInd = event.value === 'note'
-    this.doSearch()
+    this.fireOfNotePublishedInd = event.value === 'note';
+    this.doSearch();
   }
 }

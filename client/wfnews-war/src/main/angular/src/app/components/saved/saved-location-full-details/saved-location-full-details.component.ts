@@ -21,11 +21,11 @@ export class SavedLocationFullDetailsComponent implements OnInit {
   @Input() name;
   location: any;
   params: ParamMap;
-  public distanceInKm: number = 1;
+  public distanceInKm = 1;
   public station: any = [];
   public hours: any = [];
-  public stationName: string = "";
-  public stationHour: string = "";
+  public stationName = '';
+  public stationHour = '';
   public fireCentre: string;
   public dangerRatingLabel: string;
   public fireBans: any[];
@@ -35,12 +35,12 @@ export class SavedLocationFullDetailsComponent implements OnInit {
   public userAllNotificationsPreferences: any;
   public evacsPopulated: boolean;
 
-  displayDangerRatingDes = displayDangerRatingDes
-  convertToDateYear = convertToDateYear
-  getStageOfControlIcon = getStageOfControlIcon
-  getStageOfControlLabel = getStageOfControlLabel
-  convertToDateTimeTimeZone = convertToDateTimeTimeZone
-  isMobileView = isMobileView
+  displayDangerRatingDes = displayDangerRatingDes;
+  convertToDateYear = convertToDateYear;
+  getStageOfControlIcon = getStageOfControlIcon;
+  getStageOfControlLabel = getStageOfControlLabel;
+  convertToDateTimeTimeZone = convertToDateTimeTimeZone;
+  isMobileView = isMobileView;
 
   constructor(private route: ActivatedRoute, private notificationService: NotificationService, private cdr: ChangeDetectorRef,
     private router: Router, private spatialUtilService: SpatialUtilsService, private pointIdService: PointIdService,
@@ -52,18 +52,18 @@ export class SavedLocationFullDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: ParamMap) => {
-      this.params = params
-    })
+      this.params = params;
+    });
     this.notificationService.getUserNotificationPreferences().then(response => {
       if (response) {
         this.userAllNotificationsPreferences = response.notifications;
-        this.location = this.fetchSavedLocation(response)
-        this.getFireCentre(this.location)
-        this.fetchWeather(this.location)
-        this.fetchFireBans(this.location)
-        this.fetchDangerRating(this.location)
-        this.fetchEvacs(this.location)
-        this.fetchNearbyWildfires(this.location)
+        this.location = this.fetchSavedLocation(response);
+        this.getFireCentre(this.location);
+        this.fetchWeather(this.location);
+        this.fetchFireBans(this.location);
+        this.fetchDangerRating(this.location);
+        this.fetchEvacs(this.location);
+        this.fetchNearbyWildfires(this.location);
       }
     });
   }
@@ -75,19 +75,20 @@ export class SavedLocationFullDetailsComponent implements OnInit {
         for (const item of notificationSettings?.notifications) {
           if (item?.notificationName === this.params['name']
             && item?.point?.coordinates[0] as number == this.params['longitude']
-            && item?.point?.coordinates[1] as number == this.params['latitude'])
-            return item;
+            && item?.point?.coordinates[1] as number == this.params['latitude']) {
+return item;
+}
 
         }
       }
     } catch (error) {
-      console.error('Error fetching saved location', error)
+      console.error('Error fetching saved location', error);
     }
 
   }
 
   backToSaved() {
-    this.router.navigate([ResourcesRoutes.SAVED])
+    this.router.navigate([ResourcesRoutes.SAVED]);
   }
 
   getFormattedCoords(coords): string {
@@ -98,8 +99,8 @@ export class SavedLocationFullDetailsComponent implements OnInit {
     try {
       const degreesPerPixel = 0.009; // rough estimation of the conversion factor from kilometers to degrees of latitude or longitude
       const distanceInDegrees = this.distanceInKm * degreesPerPixel;
-      let latitude = location.point.coordinates[1];
-      let longitude = location.point.coordinates[0];
+      const latitude = location.point.coordinates[1];
+      const longitude = location.point.coordinates[0];
       const minLongitude = longitude - distanceInDegrees;
       const maxLongitude = longitude + distanceInDegrees;
       const minLatitude = latitude - distanceInDegrees;
@@ -113,15 +114,21 @@ export class SavedLocationFullDetailsComponent implements OnInit {
       ];
       this.notificationService.getFireCentreByLocation(rectangleCoordinates).then(
         response => {
+<<<<<<< Updated upstream
+=======
+          if (response.data) {
+            response = response.data;
+          }
+>>>>>>> Stashed changes
           if (response.features) {
             const fireCentre = response.features[0].properties.MOF_FIRE_CENTRE_NAME;
             this.fireCentre = fireCentre;
-            this.cdr.markForCheck()
+            this.cdr.markForCheck();
           }
         }
-      )
+      );
     } catch(error) {
-        console.error('Could not retrieve fire centre for saved location', error)
+        console.error('Could not retrieve fire centre for saved location', error);
       }
 
   }
@@ -132,12 +139,14 @@ export class SavedLocationFullDetailsComponent implements OnInit {
       try {
         this.pointIdService.fetchNearestWeatherStation(location.point.coordinates[1], location.point.coordinates[0])
           .then(response => {
-            if (response?.stationName) this.stationName = response.stationName;
+            if (response?.stationName) {
+this.stationName = response.stationName;
+}
             for (const hours of response?.hourly) {
               if (hours.temp !== null) {
                 this.station = hours;
                 if (this.station?.hour) {
-                  this.stationHour = this.station?.hour.slice(-2) + ":00"
+                  this.stationHour = this.station?.hour.slice(-2) + ':00';
                 }
                 break;
               }
@@ -145,7 +154,7 @@ export class SavedLocationFullDetailsComponent implements OnInit {
           });
 
       } catch (error) {
-        console.error('Error retrieving weather station', error)
+        console.error('Error retrieving weather station', error);
       }
     }
 
@@ -153,18 +162,19 @@ export class SavedLocationFullDetailsComponent implements OnInit {
 
   fetchFireBans(location) {
     try {
-      if (location && location.point && location.point.coordinates && location.radius)
-        this.agolService.getBansAndProhibitions(null, { x: location.point.coordinates[0], y: location.point.coordinates[1], radius: location.radius }).toPromise().then(bans => {
+      if (location && location.point && location.point.coordinates && location.radius) {
+this.agolService.getBansAndProhibitions(null, { x: location.point.coordinates[0], y: location.point.coordinates[1], radius: location.radius }).toPromise().then(bans => {
           if (bans && bans.features) {
-            this.fireBans = []
+            this.fireBans = [];
             for (const item of bans.features) {
-              this.fireBans.push(item)
+              this.fireBans.push(item);
             }
           }
         });
+}
 
     } catch (err) {
-      console.error('Could not retrieve fire bans for saved location', err)
+      console.error('Could not retrieve fire bans for saved location', err);
     }
 
   }
@@ -181,32 +191,33 @@ export class SavedLocationFullDetailsComponent implements OnInit {
         });
       }
     } catch (err) {
-      console.error('Could not retrieve danger rating for saved location', err)
+      console.error('Could not retrieve danger rating for saved location', err);
     }
 
   }
 
   fetchEvacs(location) {
     try {
-      if (location && location.point && location.point.coordinates && location.radius)
-        this.agolService.getEvacOrders(null, { x: location.point.coordinates[0], y: location.point.coordinates[1], radius: location.radius }).toPromise().then(evacs => {
+      if (location && location.point && location.point.coordinates && location.radius) {
+this.agolService.getEvacOrders(null, { x: location.point.coordinates[0], y: location.point.coordinates[1], radius: location.radius }).toPromise().then(evacs => {
           if (evacs && evacs.features) {
-            this.evacOrders = []
-            this.evacAlerts = []
+            this.evacOrders = [];
+            this.evacAlerts = [];
             for (const item of evacs.features) {
               this.evacsPopulated = true;
               if (item.attributes.ORDER_ALERT_STATUS === 'Alert') {
-                this.evacAlerts.push(item)
+                this.evacAlerts.push(item);
               } else if (item.attributes.ORDER_ALERT_STATUS === 'Order') {
-                this.evacOrders.push(item)
+                this.evacOrders.push(item);
               }
 
             }
           }
         });
+}
 
     } catch (err) {
-      console.error('Could not retrieve evacuations for saved location', err)
+      console.error('Could not retrieve evacuations for saved location', err);
     }
 
   }
@@ -214,23 +225,23 @@ export class SavedLocationFullDetailsComponent implements OnInit {
   async fetchNearbyWildfires(location) {
     try {
       if (location && location.point && location.point.coordinates && location.radius) {
-        const locationData = new LocationData()
+        const locationData = new LocationData();
         locationData.latitude = Number(location.point.coordinates[1]);
         locationData.longitude = Number(location.point.coordinates[0]);
         locationData.radius = location.radius;
         const stageOfControlCodes = ['OUT_CNTRL', 'HOLDING', 'UNDR_CNTRL'];
-        const incidents = await this.publishedIncidentService.fetchPublishedIncidentsList(0, 9999, locationData, null, null, stageOfControlCodes).toPromise()
+        const incidents = await this.publishedIncidentService.fetchPublishedIncidentsList(0, 9999, locationData, null, null, stageOfControlCodes).toPromise();
         if (incidents?.collection && incidents?.collection?.length > 0) {
-          this.nearbyWildfires = []
+          this.nearbyWildfires = [];
           for (const item of incidents.collection) {
-            this.nearbyWildfires.push(item)
+            this.nearbyWildfires.push(item);
           }
         }
       }
     } catch (err) {
-      console.error('Could not retrieve surrounding incidents for saved location', err)
+      console.error('Could not retrieve surrounding incidents for saved location', err);
     }
-    this.cdr.detectChanges()
+    this.cdr.detectChanges();
   }
 
   navToMap() {
@@ -240,12 +251,12 @@ export class SavedLocationFullDetailsComponent implements OnInit {
   }
 
   delete() {
-    let dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       autoFocus: false,
       width: '80vw',
       data: {
         title: 'Delete saved location',
-        text: "You won't be able to undo this action"
+        text: 'You won\'t be able to undo this action'
       }
     });
 
@@ -282,19 +293,22 @@ export class SavedLocationFullDetailsComponent implements OnInit {
 
   navigateToWeather() {
     if (this.location && this.location.point && this.location.point.coordinates) {
-      this.router.navigate([ResourcesRoutes.WEATHER_DETAILS], { queryParams: { latitude: this.location.point.coordinates[1], longitude: this.location.point.coordinates[0], name: this.location.notificationName } })
+      this.router.navigate([ResourcesRoutes.WEATHER_DETAILS], { queryParams: { latitude: this.location.point.coordinates[1], longitude: this.location.point.coordinates[0], name: this.location.notificationName } });
     }
   }
 
   navigateToEvac(item) {
     if (item && item.attributes && item.attributes.EMRG_OAA_SYSID && item.attributes.ORDER_ALERT_STATUS
       && this.location && this.location.notificationName && this.location.point) {
-      let type: string = "";
-      if (item.attributes.ORDER_ALERT_STATUS === 'Alert') type = "evac-alert";
-      else if (item.attributes.ORDER_ALERT_STATUS === 'Order') type = "evac-order";
+      let type = '';
+      if (item.attributes.ORDER_ALERT_STATUS === 'Alert') {
+type = 'evac-alert';
+} else if (item.attributes.ORDER_ALERT_STATUS === 'Order') {
+type = 'evac-order';
+}
       this.router.navigate([ResourcesRoutes.FULL_DETAILS], {
         queryParams: {
-          type: type, id: item.attributes.EMRG_OAA_SYSID, source: [ResourcesRoutes.SAVED_LOCATION],
+          type, id: item.attributes.EMRG_OAA_SYSID, source: [ResourcesRoutes.SAVED_LOCATION],
           sourceName: this.location.notificationName, sourceLongitude: this.location.point.coordinates[0], sourceLatitude: this.location.point.coordinates[1]
         }
       });
@@ -309,18 +323,18 @@ export class SavedLocationFullDetailsComponent implements OnInit {
           fireYear: incident.fireYear, incidentNumber: incident.incidentNumberLabel,
           source: [ResourcesRoutes.SAVED_LOCATION], sourceName: this.location.notificationName, sourceLongitude: this.location.point.coordinates[0], sourceLatitude: this.location.point.coordinates[1]
         }
-      })
+      });
     }
 
   }
 
   onWatchlist(incident): boolean {
-    return this.watchlistService.getWatchlist().includes(incident.fireYear + ':' + incident.incidentNumberLabel)
+    return this.watchlistService.getWatchlist().includes(incident.fireYear + ':' + incident.incidentNumberLabel);
   }
 
   addToWatchlist(incident) {
     if (!this.onWatchlist(incident)) {
-      this.watchlistService.saveToWatchlist(incident.fireYear, incident.incidentNumberLabel)
+      this.watchlistService.saveToWatchlist(incident.fireYear, incident.incidentNumberLabel);
     }
   }
 

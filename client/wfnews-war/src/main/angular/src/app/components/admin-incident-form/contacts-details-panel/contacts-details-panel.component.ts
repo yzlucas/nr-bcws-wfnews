@@ -12,11 +12,11 @@ import { FireCentres } from '../../../utils';
     '../../base/base.component.scss']
 })
 export class ContactsDetailsPanel implements OnInit {
-  @Input() public readonly formGroup: UntypedFormGroup
-  @Input() public incident
+  @Input() public readonly formGroup: UntypedFormGroup;
+  @Input() public incident;
 
-  public contacts: any
-  public fireCentreOptions : fireCentreOption[] = []
+  public contacts: any;
+  public fireCentreOptions: fireCentreOption[] = [];
 
   constructor(protected http: HttpClient) {
   }
@@ -24,27 +24,27 @@ export class ContactsDetailsPanel implements OnInit {
   ngOnInit() {
     this.getFireCentres();
     this.getFireCentreContacts().subscribe(data => {
-      this.contacts = data
+      this.contacts = data;
      });
 
   }
 
-  setDefaultContactInfo (value) {
-    const control = this.formGroup.get("contact")
+  setDefaultContactInfo(value) {
+    const control = this.formGroup.get('contact');
     if (Object.prototype.hasOwnProperty.call(this.contacts, value)) {
       control.patchValue({
         phoneNumber: this.contacts[value].phone,
         emailAddress: this.contacts[value].url,
         fireCentre: value
-      })
+      });
     }
   }
 
-  public getFireCentreContacts (): Observable<any> {
-    return this.http.get('../../../../assets/data/fire-center-contacts-agol.json')
+  public getFireCentreContacts(): Observable<any> {
+    return this.http.get('../../../../assets/data/fire-center-contacts-agol.json');
   }
 
   getFireCentres(){
-    this.fireCentreOptions = FireCentres
+    this.fireCentreOptions = FireCentres;
   }
 }

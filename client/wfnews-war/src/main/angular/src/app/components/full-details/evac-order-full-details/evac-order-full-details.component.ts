@@ -12,7 +12,7 @@ export class EvacOrderFullDetailsComponent extends EvacAlertFullDetailsComponent
 
   navToIncident(incident: SimpleIncident) {
     this.router.navigate([ResourcesRoutes.PUBLIC_INCIDENT],
-      { queryParams: { fireYear: incident.fireYear, incidentNumber: incident.incidentNumberLabel, source: [ResourcesRoutes.FULL_DETAILS], sourceId: this.id, sourceType: "evac-order" } })
+      { queryParams: { fireYear: incident.fireYear, incidentNumber: incident.incidentNumberLabel, source: [ResourcesRoutes.FULL_DETAILS], sourceId: this.id, sourceType: 'evac-order' } });
   }
 
 }

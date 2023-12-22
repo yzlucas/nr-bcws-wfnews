@@ -1,5 +1,5 @@
-import { Component } from "@angular/core";
-import { AreaRestrictionListComponent } from "./area-restriction-list.component";
+import { Component } from '@angular/core';
+import { AreaRestrictionListComponent } from './area-restriction-list.component';
 
 @Component({
     selector: 'wf-area-restriction-list-desktop',
@@ -10,5 +10,5 @@ import { AreaRestrictionListComponent } from "./area-restriction-list.component"
   })
 
 export class AreaRestrictionListComponentDesktop extends AreaRestrictionListComponent {
-    columnsToDisplay = ["name", "issuedOn", "fireCentre", "distance", "viewMap"];
+    columnsToDisplay = ['name', 'issuedOn', 'fireCentre', 'distance', 'viewMap'];
 }

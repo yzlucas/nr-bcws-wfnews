@@ -1,8 +1,12 @@
 import { Injectable } from '@angular/core';
 import { getActiveMap, isMobileView } from '@app/utils';
 import { AppConfigService } from '@wf1/core-ui';
+<<<<<<< Updated upstream
 import * as esriLeaflet from 'esri-leaflet'
 import * as esriVector from 'esri-leaflet-vector'
+=======
+import * as esriVector from 'esri-leaflet-vector';
+>>>>>>> Stashed changes
 
 import * as nightStyle from '../../assets/data/vector-basemap-night.json';
 import * as topoStyle from '../../assets/data/vector-basemap-topo.json';
@@ -13,8 +17,8 @@ import { CapacitorService } from '@app/services/capacitor-service';
 import { CapacitorHttp } from '@capacitor/core';
 
 
-export type Smk = any
-export type SmkPromise = Promise<Smk>
+export type Smk = any;
+export type SmkPromise = Promise<Smk>;
 
 @Injectable({
     providedIn: 'root',
@@ -32,7 +36,7 @@ export class WFMapService {
     setHandler(id, method, handler): Promise<any> {
         const SMK = window['SMK'];
 
-        return this.patch().then(function () {
+        return this.patch().then(function() {
             SMK.HANDLER.set(id, method, handler);
         });
     }
@@ -46,7 +50,7 @@ export class WFMapService {
     }
 
     changeBasemapCacheToken() {
-        changeCacheToken()
+        changeCacheToken();
     }
 
     createSMK(option: any) {
@@ -55,7 +59,7 @@ export class WFMapService {
         const SMK = window['SMK'];
 
         return this.patch()
-            .then(function () {
+            .then(function() {
                 try {
                     option.config.push({
                         // viewer: {
@@ -67,21 +71,21 @@ export class WFMapService {
                                 choices: baseMapIds
                             },
                             {
-                                type: "bespoke",
-                                instance: "full-extent",
-                                title: "Zoom to Full Extent",
+                                type: 'bespoke',
+                                instance: 'full-extent',
+                                title: 'Zoom to Full Extent',
                                 enabled: true,
-                                position: "actionbar",
+                                position: 'actionbar',
                                 showTitle: false,
                                 showPanel: false,
-                                icon: "zoom_out_map",
+                                icon: 'zoom_out_map',
                                 order: 3
                             },
                         ]
                     });
 
                     SMK.HANDLER.set('BespokeTool--full-extent', 'triggered', (smk, tool) => {
-                        zoomToProvince()
+                        zoomToProvince();
                     });
 
                     SMK.HANDLER.set('BespokeTool--full-screen', 'triggered', (smk, tool) => {
@@ -92,21 +96,20 @@ export class WFMapService {
                         baseUrl: self.smkBaseUrl,
                         ...option
                     });
-                }
-                catch (error) {
-                    console.error("Error occurred during SMK initialization:", error);
-                    throw error
+                } catch (error) {
+                    console.error('Error occurred during SMK initialization:', error);
+                    throw error;
                 }
             })
-            .catch(function (error) {
-                console.error("Error occurred during patching:", error);
+            .catch(function(error) {
+                console.error('Error occurred during patching:', error);
                 throw error; // Re-throw the error to propagate it to the caller
             });
 
     }
 
     public patch(): Promise<any> {
-        let service = this;
+        const service = this;
         try {
             const self = this;
 
@@ -115,7 +118,7 @@ export class WFMapService {
 
             if (!this.patchPromise) {
                 this.patchPromise = Promise.resolve()
-                    .then(function () {
+                    .then(function() {
                         console.log('start patching SMK');
 
                         // Create a DIV for a temporary map.
@@ -136,7 +139,7 @@ export class WFMapService {
                             baseUrl: self.smkBaseUrl,
                             config: 'show-tool=bespoke'
                         })
-                            .then(function (smk) {
+                            .then(function(smk) {
                                 const option2x = {
                                     tileSize: 512,
                                     zoomOffset: -1
@@ -145,14 +148,14 @@ export class WFMapService {
                                 const topographicOption = {
                                     maxNativeZoom: 20,
                                     maxZoom: 30
-                                }
+                                };
 
                                 defineEsriVectoLayer('topography', 'BC Topography', [
                                     {
                                         id: 'topography',
                                         type: 'vector',
                                         url: 'https://tiles.arcgis.com/tiles/B6yKvIZqzuOr0jBR/arcgis/rest/services/Canada_Topographic/VectorTileServer',
-                                        style: function (style) {
+                                        style(style) {
                                             return topoStyle;
                                         }
                                     }
@@ -163,7 +166,7 @@ export class WFMapService {
                                         id: 'navigation',
                                         type: 'vector',
                                         url: 'https://tiles.arcgis.com/tiles/B6yKvIZqzuOr0jBR/arcgis/rest/services/Canada_Topographic/VectorTileServer',
-                                        style: function (style) {
+                                        style(style) {
                                             return navStyle;
                                         }
                                     }
@@ -174,7 +177,7 @@ export class WFMapService {
                                         id: 'imagery',
                                         type: 'vector',
                                         url: 'https://tiles.arcgis.com/tiles/B6yKvIZqzuOr0jBR/arcgis/rest/services/Canada_Topographic/VectorTileServer',
-                                        style: function (style) {
+                                        style(style) {
                                             return satelliteStyle;
                                         }
                                     },
@@ -186,7 +189,7 @@ export class WFMapService {
                                         id: 'night',
                                         type: 'vector',
                                         url: 'https://tiles.arcgis.com/tiles/B6yKvIZqzuOr0jBR/arcgis/rest/services/Canada_Topographic/VectorTileServer',
-                                        style: function (style) {
+                                        style(style) {
                                             return nightStyle;
                                         }
                                     }
@@ -197,7 +200,7 @@ export class WFMapService {
                                         id: 'bc-basemap',
                                         type: 'vector',
                                         url: 'https://tiles.arcgis.com/tiles/ubm4tcTYICKBpist/arcgis/rest/services/BC_BASEMAP/VectorTileServer',
-                                        style: function (style) {
+                                        style(style) {
                                             return style;
                                         }
                                     }
@@ -211,10 +214,10 @@ export class WFMapService {
                                 temp.parentElement.removeChild(temp);
                             });
                     })
-                    .then(function () {
+                    .then(function() {
                         // add a component to Vue global used by SMK
                         const Vue = window['Vue'];
-                        return include('component').then(function () {
+                        return include('component').then(function() {
                             const f = Vue.component('wf-feature', {
                                 template: '#wf-feature-template',
                                 extends: SMK.COMPONENT.FeatureBase,
@@ -265,7 +268,7 @@ export class WFMapService {
 
                         });
                     })
-                    .then(function () {
+                    .then(function() {
                         include.tag('plugin-wfim-util',
                             // { loader: "group", tags: [
                             { loader: 'script', url: './assets/js/smk/plugin-wfnews/util.js' }
@@ -322,57 +325,57 @@ export class WFMapService {
                             }
                         );
 
-                        include.tag("layer-image",
+                        include.tag('layer-image',
                             {
-                                loader: "group", tags: [
-                                    { loader: "script", url: "./assets/js/smk/plugin-time-dimension/layer/layer-image.js" },
-                                ]
-                            }
-                        )
-
-                        include.tag("layer-image-leaflet",
-                            {
-                                loader: "group", tags: [
-                                    { loader: "script", url: "./assets/js/smk/plugin-time-dimension/viewer-leaflet/layer/layer-image-leaflet.js" },
-                                ]
-                            }
-                        )
-
-                        include.tag("layer-wms-time",
-                            {
-                                loader: "group", tags: [
-                                    { loader: "script", url: "./assets/js/smk/plugin-time-dimension/layer/layer-wms-time.js" }
+                                loader: 'group', tags: [
+                                    { loader: 'script', url: './assets/js/smk/plugin-time-dimension/layer/layer-image.js' },
                                 ]
                             }
                         );
 
-                        include.tag("layer-wms-time-leaflet",
+                        include.tag('layer-image-leaflet',
                             {
-                                loader: "group", tags: [
-                                    { loader: "script", url: "./assets/js/smk/plugin-time-dimension/viewer-leaflet/layer/layer-wms-time-leaflet.js" }
+                                loader: 'group', tags: [
+                                    { loader: 'script', url: './assets/js/smk/plugin-time-dimension/viewer-leaflet/layer/layer-image-leaflet.js' },
                                 ]
                             }
                         );
 
-                        include.tag("tool-time-dimension",
+                        include.tag('layer-wms-time',
                             {
-                                loader: "group", tags: [
-                                    { loader: "script", url: "./assets/js/smk/plugin-time-dimension/tool/time-dimension/tool-time-dimension.js" }
+                                loader: 'group', tags: [
+                                    { loader: 'script', url: './assets/js/smk/plugin-time-dimension/layer/layer-wms-time.js' }
                                 ]
                             }
-                        )
+                        );
 
-                        include.tag("tool-time-dimension-leaflet",
+                        include.tag('layer-wms-time-leaflet',
                             {
-                                loader: "sequence", tags: [
-                                    { loader: "style", url: "https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.control.min.css" },
-                                    { loader: "script", url: "https://cdn.jsdelivr.net/npm/iso8601-js-period@0.2.1/iso8601.min.js" },
-                                    { loader: "script", url: "https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.min.js" },
-                                    { loader: "script", url: "./assets/js/smk/plugin-time-dimension/viewer-leaflet/tool/time-dimension/lib/time-dimension-layer-image-overlay.js" },
-                                    { loader: "script", url: "./assets/js/smk/plugin-time-dimension/viewer-leaflet/tool/time-dimension/tool-time-dimension-leaflet.js" }
+                                loader: 'group', tags: [
+                                    { loader: 'script', url: './assets/js/smk/plugin-time-dimension/viewer-leaflet/layer/layer-wms-time-leaflet.js' }
                                 ]
                             }
-                        )
+                        );
+
+                        include.tag('tool-time-dimension',
+                            {
+                                loader: 'group', tags: [
+                                    { loader: 'script', url: './assets/js/smk/plugin-time-dimension/tool/time-dimension/tool-time-dimension.js' }
+                                ]
+                            }
+                        );
+
+                        include.tag('tool-time-dimension-leaflet',
+                            {
+                                loader: 'sequence', tags: [
+                                    { loader: 'style', url: 'https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.control.min.css' },
+                                    { loader: 'script', url: 'https://cdn.jsdelivr.net/npm/iso8601-js-period@0.2.1/iso8601.min.js' },
+                                    { loader: 'script', url: 'https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.min.js' },
+                                    { loader: 'script', url: './assets/js/smk/plugin-time-dimension/viewer-leaflet/tool/time-dimension/lib/time-dimension-layer-image-overlay.js' },
+                                    { loader: 'script', url: './assets/js/smk/plugin-time-dimension/viewer-leaflet/tool/time-dimension/tool-time-dimension-leaflet.js' }
+                                ]
+                            }
+                        );
 
                         return include(
                             'leaflet-extensions',
@@ -380,24 +383,24 @@ export class WFMapService {
                             'layer-wms-time-cql-leaflet',
                             'layer-image-leaflet',
                             'layer-wms-time-leaflet'
-                        ).then(function () {
+                        ).then(function() {
                             console.log('custom smk layers loaded');
                         })
-                            .catch(function (error) {
-                                console.error("Error occurred while loading custom SMK layers:", error);
+                            .catch(function(error) {
+                                console.error('Error occurred while loading custom SMK layers:', error);
                                 throw error;
                             });
                     })
-                    .then(function () {
-                        SMK.TYPE.Viewer.leaflet.prototype.mapResized = function () {
+                    .then(function() {
+                        SMK.TYPE.Viewer.leaflet.prototype.mapResized = function() {
                             const self = this;
-                            setTimeout(function () {
+                            setTimeout(function() {
                                 self.map.invalidateSize({ animate: false });
                             }, 500);
                         };
 
                         const oldInit = SMK.TYPE.Viewer.leaflet.prototype.initialize;
-                        SMK.TYPE.Viewer.leaflet.prototype.initialize = function (smk) {
+                        SMK.TYPE.Viewer.leaflet.prototype.initialize = function(smk) {
                             // Call the existing initializer
                             oldInit.apply(this, arguments);
 
@@ -407,7 +410,7 @@ export class WFMapService {
                             this.map.setMaxBounds(maxBounds);
                         };
 
-                        SMK.TYPE.Viewer.leaflet.prototype.panToFeature = function (feature, zoomIn) {
+                        SMK.TYPE.Viewer.leaflet.prototype.panToFeature = function(feature, zoomIn) {
                             const turf = window['turf']; const L = window['L'];
 
                             let bounds;
@@ -449,81 +452,90 @@ export class WFMapService {
                         SMK.TYPE.Viewer.leaflet.prototype.cancelIdentify = false;
                         SMK.TYPE.Viewer.leaflet.prototype.identifyState = null;
                         const origIdentifyFeatures = SMK.TYPE.Viewer.leaflet.prototype.identifyFeatures;
-                        SMK.TYPE.Viewer.leaflet.prototype.identifyFeatures = function (location, area) {
-                            var vw = this;
+                        SMK.TYPE.Viewer.leaflet.prototype.identifyFeatures = function(location, area) {
+                            const vw = this;
                             (document.getElementsByClassName('smk-sidepanel').item(0) as HTMLElement).style.removeProperty('width');
                             if (self.identifyCallback) {
                                 self.identifyCallback(location, area);
                             }
 
                             return Promise.resolve()
-                                .then(function () {
+                                .then(function() {
                                     return origIdentifyFeatures.call(vw, location, area);
                                 })
-                                .then(function () {
+                                .then(function() {
                                     if (self.identifyDoneCallback) {
                                         self.identifyDoneCallback(location, area);
                                     }
                                 }).catch(err => {
-                                    console.error(err)
+                                    console.error(err);
                                 });
                         };
 
-                        SMK.TYPE.Layer['wms'].prototype.canMergeWith = function (other) {
+                        SMK.TYPE.Layer['wms'].prototype.canMergeWith = function(other) {
                             return this.config.combiningClass && this.config.combiningClass === other.config.combiningClass;
                         };
-                        SMK.TYPE.Layer['wms']['leaflet'].prototype.canMergeWith = function (other) {
+                        SMK.TYPE.Layer['wms']['leaflet'].prototype.canMergeWith = function(other) {
                             return this.config.combiningClass && this.config.combiningClass === other.config.combiningClass;
                         };
 
-                        SMK.TYPE.Layer[ 'wms' ]['leaflet'].prototype.getFeaturesInArea = function ( area, view, option ) {
+                        SMK.TYPE.Layer[ 'wms' ]['leaflet'].prototype.getFeaturesInArea = function( area, view, option ) {
                             // console.log('getFeaturesInArea')
-                            let self = this
+                            const self = this;
         
-                            let extraFilter = this.config.where || ''
-                            if ( extraFilter ) extraFilter = ' AND ' + extraFilter
+                            let extraFilter = this.config.where || '';
+                            if ( extraFilter ) {
+extraFilter = ' AND ' + extraFilter;
+}
         
-                            let polygon = 'SRID=4326;POLYGON ((' + area.geometry.coordinates[ 0 ].map( function ( c ) { return c.join( ' ' ) } ).join( ',' ) + '))'
+                            const polygon = 'SRID=4326;POLYGON ((' + area.geometry.coordinates[ 0 ].map( function( c ) {
+ return c.join( ' ' ); 
+} ).join( ',' ) + '))';
         
-                            let data = {
-                                service:        "WFS",
+                            const data = {
+                                service:        'WFS',
                                 version:        '1.1.0',
-                                request:        "GetFeature",
+                                request:        'GetFeature',
                                 srsName:        'EPSG:4326',
                                 typename:       this.config.layerName,
-                                outputformat:   "application/json",
+                                outputformat:   'application/json',
                                 cql_filter:     'INTERSECTS(' + (this.config.geometryAttribute||'GEOMETRY') + ',' + polygon + ')' + extraFilter
-                            }
+                            };
         
                             return service.httpGet( this.config.serviceUrl, data )
-                            .then( function ( data: any )    {
-                                console.log('parse ok')
+                            .then( function( data: any )    {
+                                console.log('parse ok');
                                 // console.log( data )
                                 if (data.data) {
                                     // from capacitor http
-                                    data = data.data
+                                    data = data.data;
                                 }
-                                if ( !data ) throw new Error( 'no features' )
-                                if ( !data.features || data.features.length == 0 ) throw new Error( 'no features' )
-                                console.log('feature count',data.features.length)
+                                if ( !data ) {
+throw new Error( 'no features' );
+}
+                                if ( !data.features || data.features.length == 0 ) {
+throw new Error( 'no features' );
+}
+                                console.log('feature count',data.features.length);
         
-                                return data.features.map( function ( f, i ) {
-                                    if ( self.config.titleAttribute )
-                                        f.title = f.properties[ self.config.titleAttribute ]
-                                    else
-                                        f.title = 'Feature #' + ( i + 1 )
+                                return data.features.map( function( f, i ) {
+                                    if ( self.config.titleAttribute ) {
+f.title = f.properties[ self.config.titleAttribute ];
+} else {
+f.title = 'Feature #' + ( i + 1 );
+}
         
-                                    return f
-                                } )
+                                    return f;
+                                } );
                             } )
-                            .then( function ( features ) {
-                                console.log('features returned',features.length)
-                                return features
-                            } )
-                        }
+                            .then( function( features ) {
+                                console.log('features returned',features.length);
+                                return features;
+                            } );
+                        };
 
                         SMK.TYPE.Layer['wms-time-cql']['leaflet'].prototype.initLegends =
-                            SMK.TYPE.Layer['wms']['leaflet'].prototype.initLegends = function () {
+                            SMK.TYPE.Layer['wms']['leaflet'].prototype.initLegends = function() {
                                 const J = window['jQuery'];
 
                                 const url = this.config.serviceUrl + '?' + J.param({
@@ -571,14 +583,13 @@ export class WFMapService {
                                     });
                             };
                     })
-                    .then(function () {
+                    .then(function() {
                         console.log('done patching SMK');
                     });
             }
             return this.patchPromise;
-        }
-        catch (error) {
-            console.error("Error occurred during patching:", error);
+        } catch (error) {
+            console.error('Error occurred during patching:', error);
             throw error; // Re-throw the error to propagate it to the caller
         }
     }
@@ -602,7 +613,7 @@ export class WFMapService {
                 viewer.displayContext.layers.setItemVisible('bc-hillshade', false);
             }
         } catch (err) {
-            console.error('hillshade failed to load on init')
+            console.error('hillshade failed to load on init');
         }
     }
 
@@ -622,20 +633,20 @@ export class WFMapService {
             if (isMobile) {
                 // return this.http.get(url, params, headers)
                 const options = {
-                    url : url,
-                    headers: headers,
-                    params: params
-                }
-                const resp =  CapacitorHttp.get(options)
-                    console.log('CAPACTIORHTTP!!!!!!!!!')
-                    return resp
+                    url,
+                    headers,
+                    params
+                };
+                const resp =  CapacitorHttp.get(options);
+                    console.log('CAPACTIORHTTP!!!!!!!!!');
+                    return resp;
             } else {
                 const requestOptions = {
-                    params: params,
-                    headers: headers
+                    params,
+                    headers
                 };
                 const resp = this.httpClient.get(url, requestOptions).toPromise();
-                return resp
+                return resp;
             }
         });
     }
@@ -646,9 +657,9 @@ function clone(obj) {
 }
 
 let order = 100;
-let baseMapIds = [];
-let baseMapCacheToken
-let baseMapLayers = []
+const baseMapIds = [];
+let baseMapCacheToken;
+const baseMapLayers = [];
 
 function defineEsriBasemap(id: string, title: string, baseMaps: { id: string; option?: { [key: string]: any } }[]) {
     order += 1;
@@ -657,7 +668,7 @@ function defineEsriBasemap(id: string, title: string, baseMaps: { id: string; op
         title,
         order,
         create() {
-            return baseMaps.map(function (bm) {
+            return baseMaps.map(function(bm) {
                 const L = window['L'];
 
                 const orig = clone(L.esri.BasemapLayer.TILES[bm.id].options);
@@ -669,13 +680,13 @@ function defineEsriBasemap(id: string, title: string, baseMaps: { id: string; op
     };
 }
 
-function defineEsriVectoLayer(id: string, title: string, baseMaps: { id: string, url: string, style: any, type: string, option?: { [key: string]: any } }[]) {
-    order += 1
-    baseMapIds.push(id)
+function defineEsriVectoLayer(id: string, title: string, baseMaps: { id: string; url: string; style: any; type: string; option?: { [key: string]: any } }[]) {
+    order += 1;
+    baseMapIds.push(id);
     window['SMK'].TYPE.Viewer.prototype.basemap[id] = {
         title,
         order,
-        create: function () {
+        create() {
             const L = window['L'];
 
             /*L.esri = {
@@ -685,23 +696,25 @@ function defineEsriVectoLayer(id: string, title: string, baseMaps: { id: string,
               }
             };*/
             return baseMaps.map((bm) => {
-                const opts = clone({...bm.option, wfnewsId: id}  || {})
-                opts.cacheToken = function () {
-                    return baseMapCacheToken
-                }
+                const opts = clone({...bm.option, wfnewsId: id}  || {});
+                opts.cacheToken = function() {
+                    return baseMapCacheToken;
+                };
 
                 if (bm.type === 'vector') {
 
                     const layer = esriVector.vectorTileLayer(bm.url, {
                         style: bm.style,
-                        opts: opts
+                        opts
                     });
 
-                    layer.bringToBack = () => { return }
+                    layer.bringToBack = () => {
+ return; 
+};
                     layer._leaflet_id = id;
                     layer.id = id;
 
-                    baseMapLayers.push(bm)
+                    baseMapLayers.push(bm);
 
                     return layer;
                 } else {
@@ -709,17 +722,17 @@ function defineEsriVectoLayer(id: string, title: string, baseMaps: { id: string,
                     const bmly = window['L'].esri.basemapLayer(bm.id, opts);
                     L.esri.BasemapLayer.TILES[bm.id].options = { ...orig, wfnewsId: id };
 
-                    baseMapLayers.push(bmly)
+                    baseMapLayers.push(bmly);
 
                     return bmly;
                 }
             });
         }
-    }
+    };
 }
 
 function changeCacheToken() {
-    baseMapCacheToken = Math.trunc(Math.random() * 1e10)
+    baseMapCacheToken = Math.trunc(Math.random() * 1e10);
 }
 
 function defineWmsBasemap(id, title: string, baseMaps: { url: string; option?: { [key: string]: any } }[]) {
@@ -729,7 +742,7 @@ function defineWmsBasemap(id, title: string, baseMaps: { url: string; option?: {
         title,
         order,
         create() {
-            return baseMaps.map(function (bm) {
+            return baseMaps.map(function(bm) {
                 const L = window['L'];
 
                 return L.tileLayer(bm.url, bm.option);
@@ -744,10 +757,10 @@ function encodeUrl(url, data) {
     }
 
     const params = Object.keys(data)
-        .filter(function (k) {
+        .filter(function(k) {
             return data[k];
         })
-        .map(function (k) {
+        .map(function(k) {
             return `${encodeURIComponent(k)}=${encodeURIComponent(data[k])}`;
         })
         .join('&');
@@ -764,9 +777,9 @@ function encodeUrl(url, data) {
 }
 
 function zoomToProvince() {
-    zoomToGeometry(window['turf'].bboxPolygon([-136.3, 49, -116, 60.2]))
+    zoomToGeometry(window['turf'].bboxPolygon([-136.3, 49, -116, 60.2]));
 }
 
 function zoomToGeometry(geom: any, zoomLevel: number | boolean = 12) {
-    getActiveMap().$viewer.panToFeature(geom, zoomLevel)
+    getActiveMap().$viewer.panToFeature(geom, zoomLevel);
 }

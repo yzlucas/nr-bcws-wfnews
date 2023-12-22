@@ -1,9 +1,9 @@
-import { Component, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef, ViewChildren, QueryList } from "@angular/core";
-import { RoFPage } from "../rofPage";
-import { ReportOfFire } from "../reportOfFireModel";
-import { MatButtonToggle, MatButtonToggleChange } from "@angular/material/button-toggle";
-import { ReportOfFirePage } from "@app/components/report-of-fire/report-of-fire.component";
-import { CommonUtilityService } from "@app/services/common-utility.service";
+import { Component, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef, ViewChildren, QueryList } from '@angular/core';
+import { RoFPage } from '../rofPage';
+import { ReportOfFire } from '../reportOfFireModel';
+import { MatButtonToggle, MatButtonToggleChange } from '@angular/material/button-toggle';
+import { ReportOfFirePage } from '@app/components/report-of-fire/report-of-fire.component';
+import { CommonUtilityService } from '@app/services/common-utility.service';
 
 @Component({
   selector: 'rof-complex-question-page',
@@ -14,11 +14,11 @@ import { CommonUtilityService } from "@app/services/common-utility.service";
 export class RoFComplexQuestionPage extends RoFPage {
   public allowIDontKnowButton: boolean;
   public allowMultiSelect: boolean;
-  public disableNext: boolean = true;
+  public disableNext = true;
   public buttons: Array<any>;
   public highlightedButton: HTMLElement;
-  isEditMode: boolean = false;
-  isPageDirty: boolean = false;
+  isEditMode = false;
+  isPageDirty = false;
   public buttonStates: boolean[] = Array(10).fill(false);
 
   @ViewChild('notSureButton') notSureButton!: MatButtonToggle;
@@ -28,10 +28,10 @@ export class RoFComplexQuestionPage extends RoFPage {
   public constructor(private reportOfFirePage: ReportOfFirePage,
     private cdr: ChangeDetectorRef,
     private commonUtilityService: CommonUtilityService) {
-    super()
+    super();
   }
 
-  initialize (data: any, index: number, reportOfFire: ReportOfFire) {
+  initialize(data: any, index: number, reportOfFire: ReportOfFire) {
     super.initialize(data, index, reportOfFire);
     this.allowIDontKnowButton = data.allowIDontKnowButton;
     this.allowMultiSelect = data.allowMultiSelect;
@@ -41,10 +41,10 @@ export class RoFComplexQuestionPage extends RoFPage {
   editMode() {
     this.isPageDirty = false;
     this.isEditMode = true;
-    this.cdr.detectChanges()
+    this.cdr.detectChanges();
   }
 
-  onValChange (value: string, event: MatButtonToggleChange | PointerEvent, index:number) {
+  onValChange(value: string, event: MatButtonToggleChange | PointerEvent, index: number) {
     this.isPageDirty = true;
     this.buttonStates.fill(false);
     this.buttonStates[index] = !this.buttonStates[index];
@@ -63,13 +63,13 @@ export class RoFComplexQuestionPage extends RoFPage {
       // remove the highlight on the currently selected button
       if (clickedButton){
         if (this.highlightedButton) {
-          this.highlightedButton.classList.remove("btn-highlight");
+          this.highlightedButton.classList.remove('btn-highlight');
         }
 
         // highlight the new button
-        clickedButton.classList.add("btn-highlight");
+        clickedButton.classList.add('btn-highlight');
         // and store it for later events
-        this.highlightedButton = clickedButton
+        this.highlightedButton = clickedButton;
       }
     }
 
@@ -77,20 +77,20 @@ export class RoFComplexQuestionPage extends RoFPage {
       if(this.notSureButton && this.notSureButton.checked) {
         this.notSureButton.checked = false;
         if (this.allowMultiSelect) {
-          this.reportOfFire[this.updateAttribute] = this.reportOfFire[this.updateAttribute].filter(item => item !== "I'm not sure");
+          this.reportOfFire[this.updateAttribute] = this.reportOfFire[this.updateAttribute].filter(item => item !== 'I\'m not sure');
         }
       }
       if (Array.isArray(this.reportOfFire[this.updateAttribute]) && !this.reportOfFire[this.updateAttribute].includes(value)) {
-        this.reportOfFire[this.updateAttribute].push(value)
+        this.reportOfFire[this.updateAttribute].push(value);
       } else if (Array.isArray(this.reportOfFire[this.updateAttribute]) && this.reportOfFire[this.updateAttribute].includes(value)) {
         const index = this.reportOfFire[this.updateAttribute].indexOf(value);
-        this.reportOfFire[this.updateAttribute].splice(index, 1)
+        this.reportOfFire[this.updateAttribute].splice(index, 1);
       } else {
         this.reportOfFire[this.updateAttribute] = value;
       }
     } else {
       if (this.highlightedButton) {
-        this.highlightedButton.classList.remove("btn-highlight");
+        this.highlightedButton.classList.remove('btn-highlight');
       }
       this.reportOfFire[this.updateAttribute] = '';
     }
@@ -100,9 +100,9 @@ export class RoFComplexQuestionPage extends RoFPage {
     if (value === null) {
       this.notSureButton.checked = true;
       if(this.allowMultiSelect == true) {
-        this.reportOfFire[this.updateAttribute] = ["I'm not sure"]  
+        this.reportOfFire[this.updateAttribute] = ['I\'m not sure'];  
       } else {
-        this.reportOfFire[this.updateAttribute] = "I'm not sure"
+        this.reportOfFire[this.updateAttribute] = 'I\'m not sure';
       }
       // Deselect all other buttons
       this.toggleButtons.forEach((button) => {
@@ -113,7 +113,7 @@ export class RoFComplexQuestionPage extends RoFPage {
     } 
   }
   backToReview() {
-    this.reportOfFirePage.edit('review-page')
+    this.reportOfFirePage.edit('review-page');
   }
 
   previousPage() {
@@ -122,7 +122,7 @@ export class RoFComplexQuestionPage extends RoFPage {
       if (this.reportOfFire.motionSensor === 'yes') {
         this.previous();
       } else{
-        this.reportOfFirePage.selectPage('callback-page',null,false)
+        this.reportOfFirePage.selectPage('callback-page',null,false);
         this.reportOfFirePage.currentStep--;
       }
     } else {
@@ -138,9 +138,8 @@ export class RoFComplexQuestionPage extends RoFPage {
         } else {
           this.next();
         }
-      })
-    }
-    else{
+      });
+    } else{
       this.next();
     }
   }

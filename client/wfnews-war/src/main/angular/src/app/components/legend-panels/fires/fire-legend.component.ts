@@ -7,7 +7,7 @@ import { checkLayerVisible } from '@app/utils';
   styleUrls: ['./fire-legend.component.scss']
 })
 export class FireLegendComponent {
-  public checkLayerVisible = checkLayerVisible
+  public checkLayerVisible = checkLayerVisible;
   
   constructor() {}
 }

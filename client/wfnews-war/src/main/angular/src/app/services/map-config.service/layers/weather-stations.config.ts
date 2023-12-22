@@ -73,12 +73,12 @@ export function WeatherStationsLayerConfig(ls: layerSettings) {
               url: ''
             },
             style:{
-              strokeWidth:"1",
-              strokeStyle:"1",
-              strokeColor:"#FFFFFF00",
-              strokeOpacity:"0",
-              fillColor:"#FFFFFF00",
-              fillOpacity:"0",
+              strokeWidth:'1',
+              strokeStyle:'1',
+              strokeColor:'#FFFFFF00',
+              strokeOpacity:'0',
+              fillColor:'#FFFFFF00',
+              fillOpacity:'0',
               fill: false
             }
         }

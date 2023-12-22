@@ -1,4 +1,4 @@
-import { AfterViewInit, Component } from "@angular/core"
+import { AfterViewInit, Component } from '@angular/core';
 
 @Component({
   selector: 'blog-widget',
@@ -6,12 +6,12 @@ import { AfterViewInit, Component } from "@angular/core"
   styleUrls: ['./blog-widget.component.scss']
 })
 export class BlogWidget implements AfterViewInit{
-  public startupComplete = false
+  public startupComplete = false;
 
   constructor() { }
 
-  ngAfterViewInit (): void {
+  ngAfterViewInit(): void {
     // We probably have nothing to do for this widget
-    this.startupComplete = true
+    this.startupComplete = true;
   }
 }

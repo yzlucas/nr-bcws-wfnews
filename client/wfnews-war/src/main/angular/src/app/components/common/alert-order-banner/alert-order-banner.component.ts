@@ -11,15 +11,15 @@ export class AlertOrderBannerComponent {
   @Input() areaRestriction: AreaRestrictionsOption;
   @Input() isCard: boolean;
 
-  isOrder = () => this.evacuation?.orderAlertStatus === 'Order'
-  isArea = () => !!this.areaRestriction
+  isOrder = () => this.evacuation?.orderAlertStatus === 'Order';
+  isArea = () => !!this.areaRestriction;
 
   color = () => {
     if (this.isOrder() || this.isArea()) {
       return 'red';
     }
     return 'yellow';
-  }
+  };
 
   shape = () => this.isCard ? 'card' : 'banner';
   
@@ -31,7 +31,7 @@ export class AlertOrderBannerComponent {
       return 'error';
     }
     return 'warning';
-  }
+  };
 
   message = () => {
     if (this.isArea()) {
@@ -41,5 +41,5 @@ export class AlertOrderBannerComponent {
       return `Evacuation Order: ${this.evacuation?.eventName} issued by ${this.evacuation?.issuingAgency}`;
     }
     return `Evacuation Alert: ${this.evacuation?.eventName} issued by ${this.evacuation?.issuingAgency}`;
-  }
+  };
 }

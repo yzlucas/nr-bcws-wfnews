@@ -20,7 +20,6 @@ import { WFMapService } from '../../services/wf-map.service';
 import { IncidentIdentifyPanelComponent } from '../incident-identify-panel/incident-identify-panel.component';
 import { WeatherPanelComponent } from '../weather/weather-panel/weather-panel.component';
 import { CommonUtilityService } from '@app/services/common-utility.service';
-import { getActiveMap } from '@app/utils';
 
 let mapIndexAuto = 0;
 let initPromise = Promise.resolve();
@@ -185,7 +184,7 @@ export class WFMapContainerComponent implements OnDestroy, OnChanges {
       smk.destroy();
     });
   }
-  
+
   addSelectedIncidentPanels(smk) {
     const self = this;
     const identified = smk.$viewer.identified;

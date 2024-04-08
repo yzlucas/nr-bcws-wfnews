@@ -61,6 +61,7 @@ export class SavedLocationWeatherDetailsComponent implements OnInit {
         .then((response) => {
           if (response) {
             this.station = response;
+            debugger
             if (response.daily) {
 this.daily = response.daily[0];
 }

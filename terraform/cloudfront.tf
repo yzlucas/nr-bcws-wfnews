@@ -361,10 +361,10 @@ resource "aws_cloudfront_distribution" "wfnews_geofencing_nginx" {
 
     forwarded_values {
       query_string = true
-      headers      = ["Origin", "Authorization", "X-API-KEY", "apikey"]
+      headers      = ["Origin"]
 
       cookies {
-        forward = "all"
+        forward = "none"
       }
     }
 
@@ -610,10 +610,10 @@ resource "aws_cloudfront_distribution" "wfnews_geofencing_gov_api" {
 
     forwarded_values {
       query_string = true
-      headers      = ["Origin", "Authorization", "X-API-KEY", "apikey"]
+      headers      = ["Origin"]
 
       cookies {
-        forward = "all"
+        forward = "none"
       }
     }
 

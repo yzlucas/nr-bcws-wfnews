@@ -13,7 +13,9 @@
 
   <div class="rof-button-container" *ngIf="!isEditMode">
     <button class="rof-button" mat-flat-button (click)="reportOfFire.consentToCall = 'no'; previous();">Previous</button>
-	  <button [class]="'rof-button' + (!reportOfFire.fullName || !reportOfFire.phoneNumber || !validatePhoneNumber(reportOfFire.phoneNumber) ? '-disabled' : '-primary')"  mat-flat-button (click)="reportOfFire.consentToCall = 'yes'; nextPage();" [disabled]="!reportOfFire.fullName || !reportOfFire.phoneNumber || !validatePhoneNumber(reportOfFire.phoneNumber) ">Continue</button>
+	  <button [class]="'rof-button' + (!reportOfFire.fullName || !reportOfFire.phoneNumber || !validatePhoneNumber(reportOfFire.phoneNumber) ? '-disabled' : '-primary')"  mat-flat-button (click)="reportOfFire.consentToCall = 'yes'; nextPage();" [disabled]="!reportOfFire.fullName || !reportOfFire.phoneNumber || !validatePhoneNumber(reportOfFire.phoneNumber) ">
+      <mat-icon class="review-icon">visibility</mat-icon>Review
+    </button>
   </div>
 
   <div class="rof-button-container" *ngIf="isEditMode">

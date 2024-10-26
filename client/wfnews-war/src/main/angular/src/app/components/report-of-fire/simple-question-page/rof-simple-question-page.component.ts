@@ -126,7 +126,7 @@ this.reportOfFire.headingDetectionActive = true;
       if (this.reportOfFire.motionSensor !== 'no' && !this.commonUtilityService.checkIfLandscapeMode()) {
         this.skip();
       } else {
-        this.reportOfFirePage.selectPage('distance-page', null, false);
+        this.reportOfFirePage.selectPage('review-page', null, false);
       }
     } else {
       this.skip();

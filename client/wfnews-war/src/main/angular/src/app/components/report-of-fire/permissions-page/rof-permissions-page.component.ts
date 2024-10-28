@@ -29,12 +29,16 @@ export class RoFPermissionsPage extends RoFPage {
   }
 
   nextPage() {
-    if (this.reportOfFire.motionSensor === 'yes' && !this.commonUtilityService.checkIfLandscapeMode()) {
+    if (this.isMotionSensorActive()  && !this.commonUtilityService.checkIfLandscapeMode()) {
       this.reportOfFire.headingDetectionActive = true;
       this.next();
     } else {
       this.reportOfFirePage.selectPage('distance-page', null, false);
       this.reportOfFirePage.currentStep++;
     }
+  }
+
+  isMotionSensorActive(): boolean {
+    return this.reportOfFire.motionSensor === 'yes';
   }
 }

@@ -49,7 +49,6 @@ export class RoFSimpleQuestionPage extends RoFPage {
   }
 
   processToNext() {
-    console.log("WTF WHERE AM I")
     if (this.id === 'callback-page') {
 this.reportOfFire.headingDetectionActive = true;
 }

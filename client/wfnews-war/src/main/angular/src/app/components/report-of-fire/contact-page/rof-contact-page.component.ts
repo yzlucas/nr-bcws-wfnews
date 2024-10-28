@@ -51,12 +51,8 @@ export class RoFContactPage extends RoFPage {
     );
   }
 
-  validatePhoneNumber(value) {
-    if (value && value.toString().length === 10) {
-      return true;
-    } else {
-      return false;
-    }
+  validatePhoneNumber(value): boolean {
+    return !!value && value.toString().length === 10;
   }
 
   get iconType(): string {
@@ -64,9 +60,7 @@ export class RoFContactPage extends RoFPage {
   }
 
   get isFormValid(): boolean {
-    return !!this.reportOfFire.fullName && 
-          !!this.reportOfFire.phoneNumber && 
-          this.validatePhoneNumber(this.reportOfFire.phoneNumber);
+    return !!this.reportOfFire.fullName && this.validatePhoneNumber(this.reportOfFire.phoneNumber);
   }
 
   get buttonClass(): string {

@@ -39,6 +39,6 @@ export class RoFPermissionsPage extends RoFPage {
   }
 
   isMotionSensorActive(): boolean {
-    return this.reportOfFire.motionSensor === 'yes';
+    return this.reportOfFire.motionSensor !== 'no';
   }
 }

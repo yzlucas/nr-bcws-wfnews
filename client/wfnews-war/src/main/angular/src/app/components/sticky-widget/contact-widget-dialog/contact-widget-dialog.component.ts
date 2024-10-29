@@ -26,6 +26,7 @@ export class ContactWidgetDialogComponent implements OnInit {
   public closeColor;
   public versionNumber;
   public buildNumber: string;
+  public showVersion = true; // Flag to track which value to display
 
   isMobileView = isMobileView;
 
@@ -59,11 +60,15 @@ export class ContactWidgetDialogComponent implements OnInit {
     });
     const version = this.appConfig.getConfig().application.version;
     if (version) {
-      this.versionNumber = 'Version ' + version;
+      this.versionNumber = 'Version: ' + version;
     }
     if (BUILD_NUMBER) {
-      this.buildNumber = ' Build ' + BUILD_NUMBER;
+      this.buildNumber = ' Build: ' + BUILD_NUMBER;
     }
+
+  }
+  toggleVersionDisplay() {
+    this.showVersion = !this.showVersion;
   }
 
   public error = (controlName: string, errorName: string) => this.contactForm.controls[controlName].hasError(errorName);

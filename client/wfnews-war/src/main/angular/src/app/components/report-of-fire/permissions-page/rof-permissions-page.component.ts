@@ -34,7 +34,7 @@ export class RoFPermissionsPage extends RoFPage {
       this.next();
     } else {
       this.reportOfFirePage.selectPage('distance-page', null, false);
-      this.reportOfFirePage.currentStep++;
+      // this.reportOfFirePage.currentStep++;
     }
   }
 

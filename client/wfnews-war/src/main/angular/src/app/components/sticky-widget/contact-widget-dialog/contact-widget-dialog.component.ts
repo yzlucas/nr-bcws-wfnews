@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { ResourcesRoutes, isMobileView } from '@app/utils';
 import { AppConfigService } from '@wf1/core-ui';
+import { BUILD_NUMBER } from '../../../../environments/build-info';
 
 @Component({
   selector: 'contact-widget-dialog',
@@ -24,6 +25,7 @@ export class ContactWidgetDialogComponent implements OnInit {
   public contactInformationConfig: any;
   public closeColor;
   public versionNumber;
+  public buildNumber: string;
 
   isMobileView = isMobileView;
 
@@ -58,6 +60,9 @@ export class ContactWidgetDialogComponent implements OnInit {
     const version = this.appConfig.getConfig().application.version;
     if (version) {
       this.versionNumber = 'Version ' + version;
+    }
+    if (BUILD_NUMBER) {
+      this.buildNumber = ' Build ' + BUILD_NUMBER;
     }
   }
 

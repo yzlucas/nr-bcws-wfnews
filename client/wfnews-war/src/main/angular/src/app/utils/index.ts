@@ -607,7 +607,6 @@ export function convertToDateTimeTimeZone(date: Date | string): string {
     hour: 'numeric',
     minute: 'numeric',
     second: undefined, // this removes the seconds
-    timeZone: 'America/Los_Angeles', // Pacific Time Zone
     timeZoneName: 'short', // Automatically handles PDT/PST
   };
 

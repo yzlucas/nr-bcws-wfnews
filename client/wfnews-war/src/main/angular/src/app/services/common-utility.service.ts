@@ -14,6 +14,7 @@ import { ShareDialogComponent } from '@app/components/admin-incident-form/share-
 import { MatDialog } from '@angular/material/dialog';
 import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import { map } from 'rxjs/operators';
+import { Meta, Title } from '@angular/platform-browser';
 
 const MAX_CACHE_AGE = 30 * 1000;
 
@@ -50,6 +51,9 @@ export class CommonUtilityService {
     private capacitorService: CapacitorService,
     private router: Router,
     private dialog: MatDialog,
+    private titleService: Title,
+    private metaService: Meta,
+
   ) {
     setTimeout(() => (this.rofService = injector.get(ReportOfFireService)));
   }
@@ -359,6 +363,7 @@ export class CommonUtilityService {
   }
 
   shareMobile(shareTitle: string) {
+    this.setMetaTags(shareTitle);
     const currentUrl = this.appConfigService.getConfig().application.baseUrl.toString() + this.router.url.slice(1);
     // contents of the share is out of scope for wfnews-2403. Enhancment should be available in wfnews-2422
     const imageUrl = this.appConfigService.getConfig().application.baseUrl.toString() + '/assets/images/share-wildfire.png';
@@ -374,6 +379,26 @@ export class CommonUtilityService {
     }).catch(err => {
       console.error('Error sharing:', err);
     });
+  }
+
+  setMetaTags(shareTitle: string) {
+    const title = shareTitle;
+    const description = 'Get the latest update on BC Wildfire.';
+    const imageUrl = this.appConfigService.getConfig().application.baseUrl.toString() + '/assets/images/share-wildfire.png';
+    const pageUrl = this.appConfigService.getConfig().application.baseUrl.toString() + this.router.url.slice(1);
+    this.titleService.setTitle(title);
+
+    this.metaService.addTags([
+      { property: 'og:title', content: title },
+      { property: 'og:description', content: description },
+      { property: 'og:image', content: imageUrl },
+      { property: 'og:url', content: pageUrl },
+      { property: 'twitter:card', content: 'summary_large_image' },
+      { property: 'twitter:title', content: title },
+      { property: 'twitter:description', content: description },
+      { property: 'twitter:image', content: imageUrl },
+      { property: 'twitter:url', content: pageUrl }
+    ]);
   }
 
   openShareWindow(type: string, incidentName: string) {

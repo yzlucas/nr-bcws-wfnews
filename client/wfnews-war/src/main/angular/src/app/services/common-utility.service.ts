@@ -361,11 +361,14 @@ export class CommonUtilityService {
   shareMobile(shareTitle: string) {
     const currentUrl = this.appConfigService.getConfig().application.baseUrl.toString() + this.router.url.slice(1);
     // contents of the share is out of scope for wfnews-2403. Enhancment should be available in wfnews-2422
+    const imageUrl = this.appConfigService.getConfig().application.baseUrl.toString() + '/assets/images/share-wildfire.png';
+
     Share.share({
       title: shareTitle,
-      text: 'Share the incident update!',
+      text: 'Share the incident update',
       url: currentUrl,
-      dialogTitle: 'Share Wildfire News Link'
+      dialogTitle: 'Share Wildfire News Link',
+      files: [imageUrl] 
     }).then(() => {
       console.log('Sharing successful');
     }).catch(err => {

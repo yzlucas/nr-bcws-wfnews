@@ -149,7 +149,7 @@ export class IncidentHeaderPanelComponent implements AfterViewInit, OnInit {
         }
       }
     }
-    this.metaService.updateTag({ property: 'og:title', content: `Evacuation Alert for ${this.incident?.incidentName}`});
+    this.metaService.updateTag({ property: 'og:title', content: `${this.incident?.incidentName}`});
   }
 
   ngAfterViewInit(): void {

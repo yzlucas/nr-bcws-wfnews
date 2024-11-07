@@ -273,38 +273,51 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
     }
 
     this.router.events
-    .pipe(filter(event => event instanceof NavigationEnd))
-    .subscribe(() => {
-      this.setDefaultMetaTags();
-    });
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.setDefaultMetaTags();
+      });
   }
 
-  setDefaultMetaTags(){
+  setDefaultMetaTags() {
     const imageUrl = this.appConfigService.getConfig().application.baseUrl.toString() + 'assets/images/share-wildfire.png';
     this.titleService.setTitle('BC Wildfire Service');
 
     this.metaService.updateTag({ property: 'og:title', content: 'BC Wildfire Service' });
     this.metaService.updateTag({ property: 'og:image', content: imageUrl });
     this.metaService.updateTag({ property: 'og:site_name', content: 'BC Wildfire Service' });
-    this.metaService.updateTag({ name: 'description', content: `BC Wildfire Service App` });
+    this.metaService.updateTag({ property: 'og:description', content: `BC Wildfire Service App` });
     this.metaService.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
     this.metaService.updateTag({ name: 'twitter:site', content: '@BCGovFireInfo' });
+    this.metaService.updateTag({ property: 'twitter:image', content: imageUrl });
   }
 
   initializeDeepLinks() {
     // add listener to enable Capacitor deep links functionality
     App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
+      console.log('appUrlOpen: initializing: ', JSON.stringify(event));
       this.zone.run(() => {
-        // remove https:// and http:// from baseUrl
-        const domain = this.appConfigService.getConfig().application.baseUrl.replace(/^https?:\/\//i, '');
+        try {
+          // remove https:// and http:// from baseUrl
+          const domain = this.appConfigService.getConfig().application.baseUrl.replace(/^https?:\/\//i, '');
 
-        // The pathArray is now like ['wildfiresituation.nrs.gov.bc.ca', '/map?longitude=-124.62025&latitude=53.231&activeWildfires=true']
-        const pathArray = event.url.split(domain);
+          // reject if event URL is invalid
+          if (!event.url.includes(domain) && !domain.includes('localhost')) {
+            console.log('appUrlOpen: returning from initializeDeepLinks function');
+            return;
+          }
 
-        // Get the last element with pop()
-        const appPath = pathArray.pop();
-        if (appPath) {
-          this.router.navigateByUrl(appPath);
+          // form path from URL's path + query parameters
+          const url = new URL(event.url);
+          const path = url.pathname + url.search;
+
+          // navigate to deep link
+          if (path) {
+            console.log('appUrlOpen appPath: ', path);
+            this.router.navigateByUrl(path);
+          }
+        } catch (error) {
+          console.error('appUrlOpen: error initializing deep links', error);
         }
       });
     });

@@ -59,6 +59,14 @@ jobs:
           NPMRC: ${{ secrets.NPMRC }}
         run: echo -e -n "$NPMRC" > .npmrc
 
+      - name: Inject GitHub Build Number and Display Directory
+        run: |
+          echo "Current working directory:"
+          pwd
+          echo "export const BUILD_NUMBER = '${{ github.run_number }}';" > client/wfnews-war/src/main/angular/src/environments/build-info.ts
+          echo "Contents: "
+          ls -lah 
+
       - name: Get XML Info
         id: version
         uses: mavrosxristoforos/get-xml-info@1.1.1

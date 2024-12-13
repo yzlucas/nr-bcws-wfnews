@@ -390,6 +390,11 @@ export class CommonUtilityService {
 
   openShareWindow(type: string, incidentName: string) {
     const url = this.appConfigService.getConfig().application.baseUrl.toString() + this.router.url.slice(1);
+
+    this.snowPlowHelper(url, {
+      action: 'share_from_desktop',
+      text: `${type}, ${incidentName}`
+    });
     this.dialog.open(ShareDialogComponent, {
       panelClass: 'contact-us-dialog',
       width: '500px',

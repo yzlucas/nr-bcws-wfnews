@@ -25,7 +25,7 @@ export class HighlightsCardComponent {
 
     this.snowPlowHelper(url, {
       action: 'highlights_card_click',
-      text: 'Naviaget to Highlight Link'
+      text: 'Navigate to Highlight Link'
     });
 
     if (link) {

@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { Router as Route } from '@angular/router';
+import { Router as Route, Router } from '@angular/router';
 import { LocationData } from '@app/components/wildfires-list-header/filter-by-location/filter-by-location-dialog.component';
 import { AGOLService, AgolOptions } from '@app/services/AGOL-service';
 import { PublishedIncidentService } from '@app/services/published-incident-service';
@@ -61,6 +61,8 @@ export class AreaRestrictionsFullDetailsComponent implements OnInit {
     private watchlistService: WatchlistService,
     private commonUtilityService: CommonUtilityService,
     private metaService: Meta,
+    protected router: Router,
+
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -181,6 +183,19 @@ export class AreaRestrictionsFullDetailsComponent implements OnInit {
       );
     }
     this.cdr.detectChanges();
+  }
+  navToIncident(incident: any) {
+    console.log(incident);
+    this.router.navigate([ResourcesRoutes.PUBLIC_INCIDENT], {
+      queryParams: {
+        fireYear: incident.fireYear,
+        incidentNumber: incident.incidentNumberLabel,
+        source: [ResourcesRoutes.FULL_DETAILS],
+        sourceId: this.id,
+        sourceType: 'area-restriction',
+        name: this.name
+      },
+    });
   }
 
   async populateAreaRestrictionByID(options: AgolOptions = null) {

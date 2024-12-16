@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { Router as Route, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { LocationData } from '@app/components/wildfires-list-header/filter-by-location/filter-by-location-dialog.component';
 import { AGOLService, AgolOptions } from '@app/services/AGOL-service';
 import { PublishedIncidentService } from '@app/services/published-incident-service';
@@ -57,7 +57,6 @@ export class AreaRestrictionsFullDetailsComponent implements OnInit {
     private appConfigService: AppConfigService,
     private agolService: AGOLService,
     private publishedIncidentService: PublishedIncidentService,
-    private route: Route,
     private watchlistService: WatchlistService,
     private commonUtilityService: CommonUtilityService,
     private metaService: Meta,
@@ -245,7 +244,7 @@ export class AreaRestrictionsFullDetailsComponent implements OnInit {
 
   navToMap() {
     setTimeout(() => {
-      this.route.navigate([ResourcesRoutes.ACTIVEWILDFIREMAP], {
+      this.router.navigate([ResourcesRoutes.ACTIVEWILDFIREMAP], {
         queryParams: {
           longitude: this.restrictionData.centroidLongitude,
           latitude: this.restrictionData.centroidLatitude,
@@ -283,7 +282,8 @@ export class AreaRestrictionsFullDetailsComponent implements OnInit {
   }
 
   navToBulletinUrl() {
-    window.open(this.restrictionData.bulletinUrl ? this.restrictionData.bulletinUrl : this.appConfigService.getConfig().externalAppConfig['currentRestrictions'] as unknown as string, '_blank');
+    window.open(this.restrictionData.bulletinUrl ? this.restrictionData.bulletinUrl 
+      : this.appConfigService.getConfig().externalAppConfig['currentRestrictions'] as unknown as string, '_blank');
   }
 
   onWatchlist(incident): boolean {

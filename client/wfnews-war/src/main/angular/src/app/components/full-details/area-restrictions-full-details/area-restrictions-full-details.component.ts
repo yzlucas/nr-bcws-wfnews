@@ -184,7 +184,6 @@ export class AreaRestrictionsFullDetailsComponent implements OnInit {
     this.cdr.detectChanges();
   }
   navToIncident(incident: any) {
-    console.log(incident);
     this.router.navigate([ResourcesRoutes.PUBLIC_INCIDENT], {
       queryParams: {
         fireYear: incident.fireYear,

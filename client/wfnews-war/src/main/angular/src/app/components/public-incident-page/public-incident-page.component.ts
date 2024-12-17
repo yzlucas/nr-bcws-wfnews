@@ -16,6 +16,7 @@ import { findFireCentreByName, hideOnMobileView } from '../../utils';
   templateUrl: './public-incident-page.component.html',
   styleUrls: ['./public-incident-page.component.scss'],
 })
+
 export class PublicIncidentPageComponent implements OnInit {
   public isLoading = true;
   public loadingFailed = false;
@@ -35,7 +36,6 @@ export class PublicIncidentPageComponent implements OnInit {
 
   findFireCentreByName = findFireCentreByName;
   hideOnMobileView = hideOnMobileView;
-
   constructor(
     private router: ActivatedRoute,
     protected cdr: ChangeDetectorRef,
@@ -294,19 +294,31 @@ export class PublicIncidentPageComponent implements OnInit {
     window.location.href = mailtoUrl;
   }
 
-  onTabChange(event: MatTabChangeEvent) {
+  onTabChange(event: MatTabChangeEvent | number): void {
+    const TAB_ACTIONS = [
+      'incident_details_details_click',
+      'incident_details_response_click',
+      'incident_details_gallery_click',
+      'incident_details_maps_click',
+    ];
+  
+    const tabLabels = ['Details', 'Response', 'Gallery', 'Maps'];
     const url = this.appConfigService.getConfig().application.baseUrl.toString() + this.currentRouter.url.slice(1);
-    let actionName;
-    if (event?.tab?.textLabel === 'Response') {
-      actionName = 'incident_details_response_click';
-    } else if (event?.tab?.textLabel === 'Gallery') {
-      actionName = 'incident_details_gallery_click';
-    } else if (event?.tab?.textLabel === 'Maps') {
-      actionName = 'incident_details_maps_click';
+  
+    // Determine the index based on the type of event
+    const index = typeof event === 'number' ? event : event.index;
+  
+    // Validate the index to avoid accessing undefined values
+    if (index < 0 || index >= TAB_ACTIONS.length) {
+      console.warn('Invalid tab index:', index);
+      return;
     }
+  
+    const actionName = TAB_ACTIONS[index];
     this.snowPlowHelper(url, {
       action: actionName,
-      text: event?.tab?.textLabel
+      text: tabLabels[index],
     });
   }
+  
 }

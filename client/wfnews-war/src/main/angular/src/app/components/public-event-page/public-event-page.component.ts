@@ -103,7 +103,7 @@ export class PublicEventPageComponent {
                   this.cdr.detectChanges();
               } catch (error) {
                 console.error(
-                  'Error while populaiting associated incident for area restriction: ' +
+                  'Error while populating associated incident for area restriction: ' +
                     error,
                 );
               }

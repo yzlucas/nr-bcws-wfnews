@@ -4,9 +4,10 @@ import { LocationData } from '@app/components/wildfires-list-header/filter-by-lo
 import { PublishedIncidentService } from '@app/services/published-incident-service';
 import { AppConfigService } from '@wf1/core-ui';
 import * as L from 'leaflet';
-import { ResourcesRoutes, setDisplayColor } from '@app/utils';
+import { ResourcesRoutes, setDisplayColor, displayDangerRatingDescription } from '@app/utils';
 import { AGOLService } from '@app/services/AGOL-service';
 import { CommonUtilityService } from '@app/services/common-utility.service';
+import { Meta } from '@angular/platform-browser';
 
 @Component({
   selector: 'wfnews-danger-rating-full-details',
@@ -20,33 +21,27 @@ export class DangerRatingFullDetailsComponent implements OnInit {
 
   public map: any;
 
+  displayDangerRatingDescription = displayDangerRatingDescription;
+
   constructor(
     private cdr: ChangeDetectorRef,
     private appConfigService: AppConfigService,
     private publishedIncidentService: PublishedIncidentService,
     private route: Route,
     private agolService: AGOLService,
-    private commonUtilityService: CommonUtilityService
+    private commonUtilityService: CommonUtilityService,
+    private metaService: Meta,
   ) {}
 
   async ngOnInit(): Promise<void> {
     this.initMap();
+    this.metaService.updateTag({ property: 'og:title', content: `${this.rating} Danger Rating`});
+    this.metaService.updateTag({ property: 'og:description', content: `${this.rating} Danger Rating` });
   }
 
   dangerDescription() {
-    switch (this.rating) {
-      case 'Very Low':
-        return 'Dry forest fuels are at a very low risk of catching fire.';
-      case 'Low':
-        return 'Fires may start easily and spread quickly but there will be minimal involvement of deeper fuel layers or larger fuels.';
-      case 'Moderate':
-        return 'Forest fuels are drying and there is an increased risk of surface fires starting. Carry out any forest activities with caution.';
-      case 'High':
-        return 'Forest fuels are very dry and the fire risk is serious.  Extreme caution must be used in any forest activities.';
-      case 'Extreme':
-        return 'Extremely dry forest fuels and the fire risk is very serious. New fires will start easily, spread rapidly, and challenge fire suppression efforts.';
-    }
-  }
+    return displayDangerRatingDescription(this.rating);  
+ }
 
   async initMap() {
     // Create map and append data to the map component
@@ -175,5 +170,27 @@ export class DangerRatingFullDetailsComponent implements OnInit {
       'https://www2.gov.bc.ca/gov/content/safety/wildfire-status/wildfire-situation/fire-danger',
       '_blank',
     );
+  }
+
+  navToDangerClass() {
+    window.open(
+      this.appConfigService.getConfig().externalAppConfig[
+        'dangerSummary'
+      ] as unknown as string,
+      '_blank',
+    );
+  }
+
+  navToHighRiskActivities() {
+    window.open(
+      this.appConfigService.getConfig().externalAppConfig[
+        'highRiskActivities'
+      ] as unknown as string,
+      '_blank',
+    );
+  }
+
+  shareMobile() {
+    this.commonUtilityService.shareMobile(`${this.rating} Danger Rating`);
   }
 }

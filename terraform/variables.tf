@@ -91,6 +91,12 @@ variable "app_count" {
   default     = 2
 }
 
+variable "notifications_api_app_count" {
+  description = "Number of docker containers to run in notifications api"
+  default     = 1
+}
+
+
 variable "server_container_name" {
   description = "Server container name"
   default     = "wfnews-server-app"
@@ -543,6 +549,11 @@ variable "FIRE_REPORT_API_URL" {
 }
 
 variable "NOTIFICATION_API_URL" {
+  type = string
+  default = ""
+}
+
+variable "WFRM_RESOURCE_API_URL" {
   type = string
   default = ""
 }

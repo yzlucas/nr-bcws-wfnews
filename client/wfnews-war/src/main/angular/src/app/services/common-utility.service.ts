@@ -2,15 +2,22 @@ import { NumberFormatStyle } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, Injector } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { App } from '@capacitor/app';
 import { Geolocation } from '@capacitor/geolocation';
 import { AppConfigService } from '@wf1/core-ui';
-import { Observable } from 'rxjs';
+import { from, Observable } from 'rxjs';
+import { CapacitorService } from './capacitor-service';
+import { IonicStorageService } from './ionic-storage.service';
 import { ReportOfFireService } from './report-of-fire-service';
-import { LocalStorageService } from './local-storage-service';
+import { Router } from '@angular/router';
+import { Share } from '@capacitor/share';
+import { ShareDialogComponent } from '@app/components/admin-incident-form/share-dialog/share-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { Capacitor, CapacitorHttp } from '@capacitor/core';
+import { map } from 'rxjs/operators';
+import { Meta, Title } from '@angular/platform-browser';
+import { snowPlowHelper } from '@app/utils';
 
 const MAX_CACHE_AGE = 30 * 1000;
-
 export interface Coordinates {
   readonly accuracy: number;
   readonly altitude: number | null;
@@ -30,6 +37,7 @@ export interface Position {
   providedIn: 'root',
 })
 export class CommonUtilityService {
+  snowPlowHelper = snowPlowHelper;
   private myLocation;
   private locationTime;
   private location;
@@ -40,7 +48,14 @@ export class CommonUtilityService {
     private http: HttpClient,
     private appConfigService: AppConfigService,
     private injector: Injector,
-    private storageService: LocalStorageService
+    private ionicStorageService: IonicStorageService,
+    private capacitorService: CapacitorService,
+    private router: Router,
+    private dialog: MatDialog,
+    private titleService: Title,
+    private metaService: Meta,
+    private currentRouter: Router,
+
   ) {
     setTimeout(() => (this.rofService = injector.get(ReportOfFireService)));
   }
@@ -113,8 +128,8 @@ export class CommonUtilityService {
       trimmedAddress = result.address;
       valueLength = value.length;
       if (trimmedAddress != null) {
-valueMatch = trimmedAddress.substring(0, valueLength);
-}
+        valueMatch = trimmedAddress.substring(0, valueLength);
+      }
 
       if (
         address != null &&
@@ -174,22 +189,22 @@ valueMatch = trimmedAddress.substring(0, valueLength);
     const promise = new Promise<boolean>((resolve) => {
       Geolocation.getCurrentPosition().then(
         (position) => {
-          resolve(true)
+          resolve(true);
         },
         (error) => {
-          resolve(false)
+          resolve(false);
         },
       );
-    })
+    });
 
     return promise;
   }
 
   async checkLocationServiceStatus(): Promise<boolean> {
     const timeoutDuration = 5000; // 5 seconds limit
-   
-    const locationPromise = await this.checkLocation()
-    const timeoutPromise = this.countdown(timeoutDuration)
+
+    const locationPromise = await this.checkLocation();
+    const timeoutPromise = this.countdown(timeoutDuration);
 
     return Promise.race([timeoutPromise, locationPromise]);
   }
@@ -210,8 +225,8 @@ valueMatch = trimmedAddress.substring(0, valueLength);
     const y =
       Math.cos(this.deg2rad(lat1)) * Math.sin(this.deg2rad(lat2)) -
       Math.sin(this.deg2rad(lat1)) *
-        Math.cos(this.deg2rad(lat2)) *
-        Math.cos(dLon);
+      Math.cos(this.deg2rad(lat2)) *
+      Math.cos(dLon);
     const bearing = Math.atan2(x, y);
     const bearingDegrees = this.rad2deg(bearing);
     return (bearingDegrees + 360) % 360;
@@ -234,8 +249,12 @@ valueMatch = trimmedAddress.substring(0, valueLength);
 
   async removeInvalidOfflineRoF() {
     try {
+      let offlineReportSaved = null;
       // Fetch locally stored data
-      const offlineReportSaved = this.storageService.getData('offlineReportData');
+      await this.ionicStorageService.get('offlineReportData').then(response => {
+        offlineReportSaved = response;
+      });
+
       if (offlineReportSaved) {
         const offlineReport = JSON.parse(offlineReportSaved);
 
@@ -246,7 +265,7 @@ valueMatch = trimmedAddress.substring(0, valueLength);
             resource.submittedTimestamp &&
             this.invalidTimestamp(resource.submittedTimestamp)
           ) {
-            this.storageService.removeData('offlineReportData');
+            this.ionicStorageService.clear();
           }
         }
       }
@@ -263,12 +282,7 @@ valueMatch = trimmedAddress.substring(0, valueLength);
     return now - submittedTimestamp > oneDay;
   }
 
-  private deg2rad(deg: number): number {
-    return deg * (Math.PI / 180);
-  }
-  private rad2deg(rad: number): number {
-    return rad * (180 / Math.PI);
-  }
+
 
   async checkOnline() {
     try {
@@ -285,14 +299,15 @@ valueMatch = trimmedAddress.substring(0, valueLength);
 
   checkIfLandscapeMode() {
     // also return true if this is table portrait mode wfnews-2022. 
-    if ((window.innerWidth > window.innerHeight) || (window.innerWidth <= 1024 && window.innerWidth >= 768 && window.innerHeight > window.innerWidth) ) {
+    if (
+      (window.innerWidth > window.innerHeight) ||
+      (window.innerWidth <= 1024 && window.innerWidth >= 768 && window.innerHeight > window.innerWidth)) {
       return true;
     } else {
       return false;
     }
-  } 
+  }
 
-  
   hasSQLKeywords(jsonBlob) {
     //detect standalone sql words
     const sqlKeywords = /\b(SELECT|INSERT|UPDATE|DELETE|ALTER|DROP|CREATE)\b(?!\s*\*)/i;
@@ -301,10 +316,12 @@ valueMatch = trimmedAddress.substring(0, valueLength);
   }
 
   extractPolygonData(response) {
-    const polygonData = [];
+    let polygonData = [];
+
     for (const element of response) {
-      polygonData.push(...element);
+      polygonData = polygonData.concat(element);
     }
+
     return polygonData;
   }
 
@@ -326,8 +343,90 @@ valueMatch = trimmedAddress.substring(0, valueLength);
 
   getMapOptions(bounds: any, location: number[]) {
     return bounds
-      ? { attributionControl: false, zoomControl: false, dragging: false, doubleClickZoom: false, boxZoom: false, trackResize: false, scrollWheelZoom: false }
-      : { attributionControl: false, zoomControl: false, dragging: false, doubleClickZoom: false, boxZoom: false, trackResize: false, scrollWheelZoom: false, center: location, zoom: 9 };
+      ? {
+        attributionControl: false,
+        zoomControl: false,
+        dragging: false,
+        doubleClickZoom: false,
+        boxZoom: false,
+        trackResize: false,
+        scrollWheelZoom: false
+      } : {
+        attributionControl: false,
+        zoomControl: false,
+        dragging: false,
+        doubleClickZoom: false,
+        boxZoom: false,
+        trackResize: false,
+        scrollWheelZoom: false,
+        center: location,
+        zoom: 9
+      };
   }
-  
+
+  shareMobile(shareTitle: string) {
+    const url = this.appConfigService.getConfig().application.baseUrl.toString() + this.currentRouter.url.slice(1);
+
+    this.snowPlowHelper(url, {
+      action: 'share_from_mobile_device',
+      text: shareTitle
+    });
+
+    const currentUrl = this.appConfigService.getConfig().application.baseUrl.toString() + this.router.url.slice(1);
+    // contents of the share is out of scope for wfnews-2403. Enhancment should be available in wfnews-2422
+    const imageUrl = this.appConfigService.getConfig().application.baseUrl.toString() + '/assets/images/share-wildfire.png';
+    document.querySelector('meta[property="og:title"]')?.setAttribute('content', `${shareTitle}`);
+
+    Share.share({
+      title: shareTitle,
+      url: currentUrl,
+      dialogTitle: 'Share Wildfire News Link',
+    }).then(() => {
+      console.log('Sharing successful');
+    }).catch(err => {
+      console.error('Error sharing:', err);
+    });
+  }
+
+  openShareWindow(type: string, incidentName: string) {
+    const url = this.appConfigService.getConfig().application.baseUrl.toString() + this.router.url.slice(1);
+
+    this.snowPlowHelper(url, {
+      action: 'share_from_desktop',
+      text: `${type}, ${incidentName}`
+    });
+    this.dialog.open(ShareDialogComponent, {
+      panelClass: 'contact-us-dialog',
+      width: '500px',
+      data: {
+        incidentType: type,
+        currentUrl: url,
+        name: incidentName
+      },
+    });
+  }
+
+  getRequest<T>(url: string): Observable<T> {
+    if (Capacitor.isNativePlatform()) {
+      return from(CapacitorHttp.request({
+        method: 'GET',
+        url: encodeURI(url),
+        headers: {
+          accept: '*/*',
+        }
+      })).pipe(
+        map(response => response.data)
+      );
+    } else {
+      return this.http.get<T>(encodeURI(url));
+    }
+  }
+
+  private deg2rad(deg: number): number {
+    return deg * (Math.PI / 180);
+  }
+  private rad2deg(rad: number): number {
+    return rad * (180 / Math.PI);
+  }
+
 }

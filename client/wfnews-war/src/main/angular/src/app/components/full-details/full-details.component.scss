@@ -32,6 +32,13 @@
     line-height: 21px;
     margin-bottom: 8px;
   }
+
+  .button-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    align-self: stretch;
+  }
 }
 
 .map-button {
@@ -129,31 +136,29 @@
 }
 
 .full-details-header {
-  height: 25px;
-  width: 95%;
+  line-height: 45px;
+  padding: 0 12px;
   position: absolute;
-  display: flex;
-  padding: 10px 20px;
-  justify-content: space-between;
-  align-items: flex-start;
-  align-self: stretch;
+  width: 100%;
+
   z-index: 1000 !important;
   background-color: white;
 
-  &-left-button {
-    position: relative;
-    top: 5px;
-    margin-left: 5px;
-    width: 20px;
-    height: 20px;
-  }
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    width: calc(100% - 24px);
+    align-items: center;
 
-  &-right-button {
-    position: relative;
-    top: 5px;
-    margin-right: 5px;
-    width: 20px;
-    height: 20px;
+    .left-button {
+      width: 20px;
+      height: 20px;
+    }
+  
+    .right-button {
+      width: 20px;
+      height: 20px;
+    }
   }
 }
 
@@ -223,6 +228,7 @@ h4 {
   font-weight: 600;
   line-height: normal;
   margin: 0px 0px 16px 0px;
+  display: flex;
 }
 
 .wilfire-of-note-panel {
@@ -376,6 +382,11 @@ hr {
   height: 24px;
   width: 24px;
   top: 5px;
+}
+
+.map-icon{
+  height: 20px;
+  width: 20px;
 }
 
 .bulletin {

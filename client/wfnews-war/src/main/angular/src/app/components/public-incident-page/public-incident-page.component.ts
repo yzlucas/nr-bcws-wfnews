@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { convertToDateTimeTimeZone, convertToDateYear, convertToDateYearUtc, snowPlowHelper } from '@app/utils';
+import { AppConfigService } from '@wf1/core-ui';
 import {
   AreaRestrictionsOption,
   EvacOrderOption,
@@ -9,14 +11,12 @@ import {
 import { AGOLService } from '../../services/AGOL-service';
 import { PublishedIncidentService } from '../../services/published-incident-service';
 import { findFireCentreByName, hideOnMobileView } from '../../utils';
-import { AppConfigService } from '@wf1/core-ui';
-import { MatTabChangeEvent } from '@angular/material/tabs';
 @Component({
   selector: 'public-incident-page',
   templateUrl: './public-incident-page.component.html',
   styleUrls: ['./public-incident-page.component.scss'],
 })
-export class PublicIncidentPage implements OnInit {
+export class PublicIncidentPageComponent implements OnInit {
   public isLoading = true;
   public loadingFailed = false;
 
@@ -26,7 +26,9 @@ export class PublicIncidentPage implements OnInit {
   public evacOrders: EvacOrderOption[] = [];
   public areaRestrictions: AreaRestrictionsOption[] = [];
   public extent: any = null;
-  public snowPlowHelper = snowPlowHelper
+  public snowPlowHelper = snowPlowHelper;
+
+  selectedTabIndex = 0;
 
   showImageWarning: boolean;
   showMapsWarning: boolean;
@@ -42,7 +44,7 @@ export class PublicIncidentPage implements OnInit {
     protected http: HttpClient,
     private appConfigService: AppConfigService,
     private currentRouter: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.router.queryParams.subscribe((params: ParamMap) => {
@@ -74,9 +76,9 @@ export class PublicIncidentPage implements OnInit {
             // set date strings
             this.incident.declaredOutDate = this.incident.declaredOutDate
               ? new Date(this.incident.declaredOutDate).toLocaleTimeString(
-                  'en-US',
-                  options,
-                )
+                'en-US',
+                options,
+              )
               : 'Pending';
             this.incident.lastUpdatedTimestamp = this.incident
               .lastUpdatedTimestamp
@@ -107,9 +109,9 @@ export class PublicIncidentPage implements OnInit {
                 });
             }
             if (this.incident.incidentSizeEstimatedHa) {
-this.incident.incidentSizeEstimatedHa =
+              this.incident.incidentSizeEstimatedHa =
                 this.incident.incidentSizeEstimatedHa.toLocaleString();
-}
+            }
             // fetch the fire perimetre
             await this.getFirePerimetre();
             // load evac orders and area restrictions nearby
@@ -223,7 +225,7 @@ this.incident.incidentSizeEstimatedHa =
               emrgOAAsysID: element.attributes.EMRG_OAA_SYSID,
               uri: null,
               centroid: element.centroid,
-              issuedOn: convertToDateTimeTimeZone(
+              issuedOn: convertToDateYear(
                 element.attributes.DATE_MODIFIED,
               ),
               eventNumber: element.attributes.EVENT_NUMBER
@@ -267,7 +269,7 @@ this.incident.incidentSizeEstimatedHa =
       .getAreaRestrictions(null, {
         x: +this.incident.longitude,
         y: +this.incident.latitude,
-        radius: null,
+        radius: .5,
       })
       .toPromise()
       .then((response) => {
@@ -292,22 +294,19 @@ this.incident.incidentSizeEstimatedHa =
     window.location.href = mailtoUrl;
   }
 
-  onTabChange( event: MatTabChangeEvent) {
+  onTabChange(event: MatTabChangeEvent) {
     const url = this.appConfigService.getConfig().application.baseUrl.toString() + this.currentRouter.url.slice(1);
     let actionName;
-    if (event?.tab?.textLabel === 'Response'){
-      actionName = 'incident_details_response_click'
-    }
-    else if (event?.tab?.textLabel === 'Gallery'){
-      actionName = 'incident_details_gallery_click'
-    }
-    else if (event?.tab?.textLabel === 'Maps'){
-      actionName = 'incident_ details_maps_click'
+    if (event?.tab?.textLabel === 'Response') {
+      actionName = 'incident_details_response_click';
+    } else if (event?.tab?.textLabel === 'Gallery') {
+      actionName = 'incident_details_gallery_click';
+    } else if (event?.tab?.textLabel === 'Maps') {
+      actionName = 'incident_details_maps_click';
     }
     this.snowPlowHelper(url, {
       action: actionName,
       text: event?.tab?.textLabel
     });
   }
-  
 }

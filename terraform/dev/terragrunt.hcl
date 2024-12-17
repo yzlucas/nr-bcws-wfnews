@@ -24,6 +24,7 @@ locals {
   server_memory = get_env("SERVER_MEMORY")
   db_instance_type = get_env("DB_INSTANCE_TYPE")
   app_count = get_env("INSTANCE_COUNT")
+  notifications_api_app_count = get_env("NOTIFICATIONS_API_INSTANCE_COUNT")
 
   logging_level = get_env("LOGGING_LEVEL")
 
@@ -44,6 +45,7 @@ locals {
   WFDM_REST_URL = get_env("WFDM_REST_URL")
   FIRE_REPORT_API_URL = get_env("FIRE_REPORT_API_URL")
   NOTIFICATION_API_URL = get_env("NOTIFICATION_API_URL")
+  WFRM_RESOURCE_API_URL = get_env("WFRM_RESOURCE_API_URL")
   POINT_ID_URL = get_env("POINT_ID_URL")
   WFIM_CLIENT_URL = get_env("WFIM_CLIENT_URL")
   WFIM_REST_URL = get_env("WFIM_REST_URL")
@@ -139,6 +141,7 @@ generate "dev_tfvars" {
     db_postgres_version = "${local.db_postgres_version}"
     logging_level = "${local.logging_level}"
     app_count = "${local.app_count}"
+    notifications_api_app_count = "${local.notifications_api_app_count}"
     api_key = "${local.api_key}"
     db_pass = "${local.db_pass}"
 
@@ -159,6 +162,7 @@ generate "dev_tfvars" {
     WFDM_REST_URL ="${local.WFDM_REST_URL}"
     FIRE_REPORT_API_URL ="${local.FIRE_REPORT_API_URL}"
     NOTIFICATION_API_URL ="${local.NOTIFICATION_API_URL}"
+    WFRM_RESOURCE_API_URL ="${local.WFRM_RESOURCE_API_URL}"
     POINT_ID_URL ="${local.POINT_ID_URL}"
     WFIM_CLIENT_URL ="${local.WFIM_CLIENT_URL}"
     WFIM_REST_URL ="${local.WFIM_REST_URL}"

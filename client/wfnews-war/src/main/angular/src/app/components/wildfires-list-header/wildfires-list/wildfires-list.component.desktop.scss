@@ -109,7 +109,7 @@ tr {
 
 table {
   border: 1;
-  width: 96%;
+  table-layout: fixed;
 }
 
 td {
@@ -320,28 +320,28 @@ table tr:nth-child(even) td {
   text-align: left !important;
 }
 
-.mat-column-lastUpdated {
-  width: 11%;
-}
-
 .mat-column-stageOfControl {
   width: 15%;
 }
 
 .mat-column-fireCentre {
-  width: 18%;
+  width: 15%;
 }
 
 .mat-column-location {
-  width: 24%;
+  width: 18%;
 }
 
-.mat-column-addToWatchlist {
-  width: 5%;
+.mat-column-lastUpdated {
+  width: 10%;
+}
+
+.mat-column-discoveryDate {
+  width: 12%;
 }
 
 .mat-column-viewMap {
-  width: 8%;
+  width:6%;
 }
 
 .cell-button {

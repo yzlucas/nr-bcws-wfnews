@@ -16,6 +16,7 @@ import { findFireCentreByName, hideOnMobileView } from '../../utils';
   templateUrl: './public-incident-page.component.html',
   styleUrls: ['./public-incident-page.component.scss'],
 })
+
 export class PublicIncidentPageComponent implements OnInit {
   public isLoading = true;
   public loadingFailed = false;
@@ -35,7 +36,6 @@ export class PublicIncidentPageComponent implements OnInit {
 
   findFireCentreByName = findFireCentreByName;
   hideOnMobileView = hideOnMobileView;
-
   constructor(
     private router: ActivatedRoute,
     protected cdr: ChangeDetectorRef,
@@ -295,26 +295,30 @@ export class PublicIncidentPageComponent implements OnInit {
   }
 
   onTabChange(event: MatTabChangeEvent | number): void {
+    const TAB_ACTIONS = [
+      'incident_details_details_click',
+      'incident_details_response_click',
+      'incident_details_gallery_click',
+      'incident_details_maps_click',
+    ];
+  
     const tabLabels = ['Details', 'Response', 'Gallery', 'Maps'];
     const url = this.appConfigService.getConfig().application.baseUrl.toString() + this.currentRouter.url.slice(1);
   
     // Determine the index based on the type of event
     const index = typeof event === 'number' ? event : event.index;
   
-    let actionName;
-    if (index === 0) {
-      actionName = 'incident_details_details_click';
-    } else if (index === 1) {
-      actionName = 'incident_details_response_click';
-    } else if (index === 2) {
-      actionName = 'incident_details_gallery_click';
-    } else if (index === 3) {
-      actionName = 'incident_details_maps_click';
+    // Validate the index to avoid accessing undefined values
+    if (index < 0 || index >= TAB_ACTIONS.length) {
+      console.warn('Invalid tab index:', index);
+      return;
     }
   
+    const actionName = TAB_ACTIONS[index];
     this.snowPlowHelper(url, {
       action: actionName,
-      text: tabLabels[index]
+      text: tabLabels[index],
     });
   }
+  
 }

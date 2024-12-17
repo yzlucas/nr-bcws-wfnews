@@ -692,10 +692,6 @@ export class IncidentHeaderPanelComponent implements AfterViewInit, OnInit {
     }
   }
 
-  // printPage(){
-  //   this.requestPrint.emit();
-  // }
-
   public printPage() {
     const twoColumnContent = document.getElementsByClassName('two-column-content-cards-container')[0];
     twoColumnContent.classList.add('print');

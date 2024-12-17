@@ -294,19 +294,27 @@ export class PublicIncidentPageComponent implements OnInit {
     window.location.href = mailtoUrl;
   }
 
-  onTabChange(event: MatTabChangeEvent) {
+  onTabChange(event: MatTabChangeEvent | number): void {
+    const tabLabels = ['Details', 'Response', 'Gallery', 'Maps'];
     const url = this.appConfigService.getConfig().application.baseUrl.toString() + this.currentRouter.url.slice(1);
+  
+    // Determine the index based on the type of event
+    const index = typeof event === 'number' ? event : event.index;
+  
     let actionName;
-    if (event?.tab?.textLabel === 'Response') {
+    if (index === 0) {
+      actionName = 'incident_details_details_click';
+    } else if (index === 1) {
       actionName = 'incident_details_response_click';
-    } else if (event?.tab?.textLabel === 'Gallery') {
+    } else if (index === 2) {
       actionName = 'incident_details_gallery_click';
-    } else if (event?.tab?.textLabel === 'Maps') {
+    } else if (index === 3) {
       actionName = 'incident_details_maps_click';
     }
+  
     this.snowPlowHelper(url, {
       action: actionName,
-      text: event?.tab?.textLabel
+      text: tabLabels[index]
     });
   }
 }

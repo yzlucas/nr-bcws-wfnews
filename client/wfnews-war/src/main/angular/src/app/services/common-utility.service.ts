@@ -378,7 +378,6 @@ export class CommonUtilityService {
 
     Share.share({
       title: shareTitle,
-      text: 'Share the incident update',
       url: currentUrl,
       dialogTitle: 'Share Wildfire News Link',
     }).then(() => {

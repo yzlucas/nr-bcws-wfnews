@@ -19,8 +19,8 @@ export class ContactUsCoreComponent {
   email = () => {
 
     window.open(
-      'mailto:' + this.incident.contactEmailAddress + 
-      '?subject=' + encodeURIComponent(this.incident.incidentName),
+      'mailto:' + this.incident?.contactEmailAddress + 
+      '?subject=' + encodeURIComponent(this.incident?.incidentName),
       '_blank'
     );
   };

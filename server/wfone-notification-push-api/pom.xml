@@ -105,8 +105,9 @@
 
 			<dependency>
 				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
+				<artifactId>jakarta.servlet-api</artifactId>
 				<version>5.0.0</version>
+				<scope>provided</scope>
 			</dependency>
 
 			<dependency>

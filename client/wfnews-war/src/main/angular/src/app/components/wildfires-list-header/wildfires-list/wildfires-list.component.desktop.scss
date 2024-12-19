@@ -21,6 +21,8 @@
 }
 
 .search-input {
+  position: relative;
+  display: inline-flex;
   border-radius: 20px !important;
   border: 1px solid #a7a9ac !important;
   padding: 0 5px;
@@ -173,33 +175,23 @@ table tr:nth-child(even) td {
 }
 
 .input-clear-button {
-  margin-bottom: 1px;
-  margin-left: 278px;
-  position: absolute;
-  line-height: 24px;
-  height: 24px;
+  position: absolute; /* Position relative to .field.search-input */
+  top: 50%; /* Vertically center the button */
+  right: 10px; /* Adjust horizontal alignment to fit inside the search box */
+  transform: translateY(-50%); /* Fix centering alignment */
+  z-index: 1; /* Ensure it stays above other elements */
+  height: 24px; /* Size adjustments for the button */
   width: 24px;
-  font-size: 15px;
-  border-radius: 20%;
-  background-color: transparent;
+  line-height: 24px;
+  background: transparent; /* Transparent background */
   border: none;
-  .button-wrapper {
-    padding: 0;
-    min-width: 0;
-    width: 40px;
-    height: 40px;
-    flex-shrink: 0;
-    line-height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    position: relative;
-    top: -6px;
-    left: 6px;
-  }
+  cursor: pointer;
+
   mat-icon {
-    transform: translateX(-5px);
+    font-size: 16px; /* Ensure proper sizing for the icon */
   }
 }
+
 
 .checkbox-label {
   font-size: 15px !important;

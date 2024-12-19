@@ -176,19 +176,18 @@ table tr:nth-child(even) td {
 
 .input-clear-button {
   position: absolute; /* Position relative to .field.search-input */
-  top: 50%; /* Vertically center the button */
-  right: 10px; /* Adjust horizontal alignment to fit inside the search box */
-  transform: translateY(-50%); /* Fix centering alignment */
-  z-index: 1; /* Ensure it stays above other elements */
-  height: 24px; /* Size adjustments for the button */
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  z-index: 1;
+  height: 24px;
   width: 24px;
-  line-height: 24px;
-  background: transparent; /* Transparent background */
+  background: transparent;
   border: none;
   cursor: pointer;
 
   mat-icon {
-    font-size: 16px; /* Ensure proper sizing for the icon */
+    font-size: 16px;
   }
 }
 
